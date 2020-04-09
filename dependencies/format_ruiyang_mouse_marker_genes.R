@@ -12,8 +12,9 @@ source("./ccRCC_drug_analysis/variables.R")
 version_tmp <- 1
 run_id <- paste0(format(Sys.Date(), "%Y%m%d") , ".v", version_tmp)
 ## set output directory
-dir_out <- paste0(makeOutDir(), run_id, "/")
-dir.create(dir_out)
+
+# dir_out <- paste0(makeOutDir(), run_id, "/")
+# dir.create(dir_out)
 
 # input dependencies ------------------------------------------------------
 ## input Ruiyang's marker gene lsit

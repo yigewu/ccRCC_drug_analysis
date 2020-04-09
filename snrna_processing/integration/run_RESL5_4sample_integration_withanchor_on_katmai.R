@@ -7,7 +7,6 @@
 dir_base = "/diskmnt/Projects/ccRCC_scratch/ccRCC_Drug/"
 setwd(dir_base)
 source("./ccRCC_drug_analysis/load_pkgs.R")
-source("./ccRCC_drug_analysis/functions.R")
 source("./ccRCC_drug_analysis/variables.R")
 library(Seurat)
 ## set run id
