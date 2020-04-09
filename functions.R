@@ -1,9 +1,6 @@
 # Yige Wu @ WashU 2018 Jan
 ## shared functions for cptac2p_analysis
 
-
-
-
 # set variables -----------------------------------------------------------
 ## base directory at Box Sync
 # baseD = "~/Box/"
@@ -14,7 +11,7 @@
 dir_analysis_result <- paste0(dir_base, "/Resources/Analysis_Results/")
   
 # make directory ----------------------------------------------------------
-makeOutDir = function(path_script) {
+makeOutDir_katmai = function(path_script) {
   folders <- strsplit(x = path_script, split = "\\/")[[1]]
   folder_num <- which(folders == "ccRCC_drug_analysis") + 1
   dir_analysis_resultnow <- paste(strsplit(paste(folders[folder_num:length(folders)], collapse = "/"), split = "\\.")[[1]][1], sep = "/")
