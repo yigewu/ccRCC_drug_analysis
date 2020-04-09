@@ -61,7 +61,6 @@ for (filename_rds in filenames_rds) {
 # Select the most variable features to use for integration
 features_integ <- SelectIntegrationFeatures(object.list = list_srat, 
                                             nfeatures = num_var_features) 
-View(features_integ)
 # Prepare the SCT list object for integration
 list_srat <- PrepSCTIntegration(object.list = list_srat, 
                                 anchor.features = features_integ)
@@ -76,5 +75,9 @@ srat_integrated <- IntegrateData(anchorset = anchors_integ,
 
 # Save integrated seurat object
 file2write <- paste0(dir_out, "RESL5_4sample_integration.withanchor.", run_id, ".RDS")
+<<<<<<< HEAD
 saveRDS(object = seurat_integrated, file = file2write, compress = T)
 sink()
+=======
+saveRDS(object = srat_integrated, file = file2write, compress = T)
+>>>>>>> 2f0ac1ac615ef917e8b385ccab23927f1d531746
