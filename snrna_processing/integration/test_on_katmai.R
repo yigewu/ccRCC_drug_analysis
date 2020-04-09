@@ -11,4 +11,4 @@ thisFile <- function() {
   }
 }
 path_this_script <- thisFile()
-print(p)
+print(path_this_script)
