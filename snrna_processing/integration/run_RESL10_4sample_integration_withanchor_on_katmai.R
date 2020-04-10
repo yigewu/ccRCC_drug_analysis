@@ -75,5 +75,5 @@ srat_integrated <- IntegrateData(anchorset = anchors_integ,
 
 # Save integrated seurat object
 file2write <- paste0(dir_out, "RESL10_4sample_integration.withanchor.", run_id, ".RDS")
-saveRDS(object = seurat_integrated, file = file2write, compress = T)
+saveRDS(object = srat_integrated, file = file2write, compress = T)
 sink()

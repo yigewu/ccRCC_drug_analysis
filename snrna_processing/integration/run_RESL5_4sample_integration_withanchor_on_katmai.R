@@ -1,6 +1,5 @@
 # Yige Wu @WashU Apr 2020
-## for integrating 8 snRNA datasets on local
-## making a template script transferable for running on cluster
+## for integrating 4 snRNA datasets for RESL5 on katmai
 
 # set up libraries and output directory -----------------------------------
 ## set run id
@@ -75,9 +74,5 @@ srat_integrated <- IntegrateData(anchorset = anchors_integ,
 
 # Save integrated seurat object
 file2write <- paste0(dir_out, "RESL5_4sample_integration.withanchor.", run_id, ".RDS")
-<<<<<<< HEAD
-saveRDS(object = seurat_integrated, file = file2write, compress = T)
-sink()
-=======
 saveRDS(object = srat_integrated, file = file2write, compress = T)
->>>>>>> 2f0ac1ac615ef917e8b385ccab23927f1d531746
+sink()
