@@ -42,7 +42,7 @@ dir_rds <- "./Resources/Analysis_Results/snrna_processing/sctransform/run_sctran
 # get file names ----------------------------------------------------------
 filenames_rds <- list.files(dir_rds) 
 filenames_rds
-filenames_rds <- filenames_rds[grepl(pattern = "RESL5", x = filenames_rds)]
+filenames_rds <- filenames_rds[grepl(pattern = "RESL10", x = filenames_rds)]
 filenames_rds
 
 # input per object in for loop--------------------------------------------------------
@@ -61,7 +61,6 @@ for (filename_rds in filenames_rds) {
 # Select the most variable features to use for integration
 features_integ <- SelectIntegrationFeatures(object.list = list_srat, 
                                             nfeatures = num_var_features) 
-View(features_integ)
 # Prepare the SCT list object for integration
 list_srat <- PrepSCTIntegration(object.list = list_srat, 
                                 anchor.features = features_integ)
@@ -75,6 +74,6 @@ srat_integrated <- IntegrateData(anchorset = anchors_integ,
                                    normalization.method = "SCT")
 
 # Save integrated seurat object
-file2write <- paste0(dir_out, "RESL5_4sample_integration.withanchor.", run_id, ".RDS")
+file2write <- paste0(dir_out, "RESL10_4sample_integration.withanchor.", run_id, ".RDS")
 saveRDS(object = seurat_integrated, file = file2write, compress = T)
 sink()
