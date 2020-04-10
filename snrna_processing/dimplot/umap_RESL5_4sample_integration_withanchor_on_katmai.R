@@ -41,7 +41,7 @@ path_rds <- "./Resources/Analysis_Results/snrna_processing/integration/run_RESL5
 srat <- readRDS(file = path_rds)
 
 # make Dimplot ------------------------------------------------------------
-p <- DimPlot(object = srat, group.by = "call", split.by = "orig.ident")
+p <- DimPlot(object = srat, group.by = "call", split.by = "orig.ident", reduction = "umap")
 
 # save output -------------------------------------------------------------
 file2write <- paste0(dir_out, "dimplot.", "RESL5_4sample_integration.withanchor.", run_id, ".png")
