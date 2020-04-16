@@ -36,7 +36,7 @@ sink(file = paste0(dir_out, "Log.", timestamp, ".txt"))
 
 # set dependencies --------------------------------------------------------
 ## set the directory containing the SCTransformed seurat objects in RDS file format
-dir_rds <- "./Resources/Analysis_Results/snrna_processing/sctransform/run_sctransform_by_for_loop/20200408.v1/"
+dir_rds <- "./Resources/Analysis_Results/snrna_processing/sctransform/run_sctransform_by_for_loop/20200416.v1/"
 
 # get file names ----------------------------------------------------------
 filenames_rds <- list.files(dir_rds) 
