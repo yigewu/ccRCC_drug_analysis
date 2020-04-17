@@ -36,9 +36,9 @@ sink(file = paste0(dir_out, "Log.", timestamp, ".txt"))
 
 # set dependencies --------------------------------------------------------
 ## set integration id
-id_integration <- "RESL5_4sample_integration.withanchor.20200409.v1"
+id_integration <- "RESL10_4sample_integration.withanchor.20200410.v1"
 ## set the path to the rds file for integrated object
-path_rds <- "./Resources/Analysis_Results/snrna_processing/integration/run_RESL5_4sample_integration_withanchor_on_katmai/20200409.v1/RESL5_4sample_integration.withanchor.20200409.v1.RDS"
+path_rds <- "./Resources/Analysis_Results/snrna_processing/integration/run_RESL10_4sample_integration_withanchor_on_katmai/20200410.v1/RESL10_4sample_integration.withanchor.20200410.v1.RDS"
 ## input RDS file
 srat <- readRDS(file = path_rds)
 
@@ -65,13 +65,12 @@ dev.off()
 
 # cluster the cells -------------------------------------------------------
 # Determine the K-nearest neighbor graph
-seurat_integrated <- FindNeighbors(object = seurat_integrated, 
-                                   dims = 1:num_pcs)
+srat <- FindNeighbors(object = srat, dims = 1:num_pcs)
 
 # Determine the clusters for various resolutions                                
-seurat_integrated <- FindClusters(object = seurat_integrated,
-                                  resolution = c(0.4, 0.6, 0.8, 1.0, 1.4))
+srat <- FindClusters(object = srat, resolution = 0.5)
 
 # save output -------------------------------------------------------------
-
+file2write <- paste0(dir_out, id_integration, ".clustered", ".RDS")
+saveRDS(object = srat, file = file2write, compress = T)
 
