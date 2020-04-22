@@ -32,8 +32,6 @@ library(Seurat)
 ## set output directory
 dir_out <- paste0(makeOutDir_katmai(path_this_script), run_id, "/")
 dir.create(dir_out)
-## set log file
-sink(file = paste0(dir_out, "Log.", timestamp, ".txt"))
 
 # set dependencies --------------------------------------------------------
 ## set integration id
@@ -44,6 +42,8 @@ path_rds <- "./Resources/Analysis_Results/snrna_processing/clustering/cluster_RE
 srat <- readRDS(file = path_rds)
 ## input marker gene table
 gene2celltype_df <- fread("./Resources/Analysis_Results/dependencies/merge_celltypemarkergenes_btw_human_and_mouse/20200409.v1/celltypemarkergenes_mouse_human.rcc.20200409.v1.tsv", data.table = F)
+## set the minimal % of cells expresssing the gene
+min.exp.pct <- 25
 
 # get gene to plot --------------------------------------------------------
 ## make feature name
@@ -57,7 +57,7 @@ p <- DotPlot(object = srat, features = featurenames, col.min = 0)
 plot_data <- p$data
 ## transform the dataframe to matrix to better filter out genes with too low expressin
 plot_matrix <- dcast(data = plot_data, formula = features.plot ~ id, value.var = "pct.exp")
-## filter for genes that are expressed in >25% of one cluster at least
+## filter for genes that are expressed in >XX% (min.exp.pct) of one cluster at least
 ## replot with the filtered genes plus malignant cell marker genes
 featurenames_filtered <- as.vector(plot_matrix[rowSums(plot_matrix[,unique(as.vector(plot_data$id))] > min.exp.pct) >= 1, "features.plot"])
 
