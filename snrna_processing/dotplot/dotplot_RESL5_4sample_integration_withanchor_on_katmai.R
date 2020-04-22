@@ -43,7 +43,7 @@ srat <- readRDS(file = path_rds)
 ## input marker gene table
 gene2celltype_df <- fread("./Resources/Analysis_Results/dependencies/merge_celltypemarkergenes_btw_human_and_mouse/20200409.v1/celltypemarkergenes_mouse_human.rcc.20200409.v1.tsv", data.table = F)
 ## set the minimal % of cells expresssing the gene
-min.exp.pct <- 25
+min.exp.pct <- 0
 
 # get gene to plot --------------------------------------------------------
 ## make feature name
