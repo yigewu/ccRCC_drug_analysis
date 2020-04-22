@@ -39,7 +39,7 @@ sink(file = paste0(dir_out, "Log.", timestamp, ".txt"))
 ## set integration id
 id_integration <- "RESL5_4sample_integration.withanchor.20200416.v1"
 ## set the path to the rds file for integrated object
-path_rds <- "./Resources/Analysis_Results/snrna_processing/cluster_RESL5_4sample_integration_withanchor_on_katmai/20200417.v1/RESL5_4sample_integration.withanchor.20200416.v1.clustered.RDS"
+path_rds <- "./Resources/Analysis_Results/snrna_processing/clustering/cluster_RESL5_4sample_integration_withanchor_on_katmai/20200417.v1/RESL5_4sample_integration.withanchor.20200416.v1.clustered.RDS"
 ## input RDS file
 srat <- readRDS(file = path_rds)
 ## input marker gene table
