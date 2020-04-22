@@ -61,9 +61,9 @@ plot_matrix <- dcast(data = plot_data, formula = features.plot ~ id, value.var =
 ## filter for genes that are expressed in >XX% (min.exp.pct) of one cluster at least
 ## replot with the filtered genes plus malignant cell marker genes
 featurenames_filtered <- as.vector(plot_matrix[rowSums(plot_matrix[,unique(as.vector(plot_data$id))] > min.exp.pct) >= 1, "features.plot"])
-
+print(featurenames_filtered)
 # make Dimplot ------------------------------------------------------------
-p <- DotPlot(object = srat, features = featurenames_filtered, col.min = 0)
+p <- DotPlot(object = srat, features = featurenames_filtered, col.min = 0, assay = "RNA")
 p$data$species <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$feature_name, to = gene2celltype_df$Species)
 p$data$gene_cell_type_group <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$feature_name, to = gene2celltype_df$Cell_Type_Group)
 p$data$gene_cell_type1 <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$feature_name, to = gene2celltype_df$Cell_Type1)
