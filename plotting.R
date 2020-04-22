@@ -5,8 +5,6 @@
 packages = c(
   "ggplot2",
   "RColorBrewer",
-  "pheatmap",
-  "ggbeeswarm"
 )
 
 for (pkg_name_tmp in packages) {
