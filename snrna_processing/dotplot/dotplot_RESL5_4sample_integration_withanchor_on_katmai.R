@@ -64,25 +64,25 @@ featurenames_filtered <- as.vector(plot_matrix[rowSums(plot_matrix[,unique(as.ve
 
 # make Dimplot ------------------------------------------------------------
 p <- DotPlot(object = srat, features = featurenames_filtered, col.min = 0)
-p$data$species <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$Gene, to = gene2celltype_df$Species)
-p$data$gene_cell_type_group <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$Gene, to = gene2celltype_df$Cell_Type_Group)
-p$data$gene_cell_type1 <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$Gene, to = gene2celltype_df$Cell_Type1)
-p$data$gene_cell_type2 <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$Gene, to = gene2celltype_df$Cell_Type2)
-p$data$gene_cell_type3 <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$Gene, to = gene2celltype_df$Cell_Type3)
-p$data$gene_cell_type4 <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$Gene, to = gene2celltype_df$Cell_Type4)
-p <- p + RotatedAxis()
+p$data$species <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$feature_name, to = gene2celltype_df$Species)
+p$data$gene_cell_type_group <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$feature_name, to = gene2celltype_df$Cell_Type_Group)
+p$data$gene_cell_type1 <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$feature_name, to = gene2celltype_df$Cell_Type1)
+p$data$gene_cell_type2 <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$feature_name, to = gene2celltype_df$Cell_Type2)
+p$data$gene_cell_type3 <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$feature_name, to = gene2celltype_df$Cell_Type3)
+p$data$gene_cell_type4 <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$feature_name, to = gene2celltype_df$Cell_Type4)
+# p <- p + RotatedAxis()
 p <- p + facet_grid(.~species + gene_cell_type_group + gene_cell_type1 + gene_cell_type2 + gene_cell_type3 + gene_cell_type4, scales = "free", space = "free", drop = T)
 p <- p + theme(panel.spacing = unit(0, "lines"),
                strip.background = element_blank(),
                panel.border = element_rect(colour = "black"),
                panel.grid.major = element_line(colour = "grey50"),
                strip.text.x = element_text(angle = 0, vjust = 0.5),
-               axis.text.x = element_text(size = 15, face = "bold"),
+               axis.text.x = element_text(angle = 90, size = 15, face = "bold"),
                strip.placement = "outside")
 
 # save output -------------------------------------------------------------
 file2write <- paste0(dir_out, "dotplot.", "RESL5_4sample_integration.withanchor.", run_id, ".png")
-png(filename = file2write, width = 4000, height = 1000, res = 150)
+png(filename = file2write, width = 3000, height = 2000, res = 150)
 print(p)
 dev.off()
 
