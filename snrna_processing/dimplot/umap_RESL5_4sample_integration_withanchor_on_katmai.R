@@ -40,11 +40,16 @@ path_rds <- "./Resources/Analysis_Results/snrna_processing/clustering/cluster_RE
 ## input RDS file
 srat <- readRDS(file = path_rds)
 
-# make Dimplot ------------------------------------------------------------
-p <- DimPlot(object = srat, split.by = "call", reduction = "umap", label = T)
+# make Dimplot, split ------------------------------------------------------------
+p <- DimPlot(object = srat, reduction = "umap", label = T)
+file2write <- paste0(dir_out, "umap.", "RESL5_4sample_integration.withanchor.", run_id, ".png")
+png(filename = file2write, width = 2000, height = 1500, res = 150)
+print(p)
+dev.off()
 
-# save output -------------------------------------------------------------
-file2write <- paste0(dir_out, "dimplot.", "RESL5_4sample_integration.withanchor.", run_id, ".png")
+# make Dimplot, split ------------------------------------------------------------
+p <- DimPlot(object = srat, group.by = "call", split.by = "seurat_clusters", reduction = "umap", label = T)
+file2write <- paste0(dir_out, "umap.", "RESL5_4sample_integration.withanchor.split.", run_id, ".png")
 png(filename = file2write, width = 4000, height = 1000, res = 150)
 print(p)
 dev.off()
