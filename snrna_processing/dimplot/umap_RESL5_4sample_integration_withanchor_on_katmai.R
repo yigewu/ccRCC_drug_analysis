@@ -36,12 +36,12 @@ sink(file = paste0(dir_out, "Log.", timestamp, ".txt"))
 
 # set dependencies --------------------------------------------------------
 ## set the path to the rds file for integrated object
-path_rds <- "./Resources/Analysis_Results/snrna_processing/integration/run_RESL5_4sample_integration_withanchor_on_katmai/20200409.v1/RESL5_4sample_integration.withanchor.20200409.v1.RDS"
+path_rds <- "./Resources/Analysis_Results/snrna_processing/clustering/cluster_RESL5_4sample_integration_withanchor_on_katmai/20200417.v1/RESL5_4sample_integration.withanchor.20200416.v1.clustered.RDS"
 ## input RDS file
 srat <- readRDS(file = path_rds)
 
 # make Dimplot ------------------------------------------------------------
-p <- DimPlot(object = srat, group.by = "call", split.by = "orig.ident", reduction = "umap")
+p <- DimPlot(object = srat, split.by = "call", reduction = "umap", label = T)
 
 # save output -------------------------------------------------------------
 file2write <- paste0(dir_out, "dimplot.", "RESL5_4sample_integration.withanchor.", run_id, ".png")
