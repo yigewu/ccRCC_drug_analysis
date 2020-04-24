@@ -63,7 +63,7 @@ plot_matrix <- dcast(data = plot_data, formula = features.plot ~ id, value.var =
 featurenames_filtered <- as.vector(plot_matrix[rowSums(plot_matrix[,unique(as.vector(plot_data$id))] > min.exp.pct) >= 1, "features.plot"])
 print(featurenames_filtered)
 # make Dimplot ------------------------------------------------------------
-p <- DotPlot(object = srat, features = featurenames_filtered, col.min = 0, assay = "RNA")
+p <- DotPlot(object = srat, features = featurenames_filtered, col.min = 0, assay = "RNA", split.by = "call")
 p$data$species <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$feature_name, to = gene2celltype_df$Species)
 p$data$gene_cell_type_group <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$feature_name, to = gene2celltype_df$Cell_Type_Group)
 p$data$gene_cell_type1 <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$feature_name, to = gene2celltype_df$Cell_Type1)

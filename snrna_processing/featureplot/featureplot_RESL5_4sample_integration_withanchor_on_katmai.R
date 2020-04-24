@@ -62,7 +62,6 @@ plot_matrix <- dcast(data = plot_data, formula = features.plot ~ id, value.var =
 print(plot_matrix[1:5, 1:5])
 
 ## filter for genes that are expressed in >XX% (min.exp.pct) of one cluster at least
-## replot with the filtered genes plus malignant cell marker genes
 featurenames_filtered <- as.vector(plot_matrix[rowSums(plot_matrix[,unique(as.vector(plot_data$id))] > min.exp.pct) >= 1, "features.plot"])
 print(featurenames_filtered)
 
@@ -72,7 +71,7 @@ for (featurename in featurenames_filtered) {
                    cols = c("grey", "red"), reduction = "umap", label = T)
   
   # save output -------------------------------------------------------------
-  file2write <- paste0(dir_out, featurename, ".RESL5_4sample_integration.withanchor.", run_id, ".png")
+  file2write <- paste0(dir_out, featurename,id_integration, ".featureplot.", run_id, ".png")
   png(filename = file2write, width = 2000, height = 2000, res = 150)
   print(p)
   dev.off()
