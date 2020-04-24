@@ -54,8 +54,9 @@ gene2celltype_df <- gene2celltype_df %>%
 featurenames <-  intersect(gene2celltype_df$feature_name, srat@assays$RNA@counts@Dimnames[[1]])
 featurenames <- unique(featurenames)
 ## get the pct expressed for each gene in each cluster
-p <- DotPlot(object = srat, features = featurenames, col.min = 0)
+p <- DotPlot(object = srat, features = featurenames, col.min = 0, assay = "RNA")
 plot_data <- p$data
+plot_data <- unique(plot_data)
 ## transform the dataframe to matrix to better filter out genes with too low expressin
 plot_matrix <- dcast(data = plot_data, formula = features.plot ~ id, value.var = "pct.exp")
 print(plot_matrix[1:5, 1:5])
@@ -72,7 +73,7 @@ for (featurename in featurenames_filtered) {
   
   # save output -------------------------------------------------------------
   file2write <- paste0(dir_out, featurename, ".RESL5_4sample_integration.withanchor.", run_id, ".png")
-  png(filename = file2write, width = 3000, height = 2000, res = 150)
+  png(filename = file2write, width = 2000, height = 2000, res = 150)
   print(p)
   dev.off()
 }
