@@ -41,6 +41,7 @@ id_integration <- "RESL5_4sample_integration.withanchor.20200417.v1"
 path_rds <- "./Resources/Analysis_Results/snrna_processing/clustering/cluster_RESL5_4sample_integration_withanchor_on_katmai/20200417.v1/RESL5_4sample_integration.withanchor.20200416.v1.clustered.RDS"
 ## input RDS file
 srat <- readRDS(file = path_rds)
+DefaultAssay(srat) <- "RNA"
 ## input marker gene table
 gene2celltype_df <- fread("./Resources/Analysis_Results/dependencies/merge_celltypemarkergenes_btw_human_and_mouse/20200409.v1/celltypemarkergenes_mouse_human.rcc.20200409.v1.tsv", data.table = F)
 ## set the minimal % of cells expresssing the gene
@@ -51,7 +52,7 @@ min.exp.pct <- 0
 gene2celltype_df <- gene2celltype_df %>%
   mutate(feature_name = ifelse(Species == "Human", paste0("GRCh38-3.0.0.premrna-", Gene_Symbol), paste0("mm10-premrna---------", Gene_Symbol)))
 ## get feature names in RNA count data
-featurenames <-  intersect(gene2celltype_df$feature_name, srat@assays$RNA@counts@Dimnames[[1]])
+featurenames <-  intersect(gene2celltype_df$feature_name, srat@assays$RNA@data@Dimnames[[1]])
 featurenames <- unique(featurenames)
 ## get the pct expressed for each gene in each cluster
 p <- DotPlot(object = srat, features = featurenames, col.min = 0)

@@ -28,6 +28,7 @@ for (sample_id in path_srat_obj_df$sample_id) {
   ## input srat object
   path_srat <- path_srat_obj_df$path_output[path_srat_obj_df$sample_id == sample_id]
   srat <- readRDS(file = path_srat)
+  stop("")
   ## get best resolution
   res_best <- sample2res_df$best_resolution[sample2res_df$sample_id == sample_id]
   res_best
