@@ -53,8 +53,19 @@ gene2celltype_df <- gene2celltype_df %>%
 ## get feature names in RNA count data
 featurenames <-  intersect(gene2celltype_df$feature_name, srat@assays$RNA@counts@Dimnames[[1]])
 featurenames <- unique(featurenames)
+## get the pct expressed for each gene in each cluster
+p <- DotPlot(object = srat, features = featurenames, col.min = 0)
+plot_data <- p$data
+## transform the dataframe to matrix to better filter out genes with too low expressin
+plot_matrix <- dcast(data = plot_data, formula = features.plot ~ id, value.var = "pct.exp")
+print(plot_matrix[1:5, 1:5])
 
-for (featurename in featurenames) {
+## filter for genes that are expressed in >XX% (min.exp.pct) of one cluster at least
+## replot with the filtered genes plus malignant cell marker genes
+featurenames_filtered <- as.vector(plot_matrix[rowSums(plot_matrix[,unique(as.vector(plot_data$id))] > min.exp.pct) >= 1, "features.plot"])
+print(featurenames_filtered)
+
+for (featurename in featurenames_filtered) {
   p <- FeaturePlot(object = srat, features = featurename, 
                    min.cutoff = "q10", max.cutoff = "q90", sort.cell = TRUE,
                    cols = c("grey", "red"), reduction = "umap", label = T)
