@@ -3,7 +3,7 @@
 
 # set up libraries and output directory -----------------------------------
 ## set run id
-version_tmp <- 2
+version_tmp <- 1
 run_id <- paste0(format(Sys.Date(), "%Y%m%d") , ".v", version_tmp)
 ## set time stamp for log file
 timestamp <- paste0(run_id, ".", format(Sys.time(), "%H%M%S"))
@@ -45,7 +45,7 @@ DefaultAssay(srat) <- "RNA"
 ## input marker gene table
 gene2celltype_df <- fread("./Resources/Analysis_Results/dependencies/merge_celltypemarkergenes_btw_human_and_mouse/20200409.v1/celltypemarkergenes_mouse_human.rcc.20200409.v1.tsv", data.table = F)
 ## set the minimal % of cells expresssing the gene
-min.exp.pct <- 0
+min.exp.pct <- 10
 
 # get gene to plot --------------------------------------------------------
 ## make feature name
@@ -57,12 +57,13 @@ featurenames <- unique(featurenames)
 ## get the pct expressed for each gene in each cluster
 p <- DotPlot(object = srat, features = featurenames, col.min = 0, assay = "RNA")
 plot_data <- p$data
+print(plot_data[1:4, 1:4])
 ## transform the dataframe to matrix to better filter out genes with too low expressin
 plot_matrix <- dcast(data = plot_data, formula = features.plot ~ id, value.var = "pct.exp")
 ## filter for genes that are expressed in >XX% (min.exp.pct) of one cluster at least
 ## replot with the filtered genes plus malignant cell marker genes
 featurenames_filtered <- as.vector(plot_matrix[rowSums(plot_matrix[,unique(as.vector(plot_data$id))] > min.exp.pct) >= 1, "features.plot"])
-print(featurenames_filtered)
+print(length(featurenames_filtered))
 # make Dimplot ------------------------------------------------------------
 srat@meta.data$id_by_cluster_species <- paste0(srat@meta.data$seurat_clusters, "_", srat@meta.data$call)
 Idents(srat) <- "id_by_cluster_species"
