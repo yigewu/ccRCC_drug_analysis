@@ -3,7 +3,7 @@
 
 # set up libraries and output directory -----------------------------------
 ## set run id
-version_tmp <- 1
+version_tmp <- 2
 run_id <- paste0(format(Sys.Date(), "%Y%m%d") , ".v", version_tmp)
 ## set time stamp for log file
 timestamp <- paste0(run_id, ".", format(Sys.time(), "%H%M%S"))
@@ -55,7 +55,7 @@ gene2celltype_df <- gene2celltype_df %>%
 featurenames <-  intersect(gene2celltype_df$feature_name, srat@assays$RNA@data@Dimnames[[1]])
 featurenames <- unique(featurenames)
 ## get the pct expressed for each gene in each cluster
-p <- DotPlot(object = srat, features = featurenames, col.min = 0)
+p <- DotPlot(object = srat, features = featurenames, col.min = 0, assay = "RNA")
 plot_data <- p$data
 ## transform the dataframe to matrix to better filter out genes with too low expressin
 plot_matrix <- dcast(data = plot_data, formula = features.plot ~ id, value.var = "pct.exp")
@@ -64,15 +64,17 @@ plot_matrix <- dcast(data = plot_data, formula = features.plot ~ id, value.var =
 featurenames_filtered <- as.vector(plot_matrix[rowSums(plot_matrix[,unique(as.vector(plot_data$id))] > min.exp.pct) >= 1, "features.plot"])
 print(featurenames_filtered)
 # make Dimplot ------------------------------------------------------------
-p <- DotPlot(object = srat, features = featurenames_filtered, col.min = 0, assay = "RNA", split.by = "call")
-p$data$species <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$feature_name, to = gene2celltype_df$Species)
+srat@meta.data$id_by_cluster_species <- paste0(srat@meta.data$seurat_clusters, "_", srat@meta.data$call)
+Idents(srat) <- "id_by_cluster_species"
+p <- DotPlot(object = srat, features = featurenames_filtered, col.min = 0, assay = "RNA")
+p$data$gene_species <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$feature_name, to = gene2celltype_df$Species)
 p$data$gene_cell_type_group <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$feature_name, to = gene2celltype_df$Cell_Type_Group)
 p$data$gene_cell_type1 <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$feature_name, to = gene2celltype_df$Cell_Type1)
 p$data$gene_cell_type2 <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$feature_name, to = gene2celltype_df$Cell_Type2)
 p$data$gene_cell_type3 <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$feature_name, to = gene2celltype_df$Cell_Type3)
 p$data$gene_cell_type4 <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$feature_name, to = gene2celltype_df$Cell_Type4)
 # p <- p + RotatedAxis()
-p <- p + facet_grid(.~species + gene_cell_type_group + gene_cell_type1 + gene_cell_type2 + gene_cell_type3 + gene_cell_type4, scales = "free", space = "free", drop = T)
+p <- p + facet_grid(.~gene_species + gene_cell_type_group + gene_cell_type1 + gene_cell_type2 + gene_cell_type3 + gene_cell_type4, scales = "free", space = "free", drop = T)
 p <- p + theme(panel.spacing = unit(0, "lines"),
                strip.background = element_blank(),
                panel.border = element_rect(colour = "black"),

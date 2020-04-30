@@ -32,3 +32,10 @@ p <- ggplot()
 p <- p + geom_point(data = plotdata_df, mapping = aes(x = UMAP_1, y = UMAP_2, color = Cell_Type.Short), size = 0.2)
 p <- p + facet_grid(.~call)
 p
+
+# write output ------------------------------------------------------------
+file2write <- paste0(dir_out, "umap_celltypeshort.", id_integration, ".", run_id, ".png")
+png(filename = file2write, width = 3000, height = 1000, res = 150)
+print(p)
+dev.off()
+
