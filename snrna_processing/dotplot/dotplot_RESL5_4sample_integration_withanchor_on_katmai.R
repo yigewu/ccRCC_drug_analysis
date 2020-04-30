@@ -51,22 +51,23 @@ min.exp.pct <- 10
 ## make feature name
 gene2celltype_df <- gene2celltype_df %>%
   mutate(feature_name = ifelse(Species == "Human", paste0("GRCh38-3.0.0.premrna-", Gene_Symbol), paste0("mm10-premrna---------", Gene_Symbol)))
+## change ident
+srat@meta.data$id_by_cluster_species <- paste0(srat@meta.data$seurat_clusters, "_", srat@meta.data$call)
+Idents(srat) <- "id_by_cluster_species"
 ## get feature names in RNA count data
 featurenames <-  intersect(gene2celltype_df$feature_name, srat@assays$RNA@data@Dimnames[[1]])
 featurenames <- unique(featurenames)
 ## get the pct expressed for each gene in each cluster
 p <- DotPlot(object = srat, features = featurenames, col.min = 0, assay = "RNA")
 plot_data <- p$data
-print(plot_data[1:4, 1:4])
+# print(plot_data[1:4, 1:4])
 ## transform the dataframe to matrix to better filter out genes with too low expressin
 plot_matrix <- dcast(data = plot_data, formula = features.plot ~ id, value.var = "pct.exp")
 ## filter for genes that are expressed in >XX% (min.exp.pct) of one cluster at least
 ## replot with the filtered genes plus malignant cell marker genes
 featurenames_filtered <- as.vector(plot_matrix[rowSums(plot_matrix[,unique(as.vector(plot_data$id))] > min.exp.pct) >= 1, "features.plot"])
-print(length(featurenames_filtered))
+# print(length(featurenames_filtered))
 # make Dimplot ------------------------------------------------------------
-srat@meta.data$id_by_cluster_species <- paste0(srat@meta.data$seurat_clusters, "_", srat@meta.data$call)
-Idents(srat) <- "id_by_cluster_species"
 p <- DotPlot(object = srat, features = featurenames_filtered, col.min = 0, assay = "RNA")
 p$data$gene_species <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$feature_name, to = gene2celltype_df$Species)
 p$data$gene_cell_type_group <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$feature_name, to = gene2celltype_df$Cell_Type_Group)
@@ -85,7 +86,7 @@ p <- p + theme(panel.spacing = unit(0, "lines"),
                strip.placement = "outside")
 
 # save output -------------------------------------------------------------
-file2write <- paste0(dir_out, "dotplot.", "RESL5_4sample_integration.withanchor.", run_id, ".png")
+file2write <- paste0(dir_out, "dotplot.", id_integration, ".png")
 png(filename = file2write, width = 3000, height = 2000, res = 150)
 print(p)
 dev.off()
