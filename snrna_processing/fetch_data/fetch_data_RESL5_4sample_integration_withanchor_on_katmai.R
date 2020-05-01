@@ -28,7 +28,6 @@ setwd(dir_base)
 source("./ccRCC_drug_analysis/load_pkgs.R")
 source("./ccRCC_drug_analysis/functions.R")
 source("./ccRCC_drug_analysis/variables.R")
-source("./ccRCC_drug_analysis/plotting.R")
 library(Seurat)
 ## set output directory
 dir_out <- paste0(makeOutDir_katmai(path_this_script), run_id, "/")
@@ -43,7 +42,7 @@ path_rds <- "./Resources/Analysis_Results/snrna_processing/clustering/cluster_RE
 srat <- readRDS(file = path_rds)
 
 # fetch dats --------------------------------------------------------------
-fetcheddata_df <- FetchData(object = srat, vars = c("call", "seurat_clusters", "UMAP_1", "UMAP_2"))
+fetcheddata_df <- FetchData(object = srat, vars = c("orig.ident", "call", "seurat_clusters", "UMAP_1", "UMAP_2"))
 
 # write output ------------------------------------------------------------
 file2write <- paste0(dir_out, id_integration, ".fetched_data.", run_id, ".tsv")
