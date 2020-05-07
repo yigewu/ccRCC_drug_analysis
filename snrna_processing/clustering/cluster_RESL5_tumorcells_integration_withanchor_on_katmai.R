@@ -33,10 +33,10 @@ dir_out <- paste0(makeOutDir_katmai(path_this_script), run_id, "/")
 dir.create(dir_out)
 
 # set dependencies --------------------------------------------------------
-## set integration id
-id_integration <- "RESL5_4sample_integration.withanchor.20200409.v1"
 ## set the path to the rds file for integrated object
-path_rds <- "./Resources/Analysis_Results/snrna_processing/integration/run_RESL5_4sample_integration_withanchor_on_katmai/20200409.v1/RESL5_4sample_integration.withanchor.20200409.v1.RDS"
+path_rds <- "./Resources/Analysis_Results/snrna_processing/integration/run_RESL5_4sample_tumorcells_integration_withanchor_on_katmai/20200507.v1/RESL5.Tumor_cells.integration.withanchor.20200507.v1.RDS"
+## set integration id
+id_integration <- "RESL5.Tumor_cells.integration.withanchor.20200507.v1"
 ## input RDS file
 srat <- readRDS(file = path_rds)
 
@@ -46,7 +46,7 @@ srat <- readRDS(file = path_rds)
 srat <- RunPCA(object = srat)
 ### visualize PCs
 p <- PCAPlot(object = srat, group.by = "call", split.by = "orig.ident")
-file2write <- paste0(dir_out, "pcaplot.", id_integration, ".", ".png")
+file2write <- paste0(dir_out, "pcaplot.", id_integration, ".png")
 png(filename = file2write, width = 4000, height = 1000, res = 150)
 print(p)
 dev.off()
@@ -56,7 +56,7 @@ dev.off()
 srat <- RunUMAP(srat, dims = 1:num_pcs, reduction = "pca")
 ### visualize UMAP
 p <- DimPlot(object = srat, group.by = "call", split.by = "orig.ident", reduction = "umap")
-file2write <- paste0(dir_out, "umap.", id_integration, ".", ".png")
+file2write <- paste0(dir_out, "umap.", id_integration, ".png")
 png(filename = file2write, width = 4000, height = 1000, res = 150)
 print(p)
 dev.off()
@@ -66,9 +66,9 @@ dev.off()
 srat <- FindNeighbors(object = srat, dims = 1:num_pcs)
 
 # Determine the clusters for various resolutions                                
-srat <- FindClusters(object = srat, resolution = 0.5)
+srat <- FindClusters(object = srat, resolution = findclusters_res)
 
 # save output -------------------------------------------------------------
-file2write <- paste0(dir_out, id_integration, ".clustered", ".RDS")
+file2write <- paste0(dir_out, "clustered_srat.", id_integration, ".PC", num_pcs, ".Res", findclusters_res,  ".RDS")
 saveRDS(object = srat, file = file2write, compress = T)
 

@@ -1,6 +1,7 @@
 ## set fixed parameters for Seurat
 num_pcs <- 40
 num_var_features <- 3000
+findclusters_res <- 0.5
 
 ## set prefix for feature names for human genes and mouse genes
 prefix_human_feature <- "GRCh38-3.0.0.premrna-"
