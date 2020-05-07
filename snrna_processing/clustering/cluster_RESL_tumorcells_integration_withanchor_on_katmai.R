@@ -34,9 +34,9 @@ dir.create(dir_out)
 
 # set dependencies --------------------------------------------------------
 ## set the path to the rds file for integrated object
-path_rds <- "./Resources/Analysis_Results/snrna_processing/integration/run_RESL5_4sample_tumorcells_integration_withanchor_on_katmai/20200507.v1/RESL5.Tumor_cells.integration.withanchor.20200507.v1.RDS"
+path_rds <- "./Resources/Analysis_Results/snrna_processing/integration/run_RESL_8sample_tumorcells_integration_withanchor_on_katmai/20200507.v1/RESL.Tumor_cells.integration.withanchor.20200507.v1.RDS"
 ## set integration id
-id_integration <- "RESL5.Tumor_cells.integration.withanchor.20200507.v1"
+id_integration <- "RESL.Tumor_cells.integration.withanchor.20200507.v1"
 ## input RDS file
 srat <- readRDS(file = path_rds)
 
@@ -45,9 +45,9 @@ srat <- readRDS(file = path_rds)
 ### run PCA
 srat <- RunPCA(object = srat)
 ### visualize PCs
-p <- PCAPlot(object = srat, group.by = "call", split.by = "orig.ident")
+p <- PCAPlot(object = srat, group.by = "call", split.by = "orig.ident", ncol = 4)
 file2write <- paste0(dir_out, "pcaplot.", id_integration, ".png")
-png(filename = file2write, width = 4000, height = 1000, res = 150)
+png(filename = file2write, width = 4000, height = 2000, res = 150)
 print(p)
 dev.off()
 
@@ -55,9 +55,9 @@ dev.off()
 ### run UMAP
 srat <- RunUMAP(srat, dims = 1:num_pcs, reduction = "pca")
 ### visualize UMAP
-p <- DimPlot(object = srat, group.by = "call", split.by = "orig.ident", reduction = "umap")
+p <- DimPlot(object = srat, group.by = "call", split.by = "orig.ident", reduction = "umap", ncol = 4)
 file2write <- paste0(dir_out, "umap.", id_integration, ".png")
-png(filename = file2write, width = 4000, height = 1000, res = 150)
+png(filename = file2write, width = 4000, height = 2000, res = 150)
 print(p)
 dev.off()
 
