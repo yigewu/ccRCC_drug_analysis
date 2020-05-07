@@ -15,9 +15,9 @@ dir.create(dir_out)
 
 # input dependencies ------------------------------------------------------
 ## input fetched data
-fetcheddata_df1 <- fread(input = "./Resources/Analysis_Results/snrna_processing/fetch_data/fetch_data_RESL5_4sample_integration_withanchor_on_katmai/20200423.v1/RESL5_4sample_integration.withanchor.20200417.v1.fetched_data.20200423.v1.tsv", data.table = F)
+fetcheddata_df1 <- fread(input = "./Resources/Analysis_Results/snrna_processing/fetch_data/fetch_data_RESL5_4sample_integration_withanchor_on_katmai/20200501.v1/RESL5_4sample_integration.withanchor.20200417.v1.fetched_data.20200501.v1.tsv", data.table = F)
 fetcheddata_df1$Id_Model <- "RESL5"
-fetcheddata_df2 <- fread(input = "./Resources/Analysis_Results/snrna_processing/fetch_data/fetch_data_RESL10_4sample_integration_withanchor_on_katmai/20200423.v1/RESL10_4sample_integration.withanchor.20200417.v1.fetched_data.20200423.v1.tsv", data.table = F)
+fetcheddata_df2 <- fread(input = "./Resources/Analysis_Results/snrna_processing/fetch_data/fetch_data_RESL10_4sample_integration_withanchor_on_katmai/20200501.v1/RESL10_4sample_integration.withanchor.20200417.v1.fetched_data.20200501.v1.tsv", data.table = F)
 fetcheddata_df2$Id_Model <- "RESL10"
 fetcheddata_df <- rbind(fetcheddata_df2, fetcheddata_df1)
 ## input cell type assignment cluster 2 cell type
@@ -35,7 +35,8 @@ fetcheddata_df <- merge(fetcheddata_df,
                         by.y = c("Id_Model", "Cluster", "Species"), all.x = T)
 fetcheddata_df <- fetcheddata_df %>%
   rename(Id_Seurat_Cluster = seurat_clusters) %>%
-  rename(Barcode_Integrated = V1)
+  rename(Barcode_Integrated = V1) %>%
+  rename(Id_Sample = orig.ident)
 # write output ------------------------------------------------------------
 file2write <- paste0(dir_out, "barcode2celltype_umapdata.", run_id, ".tsv")
 write.table(x = fetcheddata_df, file = file2write, quote = F, row.names = F, sep = "\t")
