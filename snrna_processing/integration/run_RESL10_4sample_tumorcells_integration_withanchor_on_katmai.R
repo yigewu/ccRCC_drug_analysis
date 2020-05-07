@@ -39,7 +39,7 @@ dir_rds <- "./Resources/Analysis_Results/snrna_processing/sctransform/run_sctran
 ## input barcode2celltype annotation
 barcode2celltype_df <- fread(data.table = F, input = "./Resources/Analysis_Results/snrna_processing/map_barcode/map_barcode2celltype/20200501.v1/barcode2celltype_umapdata.20200501.v1.tsv")
 ## set model id
-id_model <- "RESL5"
+id_model <- "RESL10"
 ## set cell type to extract
 celltype_short <- "Tumor cells"
 # get file names ----------------------------------------------------------
