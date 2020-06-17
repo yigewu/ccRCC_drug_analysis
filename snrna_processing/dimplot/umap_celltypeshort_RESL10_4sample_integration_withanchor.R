@@ -17,9 +17,9 @@ dir.create(dir_out)
 
 # input dependencies ------------------------------------------------------
 ## set model id
-id_model = "RESL5"
+id_model = "RESL10"
 ## set integration id
-id_integration <- "RESL5_4sample_integration.withanchor.20200417.v1"
+id_integration <- "RESL10_4sample_integration.withanchor.20200417.v1"
 ## input cell type and umap data
 barcode2celltype_df <- fread(input = "./Resources/Analysis_Results/snrna_processing/map_barcode/map_barcode2celltype/20200617.v1/barcode2celltype_umapdata.20200617.v1.tsv", data.table = F)
 
@@ -47,7 +47,7 @@ plotdata_df <- barcode2celltype_df %>%
   filter(Id_Model == id_model) %>%
   mutate(CellType_Species = paste0(Cell_Type.Short, "-", Species_Cell))
 unique(plotdata_df$Id_Sample)
-plotdata_df$Id_Sample <- factor(x = plotdata_df$Id_Sample, levels = c("RESL5E-14541-CT2", "RESL5E-14542-Sap2", "RESL5E-14539-Cabo2", "RESL5E-14529-Cabo_Sap2"))
+plotdata_df$Id_Sample <- factor(x = plotdata_df$Id_Sample, levels = c("RESL10F-12462-CT2", "RESL10F-12465-Sap2", "RESL10F-12467-Cabo2", "RESL10F-12473-Cabo_Sap2"))
 ## make plot
 p <- ggplot()
 p <- p + geom_point(data = plotdata_df, mapping = aes(x = UMAP_1, y = UMAP_2, color = CellType_Species), size = 0.2, alpha = 0.8)
@@ -62,3 +62,6 @@ file2write <- paste0(dir_out, "umap_celltype_species.", id_integration, ".", "by
 png(filename = file2write, width = 3000, height = 1000, res = 150)
 print(p)
 dev.off()
+
+
+

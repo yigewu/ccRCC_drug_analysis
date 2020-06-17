@@ -26,12 +26,12 @@ cluster2celltype_df <- readxl::read_excel(path = "./Resources/snRNA_Processed_Da
 # map barcode2celltype ----------------------------------------------------
 unique(fetcheddata_df$call)
 fetcheddata_df <- fetcheddata_df %>%
-  mutate(Species = ifelse(call == "mm10_premrna", "Mouse", "Human")) %>%
+  mutate(Species_Cell = ifelse(call == "mm10_premrna", "Mouse", "Human")) %>%
   select(-call)
 fetcheddata_df <- merge(fetcheddata_df, 
                         cluster2celltype_df %>%
                           select(-Comment), 
-                        by.x = c("Id_Model", "seurat_clusters", "Species"),
+                        by.x = c("Id_Model", "seurat_clusters", "Species_Cell"),
                         by.y = c("Id_Model", "Cluster", "Species"), all.x = T)
 fetcheddata_df <- fetcheddata_df %>%
   rename(Id_Seurat_Cluster = seurat_clusters) %>%

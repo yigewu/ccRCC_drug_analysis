@@ -3,10 +3,14 @@
 ## two versions: one without scaling across lines, one with
 
 # set up libraries and output directory -----------------------------------
-## set up working directory and source functions and load libraries
-setwd(dir = "~/Box/")
-source("./Ding_Lab/Projects_Current/RCC/ccRCC_Drug/ccRCC_drug_analysis/ccRCC_Drug_shared.R")
-## set run id 
+## set working directory
+dir_base = "~/Box/Ding_Lab/Projects_Current/RCC/ccRCC_Drug/"
+setwd(dir_base)
+source("./ccRCC_drug_analysis/load_pkgs.R")
+source("./ccRCC_drug_analysis/functions.R")
+source("./ccRCC_drug_analysis/variables.R")
+source("./ccRCC_drug_analysis/plotting.R")
+## set run id
 version_tmp <- 1
 run_id <- paste0(format(Sys.Date(), "%Y%m%d") , ".v", version_tmp)
 ## set output directory
@@ -15,11 +19,12 @@ dir.create(dir_out)
 
 # input dependencies --------------------------------------------
 ## input sample info to add in information about the model id, passage and TumorTissue info
-sample_info_df <- readxl::read_excel(path = "./PDX-Pilot/DataFreeze/Sample_info/sampleInfo.v3/sampleInfo.washU_b1-b8.pdmr.other.passed.v3.20200130.from_jay.xlsx")
+sample_info_df <- readxl::read_excel(path = "~/Box/PDX-Pilot/DataFreeze/Sample_info/sampleInfo.v5/sampleInfo.washU_b1-b8.pdmr.other.passed.v5.extra.20200401.xlsx")
 ## input RNA expression
-rna_exp_df <- fread("./Ding_Lab/Projects_Current/RCC/ccRCC_Drug/Resources/Analysis_Results/expression/rna/extract_rcc_rna_from_merged/20200216.v1/RCC_PDX.GeneExp.TPM.SampleID.tsv", data.table = F)
+rna_exp_df <- fread("./Resources/Analysis_Results/expression/rna/extract_rcc_rna_from_merged/20200216.v1/RCC_PDX.GeneExp.TPM.SampleID.tsv", data.table = F)
 
-## input genes to plot
+
+# input genes to plot -----------------------------------------------------
 met_related_genes <- c("HGF", "MET", "AXL")
 vegfr_related_genes <- c("FLT1", "KDR", "FLT3", "FLT4", "NRP1", "NRP2", 
                          "VEGFA", "VEGFB", "VEGFC", "VEGFD", "VEGFE")
@@ -46,7 +51,7 @@ mtor_related_genes <- c("MTOR", "AKTS1", "DEPTOR", "RPTOR", "MLST8", "MAPKAP1", 
                         "EIF4EBP", "EEF2K")
 ### for Acriflavine
 #### get HIF targets
-tf_tab <- fread(input = "./Ding_Lab/Projects_Current/TP53_shared_data/resources/PPI/TF_interactions.txt", data.table = F)
+tf_tab <- fread(input = "./Resources/Knowledge/Gene_Protein_Interactions/TF_interactions.txt", data.table = F)
 hif_targets <- tf_tab$target_genesymbol[tf_tab$source_genesymbol %in% c("HIF1A", "EPAS1")]
 hif_related_genes <- c("HIF1A", "EPAS1", hif_targets)
 ### for Panobinostat and Entinostat
@@ -63,7 +68,7 @@ genes2plot <- c(met_related_genes, vegfr_related_genes, other_rtk_genes, fgfr_re
 genes2plot <- unique(genes2plot)
 
 ## set plotting metrics
-num_nonna <- 40
+num_nonna <- 0
 row_fontsize <- 9
 
 # prepare matrix to plot --------------------------------------------------

@@ -2,26 +2,28 @@
 ## plot a heatmap with proteomics data from the discovery set data freeze
 
 # set up libraries and output directory -----------------------------------
-## set up working directory and source functions and load libraries
-setwd(dir = "~/Box/")
-source("./Ding_Lab/Projects_Current/RCC/ccRCC_Drug/ccRCC_drug_analysis/ccRCC_Drug_shared.R")
-library(plyr)
-library(ComplexHeatmap)
-library(circlize)
-## set run id 
+dir_base = "~/Box/Ding_Lab/Projects_Current/RCC/ccRCC_Drug/"
+setwd(dir_base)
+source("./ccRCC_drug_analysis/load_pkgs.R")
+source("./ccRCC_drug_analysis/functions.R")
+source("./ccRCC_drug_analysis/variables.R")
+source("./ccRCC_drug_analysis/plotting.R")
+library(readxl)
+## set run id
 version_tmp <- 1
 run_id <- paste0(format(Sys.Date(), "%Y%m%d") , ".v", version_tmp)
 ## set output directory
 dir_out <- paste0(makeOutDir(), run_id, "/")
 dir.create(dir_out)
 
+
 # input dependencies --------------------------------------------
 ## input RNA
-rna_tab <- fread("./Ding_Lab/Projects_Current/CPTAC/PGDAC/ccRCC_discovery_manuscript/ccRCC_expression_matrices/mRNA/RNA_rpkm_tumor_normal.tsv", data.table = F)
+rna_tab <- fread("~/Box/Ding_Lab/Projects_Current/CPTAC/PGDAC/ccRCC_discovery_manuscript/ccRCC_expression_matrices/mRNA/RNA_rpkm_tumor_normal.tsv", data.table = F)
 ## input protein
-protein_tab <- fread("./Ding_Lab/Projects_Current/CPTAC/PGDAC/ccRCC_discovery_manuscript/ccRCC_expression_matrices/proteome/6_CPTAC3_CCRCC_Whole_abundance_gene_protNorm=2_CB.tsv", data.table = F)
+protein_tab <- fread("~/Box/Ding_Lab/Projects_Current/CPTAC/PGDAC/ccRCC_discovery_manuscript/ccRCC_expression_matrices/proteome/6_CPTAC3_CCRCC_Whole_abundance_gene_protNorm=2_CB.tsv", data.table = F)
 ## input bulk meta data
-bulk_meta_tab <- fread("./Ding_Lab/Projects_Current/CPTAC/PGDAC/ccRCC_discovery_manuscript/ccRCC_expression_matrices/cptac-metadata.csv")
+bulk_meta_tab <- fread("~/Box/Ding_Lab/Projects_Current/CPTAC/PGDAC/ccRCC_discovery_manuscript/ccRCC_expression_matrices/cptac-metadata.csv", data.table = F)
 ## set NonNA threshold
 num_row_nonna <- 40
 row_fontsize <- 9
