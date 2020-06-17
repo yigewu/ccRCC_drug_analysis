@@ -76,6 +76,6 @@ for (sampleid_group1 in sampleids_group1) {
 
 # write output ------------------------------------------------------------
 file2write <- paste0(dir_out, "FindMarkers.", "Wilcox.", id_integration, ".Treated_vs_CT.", ".tsv")
-write.table(x = markers_allcelltypes_df, file = file2write, sep = "\t", quote = F, row.names = F)
+write.table(x = markers_all_df, file = file2write, sep = "\t", quote = F, row.names = F)
 
 
