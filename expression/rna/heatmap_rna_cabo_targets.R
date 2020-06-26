@@ -197,19 +197,10 @@ p <- ComplexHeatmap::Heatmap(mat2plot,
                              show_column_dend = F,
                              name = "log2(TPM+1)")
 p
-## make legend for top annotation
-annotation_lgd = list(
-  Legend(labels = names(colors_cn), 
-         title = "Bulk WES Copy Number", 
-         legend_gp = gpar(fill = colors_cn)),
-  Legend(labels = names(variant_class_colors), 
-         title = "Bulk Mutation Class", 
-         legend_gp = gpar(fill = variant_class_colors)))
 
-png(filename = paste0(dir_out, "RCC_PDX.PI3K_MTOR_genes.GeneExp.", run_id, ".png"), width = 2000, height = 800, res = 150)
+png(filename = paste0(dir_out, "RCC_PDX.PI3K_MTOR_genes.GeneExp.", run_id, ".png"), width = 1500, height = 800, res = 150)
 # print(p)
 ### combine heatmap and heatmap legend
-draw(object = p, 
-     annotation_legend_side = "right", annotation_legend_list = annotation_lgd)
+draw(object = p)
 dev.off()
 

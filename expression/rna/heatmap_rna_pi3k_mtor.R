@@ -46,7 +46,7 @@ row_fontsize <- 9
 ## sort data status
 data_status_filtered_df <- data_status_df %>%
   filter(!is.na(Analysis_ID.RNA) & (Analysis_ID.RNA %in% colnames(rna_exp_df))) %>%
-  arrange(ModelID, NCI_Passage, Treated.Cab, Treated.Sap, Treated.ACF, Treated.Entinostat, TreatmentLengthGroup)
+  arrange(ModelID, TreatmentLengthGroup, Treated.Cab, Treated.Sap, Treated.ACF, Treated.Entinostat)
 analysis_ids <- data_status_filtered_df$Analysis_ID.RNA
 analysis_ids
 sample_ids <- mapvalues(x = analysis_ids, from = data_status_df$Analysis_ID.RNA, to = data_status_df$SampleID.AcrossDataType)
@@ -121,39 +121,40 @@ is_ent_treated <- as.numeric(top_col_anno_df$Treated.Entinostat)
 colors_is_ent_treated <- c(colors_treatment["ent"], "white")
 names(colors_is_ent_treated) <- c(1,0)
 ## top column annotation object
-top_col_anno = HeatmapAnnotation(ModelID = anno_text(x = model_ids, 
-                                                     location = 0.5, just = "center",
-                                                     gp = gpar(fill = uniq_model_colors[model_ids], col = "white", border = "black"),
-                                                     width = max_text_width(model_ids)*1.2),
-                                 NCI_Passage = anno_text(x = passages, 
-                                                         location = 0.5, just = "center",
-                                                         gp = gpar(fill = colors_uniq_passages[passages], col = "white", border = "black"),
-                                                         width = max_text_width(model_ids)*1.2),
-                                 CN.VHL.3p = anno_simple(x = top_col_anno_df$CN.VHL,
-                                                         simple_anno_size = unit(3, "mm"),
-                                                         col = colors_cn),
-                                 CN.HIF1A.14q = anno_simple(x = top_col_anno_df$CN.HIF1A,
-                                                            simple_anno_size = unit(3, "mm"),
-                                                            col = colors_cn),
-                                 CN.SQSTM1.5q = anno_simple(x = top_col_anno_df$CN.SQSTM1,
-                                                            simple_anno_size = unit(3, "mm"),
-                                                            col = colors_cn),
-                                 Mut.VHL = anno_simple(x = top_col_anno_df$Mut.VHL,
-                                                       simple_anno_size = unit(3, "mm"),
-                                                       col = variant_class_colors),
-                                 Mut.SETD2 = anno_simple(x = top_col_anno_df$Mut.SETD2,
-                                                         simple_anno_size = unit(3, "mm"),
-                                                         col = variant_class_colors),
-                                 Mut.BAP1 = anno_simple(x = top_col_anno_df$Mut.BAP1,
-                                                        simple_anno_size = unit(3, "mm"),
-                                                        col = variant_class_colors),
-                                 Mut.PIK3CA = anno_simple(x = top_col_anno_df$Mut.PIK3CA,
-                                                          simple_anno_size = unit(3, "mm"),
-                                                          col = variant_class_colors),
-                                 TreatmentLength = anno_text(x = treatmentlength, 
+top_col_anno = HeatmapAnnotation(TreatmentLength = anno_text(x = treatmentlength, 
                                                              location = 0.5, just = "center",
                                                              gp = gpar(fill = colors_treatmentlength[treatmentlength], col = "white", border = "black", fontsize = 8),
                                                              width = max_text_width(treatmentlength)*1.4),
+                                 # ModelID = anno_text(x = model_ids, 
+                                 #                     location = 0.5, just = "center",
+                                 #                     gp = gpar(fill = uniq_model_colors[model_ids], col = "white", border = "black"),
+                                 #                     width = max_text_width(model_ids)*1.2),
+                                 # NCI_Passage = anno_text(x = passages, 
+                                 #                         location = 0.5, just = "center",
+                                 #                         gp = gpar(fill = colors_uniq_passages[passages], col = "white", border = "black"),
+                                 #                         width = max_text_width(model_ids)*1.2),
+                                 # CN.VHL.3p = anno_simple(x = top_col_anno_df$CN.VHL,
+                                 #                         simple_anno_size = unit(3, "mm"),
+                                 #                         col = colors_cn),
+                                 # CN.HIF1A.14q = anno_simple(x = top_col_anno_df$CN.HIF1A,
+                                 #                            simple_anno_size = unit(3, "mm"),
+                                 #                            col = colors_cn),
+                                 # CN.SQSTM1.5q = anno_simple(x = top_col_anno_df$CN.SQSTM1,
+                                 #                            simple_anno_size = unit(3, "mm"),
+                                 #                            col = colors_cn),
+                                 # Mut.VHL = anno_simple(x = top_col_anno_df$Mut.VHL,
+                                 #                       simple_anno_size = unit(3, "mm"),
+                                 #                       col = variant_class_colors),
+                                 # Mut.SETD2 = anno_simple(x = top_col_anno_df$Mut.SETD2,
+                                 #                         simple_anno_size = unit(3, "mm"),
+                                 #                         col = variant_class_colors),
+                                 # Mut.BAP1 = anno_simple(x = top_col_anno_df$Mut.BAP1,
+                                 #                        simple_anno_size = unit(3, "mm"),
+                                 #                        col = variant_class_colors),
+                                 # Mut.PIK3CA = anno_simple(x = top_col_anno_df$Mut.PIK3CA,
+                                 #                          simple_anno_size = unit(3, "mm"),
+                                 #                          col = variant_class_colors),
+                                 
                                  Cabozantinib = anno_simple(x = is_cab_treated,
                                                             simple_anno_size = unit(3, "mm"),
                                                             col = colors_is_cab_treated),
@@ -166,44 +167,36 @@ top_col_anno = HeatmapAnnotation(ModelID = anno_text(x = model_ids,
                                  Entinostat = anno_simple(x = is_ent_treated,
                                                           simple_anno_size = unit(3, "mm"),
                                                           col = colors_is_ent_treated),
-                                 Is.Control = anno_simple(x = is_control,
-                                                          simple_anno_size = unit(3, "mm"),
-                                                          col = colors_is_control))
-
-
+                                 Control = anno_simple(x = is_control,
+                                                       simple_anno_size = unit(3, "mm"),
+                                                       col = colors_is_control))
 
 # make row split ----------------------------------------------------------
 rownames_mat <- rownames(mat2plot)
 row_split_vec <- ifelse(rownames_mat %in% pi3k_pathway_genes, "PI3K Pathway", "MTOR Pathway")
+row_split_factor <- factor(x = row_split_vec, levels = c("PI3K Pathway", "MTOR Pathway"))
 
 # make heatmap ------------------------------------------------------------
 col_rna <- circlize::colorRamp2(c(quantile(mat2plot, 0.1, na.rm=T), quantile(mat2plot, 0.5, na.rm=T), quantile(mat2plot, 0.9, na.rm=T)),c("blue", "white", "red"))
 p <- ComplexHeatmap::Heatmap(mat2plot,
                              col = col_rna,
-                             cluster_rows = T, show_row_dend = F,
+                             cluster_rows = T,
+                             show_row_dend = F,
                              row_names_gp = grid::gpar(fontsize = row_fontsize),
-                             row_split = row_split_vec, 
+                             row_split = row_split_factor,
                              row_title_rot = 0, row_title_gp = grid::gpar(fontsize = 12),
-                             column_split = model_ids, 
+                             column_split = col_split_factor, 
                              column_title_rot = 90, column_title_gp = grid::gpar(fontsize = 10),
                              top_annotation = top_col_anno,
                              show_column_names = F,
-                             cluster_columns = T, show_column_dend = F,
+                             cluster_columns = F, 
+                             show_column_dend = F,
                              name = "log2(TPM+1)")
 p
-## make legend for top annotation
-annotation_lgd = list(
-  Legend(labels = names(colors_cn), 
-         title = "Bulk WES Copy Number", 
-         legend_gp = gpar(fill = colors_cn)),
-  Legend(labels = names(variant_class_colors), 
-         title = "Bulk Mutation Class", 
-         legend_gp = gpar(fill = variant_class_colors)))
 
-png(filename = paste0(dir_out, "RCC_PDX.PI3K_MTOR_genes.GeneExp.", run_id, ".png"), width = 2000, height = 1000, res = 150)
+png(filename = paste0(dir_out, "RCC_PDX.PI3K_MTOR_genes.GeneExp.", run_id, ".png"), width = 1500, height = 800, res = 150)
 # print(p)
 ### combine heatmap and heatmap legend
-draw(object = p, 
-     annotation_legend_side = "right", annotation_legend_list = annotation_lgd)
+draw(object = p)
 dev.off()
 
