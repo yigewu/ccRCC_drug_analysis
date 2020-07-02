@@ -34,7 +34,7 @@ dir.create(dir_out)
 
 # set dependencies --------------------------------------------------------
 ## set the path to the rds file for integrated object
-path_rds <- "./Resources/Analysis_Results/snrna_processing/integration/run_RESL10_4sample_tumorcells_integration_withanchor_on_katmai/20200507.v1/RESL5.Tumor\ cells.integration.withanchor.20200507.v1.RDS"
+path_rds <- "./Resources/Analysis_Results/snrna_processing/integration/run_RESL10_4sample_tumorcells_integration_withanchor_on_katmai/20200507.v1/RESL10.Tumor\ cells.integration.withanchor.20200507.v1.RDS"
 ## set integration id
 id_integration <- "RESL10.Tumor_cells.integration.withanchor.20200507.v1"
 ## input RDS file

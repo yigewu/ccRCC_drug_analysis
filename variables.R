@@ -45,12 +45,7 @@ genes_mutated_in_ccRCC <- c(ubiquitin_proteasome_genes,
                             p53_cellcycle_genes,
                             fat_cadherins_genes)
 genes_mutated_in_ccRCC <- unique(genes_mutated_in_ccRCC)
-## Cabozantinib: VEGFR2 inhibitor, also inhibits c-Met, Ret, Kit, Flt-1/3/4, Tie2, and AXL
-met_related_genes <- c("HGF", "MET", "AXL")
-vegfr_genes <- c("FLT1", "KDR", "FLT3", "FLT4", "NRP1", "NRP2")
-vegf_genes <- c("VEGFA", "VEGFB", "VEGFC", "VEGFD", "VEGFE")
-other_cabo_related_genes <- c("KIT", "RET", "NTRK2", "TEK")
-genes_cabo_targets <- c(met_related_genes, vegfr_genes, vegf_genes, other_cabo_related_genes)
+
 ## RAS-pi3k-mtor
 ras_pathway_genes <- c("KRAS", "HRAS", "NRAS", 
                        "BRAF", "RAF1", "MAP2K1", "MAPK1", "MAPK3")
