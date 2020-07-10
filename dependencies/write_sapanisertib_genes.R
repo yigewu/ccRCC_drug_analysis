@@ -20,11 +20,11 @@ load("./Resources/Knowledge/Databases/2015-08-01_Gene_Set.RData")
 
 # make data frame ---------------------------------------------------------
 ## get genes from https://www.genome.jp/kegg-bin/show_pathway?hsa04150, which include both mTORC1 and mTORC2
-sapagenes_df <- data.frame(genesymbol = KEGG[["hsa04150\tmTOR signaling pathway"]], pathwaname = "mTOR signaling pathway", pathwayid = "hsa04150", pathwaysource = "KEGG")
+sapagenes_df <- data.frame(genesymbol = KEGG[["hsa04150\tmTOR signaling pathway"]], genesetname = "mTOR signaling pathway", source = "KEGG-hsa04150", category = "Sapasertinib Related")
 
 # write output ------------------------------------------------------------
 file2write <- paste0(dir_out, "Sapanisertib_Genes.", run_id, ".tsv")
-write.table(x = rccgenes_df, file = file2write, quote = F, row.names = F, sep = "\t")
+write.table(x = sapagenes_df, file = file2write, quote = F, row.names = F, sep = "\t")
 
 
 

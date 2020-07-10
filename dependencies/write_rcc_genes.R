@@ -18,11 +18,20 @@ dir.create(dir_out)
 # input dependencies ------------------------------------------------------
 ## input KEGG
 load("./Resources/Knowledge/Databases/2015-08-01_Gene_Set.RData")
+## input HIF target genes
+hiftarget_genes <- fread(data.table = F, input = "../ccRCC_snRNA/Resources/Analysis_Results/dependencies/write_hif_targets/20200428.v1/HIF_Target_Genes.20200428.v1.tsv")
 
 # make data frame ---------------------------------------------------------
 ## add important pathways for RCC: https://www.genome.jp/kegg-bin/show_pathway?hsa05211+4233
 ### including HGF-MET pathway, PI3K, RAS-RAF-MEK-ERK
-rccgenes_df <- data.frame(genesymbol = KEGG[["hsa05211\tRenal cell carcinoma"]], pathwaname = "Renal cell carcinoma", pathwayid = "hsa05211", pathwaysource = "KEGG")
+rccgenes_df1 <- data.frame(genesymbol = KEGG[["hsa05211\tRenal cell carcinoma"]], genesetname = "Renal cell carcinoma", source = "KEGG-hsa05211", category = "RCC Pathogenic Pathways")
+rccgenes_df2 <- hiftarget_genes %>%
+  rename(genesymbol = target_genesymbol) %>%
+  mutate(genesetname = ifelse(source_genesymbol == "HIF1A", "HIF1A Targets", "EPAS1 Targets")) %>%
+  mutate(source = "OmniPath") %>%
+  mutate(category = "RCC Pathogenic Pathways") %>%
+  select(genesymbol, genesetname, source, category)
+rccgenes_df <- rbind(rccgenes_df1, rccgenes_df2)
 
 # write output ------------------------------------------------------------
 file2write <- paste0(dir_out, "KEGG_RCC.", run_id, ".tsv")

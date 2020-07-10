@@ -17,13 +17,13 @@ dir.create(dir_out)
 
 # input dependencies ------------------------------------------------------
 ## input DEGs
-deg_df <- fread(data.table = F, input = "./Resources/Analysis_Results/snrna_processing/findmarkers/findmarkers_RESL5_tumorcells_integration_withanchor_on_katmai/20200617.v1/FindMarkers.Wilcox.RESL5.Tumor_cells.integration.withanchor.20200507.v1.Treated_vs_CT..tsv")
+deg_df <- fread(data.table = F, input = "./Resources/Analysis_Results/snrna_processing/findmarkers/findmarkers_RESL10_tumorcells_integration_withanchor_on_katmai/20200702.v1/FindMarkers.Wilcox.RESL10.Tumor_cells.integration.withanchor.20200507.v1.Treated_vs_CT..tsv")
 ## input genes to search for
 genes_search_df <- fread(data.table = F, input = "./Resources/Analysis_Results/snrna_processing/findmarkers/examine_degs/overlap_degs_same_treatment_RESL5_vs_RESL10_tumorcells_integration_withanchor/20200704.v1/DEGs_Overalp_Btw_RESL5_vs_RESL10_For_the_Same_Treatment.20200704.v1.tsv")
 
 # plot by each treated sample vs control highlight selected genes ----------------------------------
 for (sampleid_treated in unique(deg_df$sampleid_group1)) {
-  genes_search <- unique(genes_search_df$deg_gene_symbol[genes_search_df$sampleid_group1.x == sampleid_treated])
+  genes_search <- unique(genes_search_df$deg_gene_symbol[genes_search_df$sampleid_group1.y == sampleid_treated])
   
   ## filter for data to plot
   plot_data_df <- deg_df %>%
