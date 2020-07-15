@@ -1,5 +1,4 @@
-# Yige Wu @WashU Apr 2020
-## for making dimplot for RESL10_4sample_integration
+# Yige Wu @WashU Jul 2020
 
 # set up libraries and output directory -----------------------------------
 ## set run id
@@ -23,6 +22,7 @@ thisFile <- function() {
 path_this_script <- thisFile()
 ## set working directory
 dir_base = "/diskmnt/Projects/ccRCC_scratch/ccRCC_Drug/"
+# dir_base = "~/Box/Ding_Lab/Projects_Current/RCC/ccRCC_Drug/"
 setwd(dir_base)
 source("./ccRCC_drug_analysis/load_pkgs.R")
 source("./ccRCC_drug_analysis/functions.R")
@@ -34,19 +34,25 @@ dir.create(dir_out)
 
 # set dependencies --------------------------------------------------------
 ## set the path to the rds file for integrated object
-path_rds <- "./Resources/Analysis_Results/snrna_processing/integration/run_RESL10_4sample_tumorcells_integration_withanchor_on_katmai/20200507.v1/RESL10.Tumor\ cells.integration.withanchor.20200507.v1.RDS"
+path_rds <- "./Resources/Analysis_Results/snrna_processing/integration/run_RESL_8sample_tumorcells_integration_withanchor_on_katmai/20200507.v1/RESL.Tumor_cells.integration.withanchor.20200507.v1.RDS"
 ## set integration id
-id_integration <- "RESL10.Tumor_cells.integration.withanchor.20200507.v1"
+id_integration <- "RESL.Tumor_cells.integration.withanchor.20200507.v1"
 ## input RDS file
 srat <- readRDS(file = path_rds)
 ## set CT as group2
 sampleids <- unique(srat@meta.data$orig.ident)
-sampleid_group2 <- sampleids[grepl(x = sampleids, pattern = "-CT")]
-sampleids_group1 <- sampleids[!grepl(x = sampleids, pattern = "-CT")]
+sampleids_group1 <- sampleids[!grepl(x = sampleids, pattern = "RESL5")]
 
-# loop for each drug-treated sample ------------------------------------------------------
+# loop for pair of RESL5 & RESL10 ------------------------------------------------------
 markers_all_df <- NULL
 for (sampleid_group1 in sampleids_group1) {
+  print(paste0("Group1:", sampleid_group1))
+  ## get RESL10 sample id
+  treatment_name <- str_split_fixed(string = sampleid_group1, pattern = "-", n = 3)[,3]
+  treatment_name <- gsub(x = treatment_name, pattern = '[0-9]', replacement = "")
+  sampleid_group2 <- sampleids[grepl(x = sampleids, pattern = "RESL10") & grepl(x = sampleids, pattern = treatment_name)]
+  print(paste0("Group2:", sampleid_group2))
+  
   ## make new metadata
   metadata_tmp <- srat@meta.data
   metadata_tmp$integrated_barcode <- rownames(metadata_tmp)
@@ -75,7 +81,7 @@ for (sampleid_group1 in sampleids_group1) {
 }
 
 # write output ------------------------------------------------------------
-file2write <- paste0(dir_out, "FindMarkers.", "Wilcox.", id_integration, ".Treated_vs_CT.", ".tsv")
+file2write <- paste0(dir_out, "FindMarkers.", "Wilcox.", id_integration, ".RESL5_vs_RESL10.", ".tsv")
 write.table(x = markers_all_df, file = file2write, sep = "\t", quote = F, row.names = F)
 
 
