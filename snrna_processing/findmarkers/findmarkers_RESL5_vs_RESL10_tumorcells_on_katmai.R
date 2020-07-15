@@ -41,7 +41,7 @@ id_integration <- "RESL.Tumor_cells.integration.withanchor.20200507.v1"
 srat <- readRDS(file = path_rds)
 ## set CT as group2
 sampleids <- unique(srat@meta.data$orig.ident)
-sampleids_group1 <- sampleids[!grepl(x = sampleids, pattern = "RESL5")]
+sampleids_group1 <- sampleids[grepl(x = sampleids, pattern = "RESL5")]
 
 # loop for pair of RESL5 & RESL10 ------------------------------------------------------
 markers_all_df <- NULL
