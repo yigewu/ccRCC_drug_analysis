@@ -57,7 +57,6 @@ for (sampleid_group1 in sampleids_group1) {
     sampleid_group2 <- sampleids[grepl(x = sampleids, pattern = "RESL10") & grepl(x = sampleids, pattern = treatment_name) & !grepl(x = sampleids, pattern = "Cabo_Sap")]
   }
   print(paste0("Group2:", sampleid_group2))
-  next()
   ## make new metadata
   metadata_tmp <- srat@meta.data
   metadata_tmp$integrated_barcode <- rownames(metadata_tmp)
