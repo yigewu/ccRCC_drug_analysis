@@ -39,8 +39,9 @@ path_rds <- "./Resources/Analysis_Results/snrna_processing/integration/run_RESL_
 id_integration <- "RESL.Tumor_cells.integration.withanchor.20200507.v1"
 ## input RDS file
 srat <- readRDS(file = path_rds)
-## set CT as group2
+## set ids
 sampleids <- unique(srat@meta.data$orig.ident)
+print(sampleids)
 sampleids_group1 <- sampleids[grepl(x = sampleids, pattern = "RESL5")]
 
 # loop for pair of RESL5 & RESL10 ------------------------------------------------------
@@ -52,7 +53,7 @@ for (sampleid_group1 in sampleids_group1) {
   treatment_name <- gsub(x = treatment_name, pattern = '[0-9]', replacement = "")
   sampleid_group2 <- sampleids[grepl(x = sampleids, pattern = "RESL10") & grepl(x = sampleids, pattern = treatment_name)]
   print(paste0("Group2:", sampleid_group2))
-  
+  next()
   ## make new metadata
   metadata_tmp <- srat@meta.data
   metadata_tmp$integrated_barcode <- rownames(metadata_tmp)
