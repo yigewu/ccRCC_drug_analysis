@@ -18,7 +18,7 @@ dir.create(dir_out)
 # input dependencies --------------------------------------------
 ## input bulk data status
 ## input all ccRCC samples data info
-bulk_data_status_df <- fread(data.table = F, input = "./Resources/Analysis_Results/data_status/write_bulk_data_status/20200616.v1/RCC_PDX_Related_Samples.PDXNet_B1_9.HTAN_B1.Bulk_Data_Status.20200616.v1.tsv")
+bulk_data_status_df <- fread(data.table = F, input = "./Resources/Analysis_Results/data_status/write_bulk_data_status/20200731.v1/RCC_PDX_Related_Samples.PDXNet_B1_9.HTAN_B1.Bulk_Data_Status.20200731.v1.tsv")
 ## input snRNA data status
 sn_data_status_df <- readxl::read_xlsx(path = "./Resources/snRNA_Data_Generation/Sample_Collection/snRNA_Sample_Collection.xlsx")
 

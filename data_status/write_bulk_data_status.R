@@ -20,7 +20,7 @@ batch1_8_data_status_df <- fread(data.table = F, input = "./Resources/Analysis_R
 ## input RCC PDX batch 9,
 batch9_data_status_df <- fread(data.table = F, input = "./Resources/Analysis_Results/data_status/write_batch9_data_status/20200612.v1/RCC_PDX_Related_Samples.Data_Status.Batch9.20200612.v1.tsv")
 ## input RCC PDX batch 10
-htan_b1_data_status_df <- fread(data.table = F, input = "./Resources/Analysis_Results/data_status/write_htan_batch1_data_status/20200611.v1/RCC_PDX_Related_Samples.Data_Status.HTAN_B1.20200611.v1.tsv")
+htan_b1_data_status_df <- fread(data.table = F, input = "./Resources/Analysis_Results/data_status/write_htan_batch1_data_status/20200731.v1/RCC_PDX_Related_Samples.Data_Status.HTAN_B1.20200731.v1.tsv")
 
 # Merge data ---------------------------------
 ## merge batch1-8 with batch 10

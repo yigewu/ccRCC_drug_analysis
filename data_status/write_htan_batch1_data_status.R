@@ -17,7 +17,7 @@ dir.create(dir_out)
 
 # input dependencies --------------------------------------------
 ## input RCC PDX batch 10
-batch10_samples_df <- readxl::read_excel(path = "./Resources/Bulk_Data_Generation/HTAN_batch1//2020-03-04/HTAN_Batch1_Submission_Form_v2.xlsx")
+batch10_samples_df <- readxl::read_excel(path = "./Resources/Bulk_Data_Generation/WES_RNA/HTAN_batch1//2020-03-04/HTAN_Batch1_Submission_Form_v2.xlsx")
 ## inpu Xiaolu's PDX collection info to fill in the treatment timepont (1 month vs 2 month)
 pdxcollection_df <- readxl::read_excel(path = "./Resources/RCC_model_info/RCC_PDX_Organoid_MasterLists/20200521_RCC_PDX_Organoid_MasterLists_XY.YW_edited.xlsx", sheet = "20200519_PDX sample collection")
 
@@ -50,7 +50,7 @@ unique_batch10_pdx_df <- batch10_pdx_df %>%
 ## filter sample by data type
 batch10_wes_df <- batch10_pdx_df %>%
   filter(`DNA Type` == "Genomic DNA") %>%
-  mutate(WES = "Data Processing") %>%
+  mutate(WES = "Data Processed") %>%
   select(batch10_col_names_keep, "WES")
 batch10_rna_df <- batch10_pdx_df %>%
   filter(`DNA Type` == "Total RNA") %>%
