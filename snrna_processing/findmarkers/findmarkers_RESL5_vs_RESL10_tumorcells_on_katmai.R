@@ -51,7 +51,11 @@ for (sampleid_group1 in sampleids_group1) {
   ## get RESL10 sample id
   treatment_name <- str_split_fixed(string = sampleid_group1, pattern = "-", n = 3)[,3]
   treatment_name <- gsub(x = treatment_name, pattern = '[0-9]', replacement = "")
-  sampleid_group2 <- sampleids[grepl(x = sampleids, pattern = "RESL10") & grepl(x = sampleids, pattern = treatment_name)]
+  if (treatment_name == "Cabo_Sap") {
+    sampleid_group2 <- sampleids[grepl(x = sampleids, pattern = "RESL10") & grepl(x = sampleids, pattern = treatment_name)]
+  } else {
+    sampleid_group2 <- sampleids[grepl(x = sampleids, pattern = "RESL10") & grepl(x = sampleids, pattern = treatment_name) & !grepl(x = sampleids, pattern = "Cabo_Sap")]
+  }
   print(paste0("Group2:", sampleid_group2))
   next()
   ## make new metadata
