@@ -68,7 +68,7 @@ for (sampleid_group1 in sampleids_group1) {
   barcode2celltype_df <- barcode2celltype_df %>%
     mutate(Barcode_Individual = str_split_fixed(string = Barcode_Integrated, pattern = '_', n = 2)[,1]) %>%
     mutate(Id_Merge = paste0(Id_Sample, "_", Barcode_Individual))
-  
+  print(head(barcode2celltype_df))
   ## make new metadata
   metadata_tmp <- srat@meta.data
   metadata_tmp$Barcode_Integrated <- rownames(metadata_tmp)
@@ -76,7 +76,7 @@ for (sampleid_group1 in sampleids_group1) {
     mutate(Barcode_Individual = str_split_fixed(string = Barcode_Integrated, pattern = '_', n = 2)[,1]) %>%
     mutate(Id_Merge = paste0(orig.ident, "_", Barcode_Individual))
   metadata_tmp$Cell_Type.Short <- mapvalues(x = metadata_tmp$Id_Merge, from = barcode2celltype_df$Id_Merge, to = as.vector(barcode2celltype_df$Cell_Type.Short))
-  
+  print(head(metadata_tmp))
   for (celltype_tmp in c("Endothelial cells", "Macrophages", "Myofibroblasts")) {
     metadata_tmp <- metadata_tmp %>%
       mutate(group_findmarkers = ifelse(orig.ident == sampleid_group1 & Cell_Type.Short == celltype_tmp, "group1",
