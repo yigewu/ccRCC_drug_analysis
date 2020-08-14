@@ -40,11 +40,12 @@ id_integration <- "RESL5_4sample_integration.withanchor.20200417.v1"
 path_rds <- "./Resources/Analysis_Results/snrna_processing/clustering/cluster_RESL5_4sample_integration_withanchor_on_katmai/20200417.v1/RESL5_4sample_integration.withanchor.20200416.v1.clustered.RDS"
 ## input RDS file
 srat <- readRDS(file = path_rds)
+DefaultAssay(srat) <- "RNA"
+
 ## input marker gene table
 genes_plot_df <- data.frame(Gene_Symbol = c("HGF", "Hgf"), Species = c("Human", "Mouse"))
 ## set the minimal % of cells expresssing the gene
 min.exp.pct <- 0
-
 # make plot ---------------------------------------------------------------
 ## make feature name
 genes_plot_df <- genes_plot_df %>%
@@ -52,17 +53,17 @@ genes_plot_df <- genes_plot_df %>%
 ## get feature names in RNA count data
 featurenames <-  intersect(genes_plot_df$feature_name, srat@assays$RNA@counts@Dimnames[[1]])
 featurenames <- unique(featurenames)
-## get the pct expressed for each gene in each cluster
-p <- DotPlot(object = srat, features = featurenames, col.min = 0, assay = "RNA")
-plot_data <- p$data
-plot_data <- unique(plot_data)
-## transform the dataframe to matrix to better filter out genes with too low expressin
-plot_matrix <- dcast(data = plot_data, formula = features.plot ~ id, value.var = "pct.exp")
-print(plot_matrix[1:5, 1:5])
-
-## filter for genes that are expressed in >XX% (min.exp.pct) of one cluster at least
-featurenames_filtered <- as.vector(plot_matrix[rowSums(plot_matrix[,unique(as.vector(plot_data$id))] > min.exp.pct) >= 1, "features.plot"])
-print(featurenames_filtered)
+# ## get the pct expressed for each gene in each cluster
+# p <- DotPlot(object = srat, features = featurenames, col.min = 0, assay = "RNA")
+# plot_data <- p$data
+# plot_data <- unique(plot_data)
+# ## transform the dataframe to matrix to better filter out genes with too low expressin
+# plot_matrix <- dcast(data = plot_data, formula = features.plot ~ id, value.var = "pct.exp")
+# print(plot_matrix[1:5, 1:5])
+# 
+# ## filter for genes that are expressed in >XX% (min.exp.pct) of one cluster at least
+# featurenames_filtered <- as.vector(plot_matrix[rowSums(plot_matrix[,unique(as.vector(plot_data$id))] > min.exp.pct) >= 1, "features.plot"])
+# print(featurenames_filtered)
 
 for (featurename in featurenames_filtered) {
   p <- FeaturePlot(object = srat, features = featurename, 
