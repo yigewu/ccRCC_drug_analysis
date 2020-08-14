@@ -71,9 +71,8 @@ for (sampleid_group1 in sampleids_group1) {
   print(head(barcode2celltype_df))
   ## make new metadata
   metadata_tmp <- srat@meta.data
-  metadata_tmp$Barcode_Integrated <- rownames(metadata_tmp)
   metadata_tmp <- metadata_tmp %>%
-    mutate(Barcode_Individual = str_split_fixed(string = Barcode_Integrated, pattern = '_', n = 2)[,1]) %>%
+    mutate(Barcode_Individual = barcode) %>%
     mutate(Id_Merge = paste0(orig.ident, "_", Barcode_Individual))
   metadata_tmp$Cell_Type.Short <- mapvalues(x = metadata_tmp$Id_Merge, from = barcode2celltype_df$Id_Merge, to = as.vector(barcode2celltype_df$Cell_Type.Short), warn_missing = F)
   print(head(metadata_tmp))
