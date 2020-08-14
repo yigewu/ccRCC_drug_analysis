@@ -17,9 +17,13 @@ dir.create(dir_out)
 
 # input dependencies ------------------------------------------------------
 ## input DEGs
-deg_df <- fread(data.table = F, input = "./Resources/Analysis_Results/snrna_processing/findmarkers/findmarkers_RESL5_vs_RESL10_tumorcells_on_katmai/20200807.v1/FindMarkers.Wilcox.RESL.Tumor_cells.integration.withanchor.20200507.v1.RESL5_vs_RESL10..tsv")
+deg_raw_df <- fread(data.table = F, input = "./Resources/Analysis_Results/snrna_processing/findmarkers/findmarkers_RESL5_vs_RESL10_mousecells_on_katmai/20200814.v2/FindMarkers.Wilcox.RESL.mouse_cells.integration.withanchor.20200814.v1.RESL5_vs_RESL10.logfcthreshold0.1.minpct0.1.mindiffpct0.1.tsv")
 ## input genes to search for
 genes_search_df <- readxl::read_excel(path = "./Resources/Knowledge/Gene_Lists/Targetable_Genes.20200814.xlsx")
+
+# filter degs -------------------------------------------------------------
+deg_df <- deg_raw_df %>%
+  filter(celltype == "Endothelial cells")
 
 # plot by each treated sample vs control highlight selected genes ----------------------------------
 genes_search <- unique(genes_search_df$genesymbol)
@@ -31,8 +35,8 @@ for (sampleid1 in unique(deg_df$sampleid_group1)) {
     dplyr::filter(sampleid_group1 == sampleid1) %>%
     rename(deg_feature_name = deg_gene_symbol) %>%
     mutate(Species = ifelse(grepl(x = deg_feature_name, pattern = "GRCh38"), "Human", "Mouse")) %>%
-    filter(Species == "Human") %>%
-    mutate(deg_gene_symbol = str_split_fixed(string = deg_feature_name, pattern = "GRCh38-3.0.0.premrna-", n = 2)[,2]) %>%
+    filter(Species == "Mouse") %>%
+    mutate(deg_gene_symbol = str_split_fixed(string = deg_feature_name, pattern = "mm10-premrna---------", n = 2)[,2]) %>%
     mutate(Log10p_val_adj = -log10(x = p_val_adj))
   y_showtext <- quantile(x = plot_data_df$Log10p_val_adj, probs = 0.9)
   
@@ -74,7 +78,7 @@ for (sampleid1 in unique(deg_df$sampleid_group1)) {
   p <- p + geom_text_repel(data = subset(plot_data_df, !is.na(text_gene) & avg_logFC <= 0),
                            mapping = aes(x = avg_logFC, y = y_capped, label = text_gene), color = "black", force = 2)
   p <- p + theme_bw()
-  p <- p + ggtitle(label = paste0(sampleid1, " vs ", sampleid2, " Tumor Cells snRNA Expression"))
+  p <- p + ggtitle(label = paste0(sampleid1, " vs ", sampleid2, "\nMouse Endothelial Cells snRNA Expression"))
   p <- p + ylim(c(0, y_limit))
   p <- p + xlim(c(x_limit_bottom, x_limit_top))
   
@@ -95,8 +99,8 @@ for (sampleid1 in unique(deg_df$sampleid_group1)) {
     dplyr::filter(sampleid_group1 == sampleid1) %>%
     rename(deg_feature_name = deg_gene_symbol) %>%
     mutate(Species = ifelse(grepl(x = deg_feature_name, pattern = "GRCh38"), "Human", "Mouse")) %>%
-    filter(Species == "Human") %>%
-    mutate(deg_gene_symbol = str_split_fixed(string = deg_feature_name, pattern = "GRCh38-3.0.0.premrna-", n = 2)[,2]) %>%
+    filter(Species == "Mouse") %>%
+    mutate(deg_gene_symbol = str_split_fixed(string = deg_feature_name, pattern = "mm10-premrna---------", n = 2)[,2]) %>%
     mutate(Log10p_val_adj = -log10(x = p_val_adj))
   y_showtext <- quantile(x = plot_data_df$Log10p_val_adj, probs = 0.9)
   
@@ -138,7 +142,7 @@ for (sampleid1 in unique(deg_df$sampleid_group1)) {
   p <- p + geom_text_repel(data = subset(plot_data_df, !is.na(text_gene) & avg_logFC <= 0),
                            mapping = aes(x = avg_logFC, y = y_capped, label = text_gene), color = "black", force = 2)
   p <- p + theme_bw()
-  p <- p + ggtitle(label = paste0(sampleid1, " vs ", sampleid2, " Tumor Cells snRNA Expression"))
+  p <- p + ggtitle(label = paste0(sampleid1, " vs ", sampleid2, "\nMouse Endothelial Cells snRNA Expression"))
   p <- p + ylim(c(0, y_limit))
   p <- p + xlim(c(x_limit_bottom, x_limit_top))
   

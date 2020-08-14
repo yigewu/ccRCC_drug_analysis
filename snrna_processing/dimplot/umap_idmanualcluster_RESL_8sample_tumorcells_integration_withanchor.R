@@ -73,6 +73,37 @@ png(filename = file2write, width = 2200, height = 1000, res = 150)
 print(p)
 dev.off()
 
+# make umap by RESL by Sample---------------------------------------------------------------
+## make plot data
+plotdata_df <- barcode2cluster_df %>%
+  mutate(Id_Manual_Cluster = factor(Id_Manual_Cluster)) %>%
+  mutate(id_model = str_split_fixed(string = Id_Sample, pattern = "-", n = 3)[,1]) %>%
+  mutate(Treatment = str_split_fixed(string = Id_Sample, pattern = "-", n = 3)[,3]) %>%
+  mutate(Treatment = gsub(x = Treatment, pattern = '[0-9]', replacement = ""))
+plotdata_df$Treatment <- factor(x = plotdata_df$Treatment, levels = c("CT", "Cabo", "Sap", "Cabo_Sap"))
+plotdata_df$id_model <- factor(x = plotdata_df$id_model, levels = c("RESL5E", "RESL10F"))
+
+## make plot
+p <- ggplot()
+p <- p + geom_point(data = plotdata_df, mapping = aes(x = UMAP_1, y = UMAP_2, color = Id_Manual_Cluster), 
+                    size = 0.2, alpha = 0.8)
+p <- p + scale_color_manual(values = colors_cluster)
+# p <- p + facet_grid(.~orig.ident, rows = vars(id_model))
+p <- p + facet_grid(id_model~Treatment)
+p <- p + guides(colour = guide_legend(override.aes = list(size=5)))
+p <- p + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+               panel.background = element_blank(), axis.line = element_line(colour = "black"))
+p <- p + theme(axis.text.x=element_blank(),
+               axis.ticks.x=element_blank())
+p <- p + theme(axis.text.y=element_blank(),
+               axis.ticks.y=element_blank())
+p
+## write output
+file2write <- paste0(dir_out, "umap.", "allclusters.", "bySample.", id_integration, ".png")
+png(filename = file2write, width = 2200, height = 1000, res = 150)
+print(p)
+dev.off()
+
 # make umap by sample with all clusters together ---------------------------------------------------------------
 ## make plot data
 plotdata_df <- barcode2cluster_df %>%
