@@ -34,7 +34,7 @@ dir.create(dir_out)
 
 # set dependencies --------------------------------------------------------
 ## set the path to the rds file for integrated object
-path_rds <- "./Resources/Analysis_Results/snrna_processing/integration/run_RESL_8sample_mousecells_integration_withanchor_on_katmai/20200814.v1/RESL.mouse_cells.integration.withanchor.20200814.v1.RDS"
+path_rds <- "./Resources/Analysis_Results/snrna_processing/clustering/cluster_RESL_mousecells_integration_withanchor_on_katmai/20200814.v1/clustered_srat.RESL.mouse_cells.integration.withanchor.20200814.v1.PC40.Res0.5.RDS"
 ## set integration id
 id_integration <- "RESL.mouse_cells.integration.withanchor.20200814.v1"
 ## input barcode2celltype annotation
@@ -75,7 +75,7 @@ for (sampleid_group1 in sampleids_group1) {
   metadata_tmp <- metadata_tmp %>%
     mutate(Barcode_Individual = str_split_fixed(string = Barcode_Integrated, pattern = '_', n = 2)[,1]) %>%
     mutate(Id_Merge = paste0(orig.ident, "_", Barcode_Individual))
-  metadata_tmp$Cell_Type.Short <- mapvalues(x = metadata_tmp$Id_Merge, from = barcode2celltype_df$Id_Merge, to = as.vector(barcode2celltype_df$Cell_Type.Short))
+  metadata_tmp$Cell_Type.Short <- mapvalues(x = metadata_tmp$Id_Merge, from = barcode2celltype_df$Id_Merge, to = as.vector(barcode2celltype_df$Cell_Type.Short), warn_missing = F)
   print(head(metadata_tmp))
   for (celltype_tmp in c("Endothelial cells", "Macrophages", "Myofibroblasts")) {
     metadata_tmp <- metadata_tmp %>%
