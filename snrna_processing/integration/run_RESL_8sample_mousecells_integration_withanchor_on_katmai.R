@@ -90,5 +90,5 @@ srat_integrated <- IntegrateData(anchorset = anchors_integ,
                                    normalization.method = "SCT")
 
 # Save integrated seurat object
-file2write <- paste0(dir_out, id_model, ".", gsub(x = celltypes_short, pattern = "_", replacement = ""), ".", "integration.withanchor.", run_id, ".RDS")
+file2write <- paste0(dir_out, id_model, ".", "mouse_cells", ".", "integration.withanchor.", run_id, ".RDS")
 saveRDS(object = srat_integrated, file = file2write, compress = T)
