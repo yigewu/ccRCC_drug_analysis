@@ -40,7 +40,7 @@ dir_rds <- "./Resources/Analysis_Results/snrna_processing/sctransform/run_sctran
 barcode2celltype_df <- fread(data.table = F, input = "./Resources/Analysis_Results/snrna_processing/map_barcode/map_barcode2celltype/20200501.v1/barcode2celltype_umapdata.20200501.v1.tsv")
 id_model <- "RESL"
 ## set cell type to extract
-celltype_short <- "Endothelial cells"
+celltypes_short <- c("Endothelial cells", "Macrophages", "Myofibroblasts")
 # get file names ----------------------------------------------------------
 filenames_rds <- list.files(dir_rds) 
 filenames_rds
@@ -57,7 +57,7 @@ for (filename_rds in filenames_rds) {
   ## get the barcode for the tumor cells
   barcode_tumorcells_df <- barcode2celltype_df %>%
     filter(Id_Sample == id_sample) %>%
-    filter(Cell_Type.Short == celltype_short) %>%
+    filter(Cell_Type.Short %in% celltypes_short) %>%
     mutate(Barcode_Individual = str_split_fixed(string = Barcode_Integrated, pattern = '_', n = 2)[,1])
   
   ## get the path for RDS file
@@ -90,5 +90,5 @@ srat_integrated <- IntegrateData(anchorset = anchors_integ,
                                    normalization.method = "SCT")
 
 # Save integrated seurat object
-file2write <- paste0(dir_out, id_model, ".", gsub(x = celltype_short, pattern = "_", replacement = ""), ".", "integration.withanchor.", run_id, ".RDS")
+file2write <- paste0(dir_out, id_model, ".", gsub(x = celltypes_short, pattern = "_", replacement = ""), ".", "integration.withanchor.", run_id, ".RDS")
 saveRDS(object = srat_integrated, file = file2write, compress = T)

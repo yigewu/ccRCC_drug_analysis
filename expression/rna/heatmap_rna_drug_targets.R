@@ -35,7 +35,7 @@ fgfr_related_genes <- c("FGF1", "FGF2",
                         "FGF4", "FGF5", "FGF6",
                         "FGF3", "FGF7", "FGF10", "FGF22",
                         "FGF8", "FGF17", "FGF18",
-                        "FGF9", "FGF16", "FGF320",
+                        "FGF9", "FGF16", "FGF20",
                         "FGF11", "FGF12", "FGF13", "FGF14",
                         "FGF19", "FGF21", "FGF23",
                         "FGFR1", "FGFR2", "FGFR3", "FGFR4")
