@@ -65,7 +65,7 @@ featurenames <- unique(featurenames)
 # featurenames_filtered <- as.vector(plot_matrix[rowSums(plot_matrix[,unique(as.vector(plot_data$id))] > min.exp.pct) >= 1, "features.plot"])
 # print(featurenames_filtered)
 
-for (featurename in featurenames_filtered) {
+for (featurename in featurenames) {
   p <- FeaturePlot(object = srat, features = featurename, 
                    min.cutoff = "q10", max.cutoff = "q90", sort.cell = TRUE,
                    cols = c("grey", "red"), reduction = "umap", label = T)
