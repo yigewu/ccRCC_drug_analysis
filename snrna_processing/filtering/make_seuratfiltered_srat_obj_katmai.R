@@ -83,8 +83,6 @@ for (id_sample in ids_sample) {
   ## Compute percent mito ratio
   srat$mitoRatio <- Seurat::PercentageFeatureSet(object = srat, pattern = "MT-")
   srat$mitoRatio <- srat@meta.data$mitoRatio / 100
-  srat@assays$RNA@data@Dimnames[[1]] %>% tail %>% print()
-  srat@assays$RNA@data@Dimnames[[1]] %>% head %>% print()
   
   ## extract meta data
   metadata_df <- srat@meta.data
@@ -135,6 +133,8 @@ for (id_sample in ids_sample) {
   filtered_srat <- NormalizeData(filtered_srat, verbose = TRUE)
   
   ## add cell cycle score
+  print(tail(srat@assays$RNA@data@Dimnames[[1]]))
+  print(head(srat@assays$RNA@data@Dimnames[[1]]))
   filtered_srat <- CellCycleScoring(filtered_srat, g2m.features=g2m_feature_names, s.features=s_feature_names)
   
   ## SCTransform
