@@ -43,7 +43,7 @@ ids_sample <- list.files(path = dir_cellranger_outputs)
 ids_sample <- ids_sample[grepl(pattern = 'RESL', x = ids_sample)]
 ids_sample
 ## input paths to the scrublet outputs
-scrublet_out_paths_df <- fread(data.table = F, input = "./Resources/Analysis_Results/snrna_processing/other/write_paths_to_scrublet_output_tables/20210125.v1/Paths_to_Scrulbet_Output_Tables.20210125.v1.tsv")
+scrublet_out_paths_df <- fread(data.table = F, input = "./Resources/Analysis_Results/snrna_processing/other/write_paths_to_scrublet_output_tables/20210127.v1/Paths_to_Scrulbet_Output_Tables.20210127.v1.tsv")
 ## input scrublet 
 ## set filtering threshold
 mitoRatio_max <- 0.1
@@ -91,7 +91,7 @@ for (id_sample in ids_sample) {
   ## add scrublet information if any
   ### input scrublet output
   if (id_sample %in% scrublet_out_paths_df$Sample_id) {
-    path_scrublet <- scrublet_out_paths_df$Path_box[scrublet_out_paths_df$Sample_id == id_sample]
+    path_scrublet <- scrublet_out_paths_df$Path_relative[scrublet_out_paths_df$Sample_id == id_sample]
     scrublet_out_df <- fread(data.table = F, input = path_scrublet)
     metadata_df <- merge(x = metadata_df, y = scrublet_out_df, by.x = c("barcode"), by.y = c("Barcode"), all.x = T)
   } else {

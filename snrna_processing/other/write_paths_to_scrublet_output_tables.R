@@ -22,6 +22,8 @@ scrublet_cutoffs_df <- fread(data.table = F, input = "./Resources/snRNA_Processe
 # make table --------------------------------------------------------------
 paths_df <- scrublet_cutoffs_df %>%
   filter(Optimal == "Yes") %>%
+  mutate(Path_relative = paste0("./", "Resources/snRNA_Processed_Data/Scrublet/outputs/", Sample_id, "/Cutoff", Cutoff, "/", Sample_id, "_scrublet_output_table.csv.gz")) %>%
+  mutate(Path_katmai = paste0("/diskmnt/Projects/ccRCC_scratch/ccRCC_Drug/", "Resources/snRNA_Processed_Data/Scrublet/outputs/", Sample_id, "/Cutoff", Cutoff, "/", Sample_id, "_scrublet_output_table.csv.gz")) %>%
   mutate(Path_box = paste0(dir_base, "Resources/snRNA_Processed_Data/Scrublet/outputs/", Sample_id, "/Cutoff", Cutoff, "/", Sample_id, "_scrublet_output_table.csv.gz"))
 
 # write output ------------------------------------------------------------
