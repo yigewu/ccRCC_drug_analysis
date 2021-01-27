@@ -101,6 +101,7 @@ for (id_sample in ids_sample) {
       mutate(doublet_score = NA) %>%
       mutate(predicted_doublet = FALSE)
   }
+  print(head(metadata_df))
   ## merge into the super table
   metadata_cellrangerfiltered_df <- rbind(metadata_cellrangerfiltered_df, metadata_df)
   
