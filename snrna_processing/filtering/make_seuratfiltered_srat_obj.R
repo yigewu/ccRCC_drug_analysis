@@ -20,6 +20,11 @@ dir.create(dir_out)
 timestamp <- paste0(run_id, ".", format(Sys.time(), "%H%M%S"))
 ## set log file
 sink(file = paste0(dir_out, "Log.", timestamp, ".txt"))
+## create sub-output directory
+dir_out_elbowplot <- paste0(dir_out, "elbowplot", "/")
+dir.create(dir_out_elbowplot)
+dir_out_umap <- paste0(dir_out, "umap", "/")
+dir.create(dir_out_umap)
 
 # input dependencies ------------------------------------------------------
 ## set directory to the cell ranger outputs
@@ -141,7 +146,7 @@ for (id_sample in ids_sample) {
   filtered_srat <- FindClusters(object = filtered_srat, resolution = findclusters_res)
   
   # Plot ans save the UMAP plot
-  p <- DimPlot(srat,
+  p <- DimPlot(filtered_srat,
                reduction = "umap",
                label = TRUE,
                label.size = 6)

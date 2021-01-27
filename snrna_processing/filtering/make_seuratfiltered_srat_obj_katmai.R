@@ -125,6 +125,9 @@ for (id_sample in ids_sample) {
   filtered_srat <- subset(x = srat, cells = metadata_filtered_df2$barcode_raw)
   rm(srat)
   
+  ## add classification
+  filtered_srat@meta.data$call <- plyr::mapvalues(x = rownames(filtered_srat@meta.data), from = metadata_filtered_df2$barcode_raw, to = as.vector(metadata_filtered_df2$call))
+  
   ## normalize
   filtered_srat <- NormalizeData(filtered_srat, verbose = TRUE)
   
@@ -156,7 +159,7 @@ for (id_sample in ids_sample) {
   filtered_srat <- FindClusters(object = filtered_srat, resolution = findclusters_res)
   
   # Plot ans save the UMAP plot
-  p <- DimPlot(srat,
+  p <- DimPlot(filtered_srat,
                reduction = "umap",
                label = TRUE,
                label.size = 6)
