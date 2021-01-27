@@ -85,10 +85,14 @@ for (id_sample in ids_sample) {
   ## extract meta data
   metadata_df <- srat@meta.data
   metadata_df$barcode <- rownames(metadata_df)
+  print(head(metadata_df))
   
   ## add barcode classification
   class_df <- fread(data.table = F, input = paste0(dir_cellranger_outputs, id_sample, "/", id_sample, "/outs/analysis/gem_classification.csv"))
+  print(head(class_df))
+  
   metadata_df <- merge(x = metadata_df, y = class_df, by.x = c("barcode"), by.y = c("barcode"), all.x = T)
+  print(head(metadata_df))
   
   ## add scrublet information if any
   ### input scrublet output
