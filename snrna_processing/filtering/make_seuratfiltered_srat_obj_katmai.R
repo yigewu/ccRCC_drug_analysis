@@ -3,18 +3,37 @@
 ## create the seurat object
 
 # set up libraries and output directory -----------------------------------
-## set working directory
-dir_base = "~/Box/Ding_Lab/Projects_Current/RCC/ccRCC_Drug/"
-setwd(dir_base)
-source("./ccRCC_drug_analysis/load_pkgs.R")
-source("./ccRCC_drug_analysis/functions.R")
-library(Seurat)
 ## set run id
 version_tmp <- 1
 run_id <- paste0(format(Sys.Date(), "%Y%m%d") , ".v", version_tmp)
+## set time stamp for log file
+timestamp <- paste0(run_id, ".", format(Sys.time(), "%H%M%S"))
+## getting the path to the current script
+thisFile <- function() {
+  cmdArgs <- commandArgs(trailingOnly = FALSE)
+  needle <- "--file="
+  match <- grep(needle, cmdArgs)
+  if (length(match) > 0) {
+    # Rscript
+    return(normalizePath(sub(needle, "", cmdArgs[match])))
+  } else {
+    # 'source'd via R console
+    return(normalizePath(sys.frames()[[1]]$ofile))
+  }
+}
+path_this_script <- thisFile()
+## set working directory
+dir_base = "/diskmnt/Projects/ccRCC_scratch/ccRCC_Drug/"
+setwd(dir_base)
+source("./ccRCC_drug_analysis/load_pkgs.R")
+source("./ccRCC_drug_analysis/functions.R")
+source("./ccRCC_drug_analysis/variables.R")
+library(Seurat)
 ## set output directory
-dir_out <- paste0(makeOutDir(), run_id, "/")
+dir_out <- paste0(makeOutDir_katmai(path_this_script), run_id, "/")
 dir.create(dir_out)
+## set log file
+sink(file = paste0(dir_out, "Log.", timestamp, ".txt"))
 
 # input dependencies ------------------------------------------------------
 ## set directory to the cell ranger outputs
@@ -47,7 +66,6 @@ s_feature_names <- cell_cycle_genes$feature_name[cell_cycle_genes$phase == "S"]
 metadata_cellrangerfiltered_df <- NULL
 path_outputs <- NULL
 metadata_seuratfiltered_df <- NULL
-sink(file = paste0(dir_out, "Log.", run_id, ".txt"))
 for (id_sample in ids_sample) {
   ## Make matrix directory
   dir_matrix <- paste0(dir_cellranger_outputs, id_sample, "/", id_sample, "/outs/filtered_feature_bc_matrix/")
@@ -118,10 +136,10 @@ for (id_sample in ids_sample) {
   ## merge intp the super table
   metadata_seuratfiltered_df <- rbind(metadata_seuratfiltered_df, filtered_srat@meta.data)
 }
-sink()
 # make and write path to the quality metrics ------------------------------
 path_outputs_df <- data.frame(id_sample = ids_sample, 
-                              path_output_box = path_outputs, 
+                              path_output_katmai = path_outputs, 
+                              path_output_box = gsub(x = path_outputs, pattern = dir_base, replacement = "~/Box/Ding_Lab/Projects_Current/RCC/ccRCC_Drug/"), 
                               path_output_relative = gsub(x = path_outputs, pattern = dir_base, replacement = "./"))
 file2write <- paste0(dir_out, "path_seurat_filtered_RDS.", run_id, ".tsv")
 write.table(x = path_outputs_df, file = file2write, quote = F, sep = "\t", row.names = F)
@@ -133,3 +151,6 @@ write.table(x = metadata_cellrangerfiltered_df, file = file2write, sep = "\t", q
 # write seurat filtered meta data ----------------------------------------------
 file2write <- paste0(dir_out, "Seurat_Filtered.Barcode_Metrics.tsv")
 write.table(x = metadata_seuratfiltered_df, file = file2write, sep = "\t", quote = F, row.names = F)
+
+sink()
+
