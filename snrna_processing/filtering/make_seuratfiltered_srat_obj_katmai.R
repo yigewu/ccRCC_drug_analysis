@@ -32,6 +32,10 @@ library(Seurat)
 ## set output directory
 dir_out <- paste0(makeOutDir_katmai(path_this_script), run_id, "/")
 dir.create(dir_out)
+dir_out_elbowplot <- paste0(dir_out, "elbowplot", "/")
+dir.create(dir_out_elbowplot)
+dir_out_umap <- paste0(dir_out, "umap", "/")
+dir.create(dir_out_umap)
 ## set log file
 sink(file = paste0(dir_out, "Log.", timestamp, ".txt"))
 
@@ -134,6 +138,35 @@ for (id_sample in ids_sample) {
   
   ## SCTransform
   filtered_srat <- SCTransform(filtered_srat, vars.to.regress = c("mitoRatio", 'nFeature_RNA', "nCount_RNA", 'S.Score', 'G2M.Score'))
+  
+  # Run PCA
+  filtered_srat <- RunPCA(object = filtered_srat, npcs = num_pcs)
+  
+  # Plot ans save the elbow plot, see if the number of PCs are reasonable
+  p <- ElbowPlot(object = filtered_srat, ndims = num_pcs)
+  file2write <- paste0(dir_out_elbowplot, id_sample, "_pc_elbowplot", ".png")
+  png(filename = file2write, width = 800, height = 800, res = 150)
+  print(p)
+  dev.off()
+  
+  # Run UMAP
+  filtered_srat <- RunUMAP(filtered_srat, dims = 1:num_pcs, reduction = "pca")
+  
+  # Determine the K-nearest neighbor graph
+  filtered_srat <- FindNeighbors(object = filtered_srat, dims = 1:num_pcs)
+  
+  # Determine the clusters for various resolutions                                
+  filtered_srat <- FindClusters(object = filtered_srat, resolution = findclusters_res)
+  
+  # Plot ans save the UMAP plot
+  p <- DimPlot(srat,
+               reduction = "umap",
+               label = TRUE,
+               label.size = 6)
+  file2write <- paste0(dir_out_umap, id_sample, "_", paste0("SCT_snn_res.", findclusters_res), ".umap.", ".png")
+  png(filename = file2write, width = 1000, height = 800, res = 150)
+  print(p)
+  dev.off()
   
   ## save outputs
   file2write <- paste0(dir_out, id_sample, ".seruat_filtered.", run_id, ".RDS")
