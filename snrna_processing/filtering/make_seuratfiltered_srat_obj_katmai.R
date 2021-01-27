@@ -88,6 +88,7 @@ for (id_sample in ids_sample) {
   
   ## extract meta data
   metadata_df <- srat@meta.data
+  metadata_df$barcode_raw <- rownames(metadata_df)
   metadata_df$barcode <- paste0(rownames(metadata_df), "-1")
   print(head(metadata_df))
   
@@ -123,7 +124,7 @@ for (id_sample in ids_sample) {
     filter(!predicted_doublet)
   print(nrow(metadata_filtered_df2))
   ## subset seurat object
-  filtered_srat <- subset(x = srat, cells = metadata_filtered_df2$barcode)
+  filtered_srat <- subset(x = srat, cells = metadata_filtered_df2$barcode_raw)
   rm(srat)
   
   ## add meta data
