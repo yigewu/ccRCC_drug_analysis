@@ -50,7 +50,7 @@ p <- p + scale_color_manual(values = c("CT" = color_grey, "Cab" = color_red, "Sa
 p <- p + coord_cartesian(ylim = c(-41, 100), xlim = c(0, 60), expand = FALSE)
 p <- p + scale_y_continuous(breaks = seq(-40, 100, 20))
 p <- p + scale_x_continuous(expand = c(0,0), breaks = seq(0, 60, 10))
-p <- p + theme_classic(base_size = 14)
+p <- p + theme_classic(base_size = 16)
 p <- p + geom_hline(aes(yintercept = 0), linetype = 2)
 p <- p + theme(panel.grid.major.y = element_line(colour = "grey90"))
 p <- p + ylab("Tumor volume change (%)") + xlab("Treatment time (days)")
@@ -68,9 +68,11 @@ p <- p + scale_color_manual(values = c("CT" = color_grey, "Cab" = color_red, "Sa
 p <- p + coord_cartesian(ylim = c(100, 700), xlim = c(0, 60), expand = FALSE)
 p <- p + scale_y_continuous(breaks = seq(100, 700, 200))
 p <- p + scale_x_continuous(expand = c(0,0), breaks = seq(0, 60, 10))
-p <- p + theme_classic(base_size = 14)
+p <- p + theme_classic(base_size = 16)
 p <- p + geom_hline(aes(yintercept = 0), linetype = 2)
-p <- p + theme(panel.grid.major.y = element_line(colour = "grey90"))
+p <- p + theme(panel.grid.major.y = element_line(colour = "grey90"),
+               axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+               axis.line.x = element_blank())
 p <- p + ylab("Tumor volume change (%)")
 p <- p + theme(axis.title.x = element_blank())
 p

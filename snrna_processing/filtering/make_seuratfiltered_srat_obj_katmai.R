@@ -59,12 +59,12 @@ nFeature_RNA_min_mouse <- 100
 nFeature_RNA_max <- 10000
 ## input cell cycle genes
 cell_cycle_genes <- fread(input = "./Resources/Analysis_Results/dependencies/make_cellcycle_human_mouse_genes/20200408.v1/cell_cycle_human_mouse_genes.20200408.v1.tsv", data.table = F)
-# srat@assays$RNA@data@Dimnames[[1]] %>% tail
-# srat@assays$RNA@data@Dimnames[[1]] %>% head
+srat@assays$RNA@data@Dimnames[[1]] %>% tail %>% print()
+srat@assays$RNA@data@Dimnames[[1]] %>% head %>% print()
 cell_cycle_genes <- cell_cycle_genes %>%
   mutate(feature_name = ifelse(species == "human", paste0("GRCh38-", gene_name), paste0("mm10---", gene_name)))
-g2m_feature_names <- cell_cycle_genes$feature_name[cell_cycle_genes$phase == "G2/M"]
-s_feature_names <- cell_cycle_genes$feature_name[cell_cycle_genes$phase == "S"]
+g2m_feature_names <- cell_cycle_genes$feature_name[cell_cycle_genes$phase == "G2/M"]; print(g2m_feature_names)
+s_feature_names <- cell_cycle_genes$feature_name[cell_cycle_genes$phase == "S"]; print(s_feature_names)
 
 # process each sample -----------------------------------------------------
 metadata_cellrangerfiltered_df <- NULL
