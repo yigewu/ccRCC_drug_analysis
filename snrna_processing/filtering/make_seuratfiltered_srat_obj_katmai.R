@@ -41,7 +41,7 @@ dir_cellranger_outputs <- "./Resources/snRNA_Processed_Data/Cell_Ranger/cellrang
 ## set sample ids
 ids_sample <- list.files(path = dir_cellranger_outputs)
 ids_sample <- ids_sample[grepl(pattern = 'RESL', x = ids_sample)]
-ids_sample
+# ids_sample
 ## input paths to the scrublet outputs
 scrublet_out_paths_df <- fread(data.table = F, input = "./Resources/Analysis_Results/snrna_processing/other/write_paths_to_scrublet_output_tables/20210127.v1/Paths_to_Scrulbet_Output_Tables.20210127.v1.tsv")
 ## input scrublet 
@@ -67,6 +67,8 @@ metadata_cellrangerfiltered_df <- NULL
 path_outputs <- NULL
 metadata_seuratfiltered_df <- NULL
 for (id_sample in ids_sample) {
+  print(id_sample)
+  
   ## Make matrix directory
   dir_matrix <- paste0(dir_cellranger_outputs, id_sample, "/", id_sample, "/outs/filtered_feature_bc_matrix/")
   
@@ -106,9 +108,11 @@ for (id_sample in ids_sample) {
   metadata_filtered_df1 <- metadata_df %>%
     filter(((call == "mm10") & (nCount_RNA >= nCount_RNA_min_mouse) & (nFeature_RNA >= nFeature_RNA_min_mouse)) | ((call == "GRCh38") & (nCount_RNA >= nCount_RNA_min_human) & (nFeature_RNA >= nFeature_RNA_min_human))) %>%
     filter((mitoRatio < mitoRatio_max) & (nCount_RNA <= nCount_RNA_max) & (nFeature_RNA <= nFeature_RNA_max))
+  print(nrow(metadata_filtered_df1))
+  
   metadata_filtered_df2 <- metadata_filtered_df1 %>%
     filter(!predicted_doublet)
-  
+  print(nrow(metadata_filtered_df2))
   ## subset seurat object
   filtered_srat <- subset(x = srat, cells = metadata_filtered_df2$barcode)
   rm(srat)

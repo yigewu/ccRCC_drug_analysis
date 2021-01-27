@@ -19,7 +19,7 @@ dir.create(dir_out)
 ## input the treatment groups
 treatmentgroups_process <- c("CT", "Cab", "Sap", "Cab+Sap")
 ## set sample id
-
+id_sample <- "GU374B_B1"
 ## input formatted measurement data
 avg_relative_volume_df <- fread(data.table = F, input = "./Resources/Analysis_Results/treatment_data/tumor_volume/process_tumor_volume/20210126.v1/GU374B_B1_KS_20210126/GU374B_B1_KS_20210126.RelativeTumoreVolume.Average.ByTreatmentGroup.20210126.v1.tsv")
 
@@ -47,14 +47,33 @@ p <- ggplot(data = plot_data_long_df, mapping = aes(x = Treatment_Days, y = Avg_
 p <- p + geom_line()
 p <- p + geom_point()
 p <- p + scale_color_manual(values = c("CT" = color_grey, "Cab" = color_red, "Sap" = color_green, "Cab+Sap" = color_yellow))
-p <- p + scale_y_continuous(limits = c(-40, 140), breaks = seq(-40, 120, 20))
-p <- p + scale_x_continuous(expand = c(0,0))
-p <- p + theme_classic()
+p <- p + scale_y_continuous(limits = c(-41, 140), breaks = seq(-40, 120, 20))
+p <- p + scale_x_continuous(expand = c(0,0), breaks = seq(0, 60, 10))
+p <- p + theme_classic(base_size = 14)
 p <- p + geom_hline(aes(yintercept = 0), linetype = 2)
-p <- p + geom_hline(aes(yintercept = 100))
+p <- p + theme(panel.grid.major.y = element_line(colour = "grey90"))
+p <- p + ylab("Tumor volume change (%)") + xlab("Treatment time (days)")
 p
-file2write <- paste0(dir_out, )
+file2write <- paste0(dir_out, id_sample, ".", "y_below100.", "png")
+png(filename = file2write, width = 800, height = 800, res = 150)
+print(p)
+dev.off()
 
-# save output -------------------------------------------------------------
-
+# plot > 100 --------------------------------------------------------------------
+p <- ggplot(data = plot_data_long_df, mapping = aes(x = Treatment_Days, y = Avg_Relative_Volume_Change, group = Treatment_Group, color = Treatment_Group))
+p <- p + geom_line()
+p <- p + geom_point()
+p <- p + scale_color_manual(values = c("CT" = color_grey, "Cab" = color_red, "Sap" = color_green, "Cab+Sap" = color_yellow))
+p <- p + scale_y_continuous(limits = c(-100, NA), breaks = seq(100, 700, 200))
+p <- p + scale_x_continuous(expand = c(0,0), breaks = seq(0, 60, 10))
+p <- p + theme_classic(base_size = 14)
+p <- p + geom_hline(aes(yintercept = 0), linetype = 2)
+p <- p + theme(panel.grid.major.y = element_line(colour = "grey90"))
+p <- p + ylab("Tumor volume change (%)")
+p <- p + theme(axis.title.x = element_blank())
+p
+file2write <- paste0(dir_out, id_sample, ".", "y_over100.", "png")
+png(filename = file2write, width = 800, height = 300, res = 150)
+print(p)
+dev.off()
 
