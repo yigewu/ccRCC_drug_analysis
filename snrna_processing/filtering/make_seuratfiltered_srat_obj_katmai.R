@@ -133,8 +133,8 @@ for (id_sample in ids_sample) {
   filtered_srat <- NormalizeData(filtered_srat, verbose = TRUE)
   
   ## add cell cycle score
-  print(tail(srat@assays$RNA@data@Dimnames[[1]]))
-  print(head(srat@assays$RNA@data@Dimnames[[1]]))
+  print(tail(filtered_srat@assays$RNA@data@Dimnames[[1]]))
+  print(head(filtered_srat@assays$RNA@data@Dimnames[[1]]))
   filtered_srat <- CellCycleScoring(filtered_srat, g2m.features=g2m_feature_names, s.features=s_feature_names)
   
   ## SCTransform
