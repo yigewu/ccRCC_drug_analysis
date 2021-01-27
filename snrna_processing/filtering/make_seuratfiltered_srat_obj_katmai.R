@@ -84,7 +84,7 @@ for (id_sample in ids_sample) {
   
   ## extract meta data
   metadata_df <- srat@meta.data
-  metadata_df$barcode <- rownames(metadata_df)
+  metadata_df$barcode <- paste0(rownames(metadata_df), "-1")
   print(head(metadata_df))
   
   ## add barcode classification
