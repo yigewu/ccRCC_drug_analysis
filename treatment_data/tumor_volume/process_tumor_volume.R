@@ -22,7 +22,7 @@ filenames <- list.files(path = dir_files)
 filenames
 
 # extract volumes-----------------------------------------------------------------
-filename_tmp <- filenames[1]
+filename_tmp <- filenames[2]
 ## input measurements
 measure_df <- read_excel(path = paste0(dir_files, filename_tmp), sheet = "MeasurementsAll", na = "NA")
 volumes_df <- measure_df %>%
@@ -45,12 +45,23 @@ volumes_num_clean_mat <- apply(volumes_num_mat, 2, function(x) {
   }
   return(x_new)
 })
+
+# remove unwanted data ----------------------------------------------------
+if (grepl(x = filename_tmp, pattern = "RESL10_B1")) {
+  volumes_num_clean_mat[, "CT-12477-right"] <- NA
+  volumes_num_clean_mat[, "CT-12481-right"] <- NA
+  volumes_num_clean_mat[, "CT-12481-left"] <- NA
+  volumes_num_clean_mat[, "Cab-12479-right"] <- NA
+  volumes_num_clean_mat[, "Sap-12472-right"] <- NA
+  volumes_num_clean_mat[, "Cab+Sap-12464-right"] <- NA
+  volumes_num_clean_mat[, "Cab+Sap-12474-left"] <- NA
+}
 volumes_clean_df <- cbind(volumes_df[min(idxs_treatmenton):nrow(volumes_df),1:3], volumes_num_clean_mat)
 
 ## calculate relative tumor volumn compared to the begining of the treatment
 relative_volume_mat <- sweep(x = volumes_num_clean_mat, 2, as.vector(volumes_num_clean_mat[1,]), `/`)*100
 relative_volume_df <- cbind(volumes_df[min(idxs_treatmenton):nrow(volumes_df),1:3], relative_volume_mat)
-  
+
 # calculate average relative volumes --------------------------------------
 relative_volume_long_df <- reshape2::melt(data = relative_volume_df, id.vars = c("Treatment_Status", "Date", "Measurement_Type"))
 relative_volume_long_df <- relative_volume_long_df %>%
