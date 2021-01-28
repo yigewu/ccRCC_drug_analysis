@@ -48,6 +48,7 @@ volumes_num_clean_mat <- apply(volumes_num_mat, 2, function(x) {
 
 # remove unwanted data ----------------------------------------------------
 if (grepl(x = filename_tmp, pattern = "RESL10_B1")) {
+  ## Xiaolu did not use the following samples
   volumes_num_clean_mat[, "CT-12477-right"] <- NA
   volumes_num_clean_mat[, "CT-12481-right"] <- NA
   volumes_num_clean_mat[, "CT-12481-left"] <- NA
@@ -57,6 +58,12 @@ if (grepl(x = filename_tmp, pattern = "RESL10_B1")) {
   volumes_num_clean_mat[, "Cab+Sap-12474-left"] <- NA
 }
 volumes_clean_df <- cbind(volumes_df[min(idxs_treatmenton):nrow(volumes_df),1:3], volumes_num_clean_mat)
+## Xiaolu removed some days with weird measurements
+if (grepl(x = filename_tmp, pattern = "RESL10_B1")) {
+  volumes_clean_df <- volumes_clean_df %>%
+    filter(!(Date %in% c("2019-08-26 UTC", "2019-09-02 UTC", "2019-09-13 UTC")))
+}
+volumes_num_clean_mat <- volumes_clean_df[, colnames(volumes_num_clean_mat)]
 
 ## calculate relative tumor volumn compared to the begining of the treatment
 relative_volume_mat <- sweep(x = volumes_num_clean_mat, 2, as.vector(volumes_num_clean_mat[1,]), `/`)*100

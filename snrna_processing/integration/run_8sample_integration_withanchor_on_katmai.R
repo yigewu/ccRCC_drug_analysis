@@ -66,12 +66,9 @@ anchors_integ <- FindIntegrationAnchors(object.list = list_srat,
 cat("Finished FindIntegrationAnchors!\n\n\n")
 rm(list_srat)
 # Integrate across conditions
-print("Started IntegrateData!\n\n\n")
-
 srat <- IntegrateData(anchorset = anchors_integ, 
                       normalization.method = "SCT", verbose = T)
 cat("Finished IntegrateData!\n\n\n")
-print("Finished IntegrateData!\n\n\n")
 rm(anchors_integ)
 
 # dimension reduction -----------------------------------------------------
