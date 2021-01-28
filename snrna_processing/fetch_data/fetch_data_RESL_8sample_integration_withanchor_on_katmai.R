@@ -44,7 +44,7 @@ fetcheddata_df <- FetchData(object = srat, vars = c("orig.ident", "call", "seura
 fetcheddata_df$barcode <- rownames(fetcheddata_df)
 
 # write output ------------------------------------------------------------
-file2write <- paste0(dir_out, id_integration, ".umap_data.", run_id, ".tsv")
+file2write <- paste0(dir_out, "RESL_8sample", ".umap_data.", run_id, ".tsv")
 write.table(x = fetcheddata_df, file = file2write, row.names = T, quote = F, sep = "\t")
 
 
