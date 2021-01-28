@@ -47,22 +47,27 @@ for (id_sample_tmp in path_rds_df$id_sample) {
   ## read RDS file and store in the list
   list_srat[[id_sample_tmp]] <- readRDS(file = path_rds)
 }
-
+cat("Finished creating the seurat object list!\n\n\n")
 # start integration -------------------------------------------------------
 # Select the most variable features to use for integration
 features_integ <- SelectIntegrationFeatures(object.list = list_srat, 
-                                            nfeatures = num_var_features) 
+                                            nfeatures = num_var_features, verbose = T) 
+cat("Finished SelectIntegrationFeatures!\n\n\n")
 # Prepare the SCT list object for integration
 list_srat <- PrepSCTIntegration(object.list = list_srat, 
-                                anchor.features = features_integ)
+                                anchor.features = features_integ, verbose = T)
+cat("Finished PrepSCTIntegration!\n\n\n")
+
 # Find best buddies - can take a while to run
 anchors_integ <- FindIntegrationAnchors(object.list = list_srat, 
                                         normalization.method = "SCT", 
                                         anchor.features = features_integ, verbose = T)
+cat("Finished FindIntegrationAnchors!\n\n\n")
 rm(list_srat)
 # Integrate across conditions
 srat <- IntegrateData(anchorset = anchors_integ, 
-                                 normalization.method = "SCT")
+                                 normalization.method = "SCT", verbose = T)
+print("Finished IntegrateData!\n\n\n")
 rm(anchors_integ)
 
 # dimension reduction -----------------------------------------------------
@@ -75,6 +80,7 @@ file2write <- paste0(dir_out, "pcaplot.byspecies",".png")
 png(filename = file2write, width = 4000, height = 1000, res = 150)
 print(p)
 dev.off()
+cat("Finished PCAPlot!\n\n\n")
 
 ## UMAP
 ### run UMAP
@@ -85,15 +91,19 @@ file2write <- paste0(dir_out, "umap.byspecies", ".png")
 png(filename = file2write, width = 4000, height = 1000, res = 150)
 print(p)
 dev.off()
+cat("Finished RunUMAP!\n\n\n")
 
 # cluster the cells -------------------------------------------------------
 # Determine the K-nearest neighbor graph
 srat <- FindNeighbors(object = srat, dims = 1:num_pcs)
+cat("Finished FindNeighbors!\n\n\n")
 
 # Determine the clusters for various resolutions                                
 srat <- FindClusters(object = srat, resolution = findclusters_res)
+cat("Finished FindClusters!\n\n\n")
 
 # save output -------------------------------------------------------------
 file2write <- paste0(dir_out, "RESL_8sample_integration.withanchor.", run_id, ".RDS")
 saveRDS(object = srat, file = file2write, compress = T)
+cat("Finished saveRDS!\n\n\n")
 sink()
