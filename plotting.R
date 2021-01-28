@@ -4,7 +4,6 @@
 # library -----------------------------------------------------------------
 packages = c(
   "ggplot2",
-  "ComplexHeatmap",
   "RColorBrewer",
   "rcartocolor",
   "ggrepel"
