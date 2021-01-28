@@ -44,7 +44,7 @@ ids_samples <- path_rds_df$id_sample
 ids_samples <- ids_samples[grepl(pattern = "RESL5", x = ids_samples)]
 ids_samples
 list_srat <- list()
-for (id_sample_tmp in path_rds_df$id_sample) {
+for (id_sample_tmp in ids_samples) {
   ## get the path for RDS file
   path_rds <-path_rds_df$path_output_relative[path_rds_df$id_sample == id_sample_tmp]
   ## read RDS file and store in the list
