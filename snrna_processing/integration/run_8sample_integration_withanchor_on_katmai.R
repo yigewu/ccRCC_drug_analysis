@@ -46,6 +46,7 @@ for (id_sample_tmp in path_rds_df$id_sample) {
   path_rds <-path_rds_df$path_output_relative[path_rds_df$id_sample == id_sample_tmp]
   ## read RDS file and store in the list
   list_srat[[id_sample_tmp]] <- readRDS(file = path_rds)
+  print(dim(list_srat[[id_sample_tmp]]))
 }
 cat("Finished creating the seurat object list!\n\n\n")
 # start integration -------------------------------------------------------
