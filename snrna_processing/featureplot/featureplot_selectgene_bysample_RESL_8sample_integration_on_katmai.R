@@ -57,13 +57,15 @@ featurenames <- unique(featurenames)
 
 
 for (featurename in featurenames) {
-  p <- FeaturePlot(object = srat, features = featurename, 
+  p <- FeaturePlot(object = srat, 
+                   features = featurename,
+                   split.by = "orig.ident", ncol = 4,
                    min.cutoff = "q10", max.cutoff = "q90", sort.cell = TRUE,
-                   cols = c("grey", "red"), reduction = "umap", label = T, split.by = "orig.ident", ncol = 4)
+                   cols = c("grey", "red"), reduction = "umap", label = T,)
   
   # save output -------------------------------------------------------------
   file2write <- paste0(dir_out, featurename, ".featureplot", ".png")
-  png(filename = file2write, width = 3000, height = 1500, res = 150)
+  png(filename = file2write, width = 6000, height = 800, res = 150)
   print(p)
   dev.off()
 }
