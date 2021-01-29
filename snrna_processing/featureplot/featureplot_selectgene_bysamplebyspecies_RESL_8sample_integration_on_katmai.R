@@ -56,7 +56,7 @@ featurenames <- unique(featurenames)
 srat@meta.data$sample_species <- paste0(srat@meta.data$orig.ident, "_", srat@meta.data$call)
 
 for (featurename in featurenames) {
-  p <- FeaturePlot(object = srat_sub, 
+  p <- FeaturePlot(object = srat, 
                    features = featurename,
                    split.by = "sample_species", ncol = 4,
                    min.cutoff = "q10", max.cutoff = "q90", sort.cell = TRUE,
