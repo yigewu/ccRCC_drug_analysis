@@ -61,6 +61,7 @@ volumes_clean_df <- cbind(volumes_df[min(idxs_treatmenton):nrow(volumes_df),1:3]
 ## Xiaolu removed some days with weird measurements
 if (grepl(x = filename_tmp, pattern = "RESL10_B1")) {
   volumes_clean_df <- volumes_clean_df %>%
+    mutate
     filter(!(Date %in% c("2019-08-26 UTC", "2019-09-02 UTC", "2019-09-13 UTC")))
 }
 volumes_num_clean_mat <- volumes_clean_df[, colnames(volumes_num_clean_mat)]
