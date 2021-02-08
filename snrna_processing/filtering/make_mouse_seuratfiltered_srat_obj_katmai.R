@@ -42,8 +42,7 @@ sink(file = paste0(dir_out, "Log.", timestamp, ".txt"))
 
 # input dependencies ------------------------------------------------------
 ## set directory to the cell ranger outputs
-# dir_cellranger_outputs <- "./Resources/snRNA_Processed_Data/Cell_Ranger/cellranger-5.0.1_Ref-2020-A_GRCh38/"
-dir_cellranger_outputs <- "./Resources/snRNA_Processed_Data/Cell_Ranger/outputs/cellranger-5.0.1_Ref-2020-A_GRCh38/"
+dir_cellranger_outputs <- "./Resources/snRNA_Processed_Data/Cell_Ranger/outputs/cellranger-5.0.1_Ref-2020-A_mm10/"
 ## set sample ids
 ids_sample <- list.files(path = dir_cellranger_outputs)
 ids_sample <- ids_sample[grepl(pattern = 'RESL', x = ids_sample)]

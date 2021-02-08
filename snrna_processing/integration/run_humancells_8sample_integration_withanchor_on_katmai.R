@@ -75,20 +75,14 @@ rm(anchors_integ)
 ## PCA
 ### run PCA
 srat <- RunPCA(object = srat)
-### visualize PCs
-p <- PCAPlot(object = srat, group.by = "call", split.by = "orig.ident")
-file2write <- paste0(dir_out, "pcaplot.byspecies",".png")
-png(filename = file2write, width = 4000, height = 1000, res = 150)
-print(p)
-dev.off()
-cat("Finished PCAPlot!\n\n\n")
+cat("Finished RunPCA!\n\n\n")
 
 ## UMAP
 ### run UMAP
 srat <- RunUMAP(srat, dims = 1:num_pcs, reduction = "pca")
 ### visualize UMAP
-p <- DimPlot(object = srat, group.by = "call", split.by = "orig.ident", reduction = "umap")
-file2write <- paste0(dir_out, "umap.byspecies", ".png")
+p <- DimPlot(object = srat, split.by = "orig.ident", reduction = "umap")
+file2write <- paste0(dir_out, "umap.bysample", ".png")
 png(filename = file2write, width = 4000, height = 1000, res = 150)
 print(p)
 dev.off()
