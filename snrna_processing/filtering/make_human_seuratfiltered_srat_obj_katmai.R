@@ -83,7 +83,6 @@ for (id_sample in ids_sample) {
   ## subset the object
   srat <- subset(x = srat, cells = barcodes_keep); print(dim(srat))
   print("Finished subsetting the seurat object!")
-  rm(input)
   
   ## normalize
   srat <- NormalizeData(srat, verbose = TRUE)
