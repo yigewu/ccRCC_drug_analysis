@@ -34,7 +34,9 @@ other_epigeneticregulator_genes <- c("SETD2",
                                      "BAP1", 
                                      "KDM5C", "KDM6A",
                                      "TET2")
-pi3k_mtor_genes <- c("EGFR", "ERBB3", "FGFR3", "FGFR4", "IGF1R", "PIK3CA", "PIK3CB", "PIK3CG","PTEN", "AKT1", "AKT2", "AKT3", "MTOR", "TSC1", "TSC2", "RPS6KA2", "RPS6KA3", "RPS6KA6", "RHEB", 
+pi3k_mtor_genes <- c("EGFR", "ERBB3", "FGFR3", "FGFR4", "IGF1R", 
+                     "PIK3CA", "PIK3CB", "PIK3CG","PTEN", 
+                     "AKT1", "AKT2", "AKT3", "MTOR", "TSC1", "TSC2", "RPS6KA2", "RPS6KA3", "RPS6KA6", "RHEB", 
                      "SRC", "PKT2")
 p53_cellcycle_genes <- c("ATM", "CHECK2", "TP53", "MDM2", "CDKN2A", "CCND1", "E2F3", "CCNB2",
                          "MYC")
@@ -49,14 +51,28 @@ genes_mutated_in_ccRCC <- c(ubiquitin_proteasome_genes,
                             fat_cadherins_genes)
 genes_mutated_in_ccRCC <- unique(genes_mutated_in_ccRCC)
 
+
+# genes for expression analysis -------------------------------------------
 ## RAS-pi3k-mtor
 ras_pathway_genes <- c("KRAS", "HRAS", "NRAS", 
                        "BRAF", "RAF1", "MAP2K1", "MAPK1", "MAPK3")
-pi3k_pathway_genes <- c("PIK3CA", "PIK3CB", "PIK3CD", "PIK3R1", "PIK3R2",
+pi3k_pathway_genes <- c("PIK3CA", "PIK3CB", "PIK3CD", "PIK3CG", "PIK3R1", "PIK3R2", "PIK3R3", 
+                        "PTEN",
+                        "PDK1",
                         "AKT1", "AKT2", "AKT3",
-                        "GSK3B")
-mtor_pathway_genes <- c("MTOR", "AKTS1", "DEPTOR", "RPTOR", "MLST8", "MAPKAP1", "PRR5", "RICTOR",
-                        "RPS6KB1", "EIF4E", "EIF4G", "EEF2",
-                        "EIF4EBP", "EEF2K")
+                        "GSK3B", "BAD", "FOXO1", "FOXO3", "FOXO4", "NOS3", "CDKN1B")
+mtor_pathway_genes <- c("TSC1", "TSC2", "RHEB",
+                        "MTOR", "AKT1S1", "DEPTOR", "RPTOR", "MLST8", "MAPKAP1", "PRR5", "RICTOR",
+                        "RB1CC1", "ULK1", "ATG13",
+                        "GRB10", "TFEB", 
+                        "RPS6KB1",
+                        "EIF4EBP1")
+## reference: https://www.wikipathways.org/index.php/Pathway:WP3844
 genes_pi3k_mtor <- c(ras_pathway_genes, pi3k_pathway_genes, mtor_pathway_genes)
+## RTKs
+met_related_genes <- c("HGF", "MET", "AXL")
+vegfr_genes <- c("FLT1", "KDR", "FLT3", "FLT4", "NRP1", "NRP2")
+vegf_genes <- c("VEGFA", "VEGFB", "VEGFC", "VEGFD", "VEGFE")
+other_cabo_related_genes <- c("KIT", "RET", "NTRK2", "TEK")
+genes_rtk_cabo <- c(met_related_genes, vegfr_genes, vegf_genes, other_cabo_related_genes)
 

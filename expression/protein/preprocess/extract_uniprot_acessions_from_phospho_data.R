@@ -19,5 +19,13 @@ dir.create(dir_out)
 phospho_df <- fread(data.table = F, input = "./Resources/Bulk_Processed_Data/Data_Files/Protein/01252021/LiDing_PDX_ccRCC_204phospho_library_Report.txt")
 
 # get unique accessions ---------------------------------------------------
+uniprotid_string_uniq <- unique(phospho_df$PG.ProteinAccessions)
+length(uniprotid_string_uniq)
+uniprotid_uniq <- sapply(uniprotid_string_uniq, function(x) { str_split(string = x, pattern = ";")[[1]]})
+uniprotid_uniq <- unique(unlist(uniprotid_uniq))
+length(uniprotid_uniq)
+uniprotid_uniq_df <- data.frame(Acession = uniprotid_uniq)
 
-
+# write output ------------------------------------------------------------
+file2write <- paste0(dir_out, "Uniprot_Accessions.", run_id, ".tsv")
+write.table(x = uniprotid_uniq_df, file = file2write, sep = "\t", quote = F, row.names = F)
