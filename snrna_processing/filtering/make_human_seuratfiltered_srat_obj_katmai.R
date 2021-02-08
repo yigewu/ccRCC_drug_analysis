@@ -72,9 +72,13 @@ for (id_sample in ids_sample) {
   
   ## Read in matrix
   input <- Seurat::Read10X(data.dir = dir_matrix); print(dim(input))
+  print("Finished input matrix!")
   
   ## subset the matrix
+  print(head(colnames(input)))
+  print(head(barcodes_keep))
   input_subset <- input[, barcodes_keep]; print(dim(input_subset))
+  print("Finished subsetting matrix!")
   rm(input)
   
   ## make seurat object
