@@ -84,6 +84,10 @@ for (id_sample in ids_sample) {
   srat <- subset(x = srat, cells = barcodes_keep); print(dim(srat))
   print("Finished subsetting the seurat object!")
   
+  ## Compute percent mito ratio
+  srat$mitoRatio <- Seurat::PercentageFeatureSet(object = srat, pattern = "MT-")
+  srat$mitoRatio <- srat@meta.data$mitoRatio / 100
+  
   ## normalize
   srat <- NormalizeData(srat, verbose = TRUE)
   
