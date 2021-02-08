@@ -53,7 +53,8 @@ barcode2species_df <- fread(data.table = F, input = "./Resources/Analysis_Result
 ## input cell cycle genes
 cell_cycle_genes <- fread(input = "./Resources/Analysis_Results/dependencies/make_cellcycle_human_mouse_genes/20200408.v1/cell_cycle_human_mouse_genes.20200408.v1.tsv", data.table = F)
 cell_cycle_genes <- cell_cycle_genes %>%
-  mutate(feature_name = ifelse(species == "human", paste0("GRCh38-", gene_name), paste0("mm10---", gene_name)))
+  filter(species == "human") %>%
+  mutate(feature_name = gene_name)
 g2m_feature_names <- cell_cycle_genes$feature_name[cell_cycle_genes$phase == "G2/M"]; print(g2m_feature_names)
 s_feature_names <- cell_cycle_genes$feature_name[cell_cycle_genes$phase == "S"]; print(s_feature_names)
 
@@ -91,6 +92,7 @@ for (id_sample in ids_sample) {
   print(tail(srat@assays$RNA@data@Dimnames[[1]]))
   print(head(srat@assays$RNA@data@Dimnames[[1]]))
   srat <- CellCycleScoring(object = srat, g2m.features=g2m_feature_names, s.features=s_feature_names)
+  print("Finished CellCycleScoring!")
   
   ## SCTransform
   srat <- SCTransform(srat, vars.to.regress = c("mitoRatio", 'nFeature_RNA', "nCount_RNA", 'S.Score', 'G2M.Score'))
@@ -127,6 +129,7 @@ for (id_sample in ids_sample) {
   ## save outputs
   file2write <- paste0(dir_out, id_sample, ".human", ".seruat_filtered.", run_id, ".RDS")
   saveRDS(object = srat, file = file2write, compress = T)
+  print("Finished saveRDS!")
   
   ## store path to the outputs
   path_outputs <- c(path_outputs, file2write)
@@ -138,5 +141,6 @@ path_outputs_df <- data.frame(id_sample = ids_sample,
                               path_output_relative = gsub(x = path_outputs, pattern = dir_base, replacement = "./"))
 file2write <- paste0(dir_out, "Path_to_Seurat_Objects.HumanCellsss.Filtered.", run_id, ".tsv")
 write.table(x = path_outputs_df, file = file2write, quote = F, sep = "\t", row.names = F)
+print("Finished write.table!")
 sink()
 
