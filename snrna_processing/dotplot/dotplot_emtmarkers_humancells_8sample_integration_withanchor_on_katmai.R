@@ -3,7 +3,7 @@
 
 # set up libraries and output directory -----------------------------------
 ## set run id
-version_tmp <- 3
+version_tmp <- 4
 run_id <- paste0(format(Sys.Date(), "%Y%m%d") , ".v", version_tmp)
 ## set time stamp for log file
 timestamp <- paste0(run_id, ".", format(Sys.time(), "%H%M%S"))
@@ -102,6 +102,36 @@ p <- p + theme(axis.title = element_blank())
 p <- p + labs(colour = "Expression value")
 p <- p + theme(legend.position = "bottom")
 file2write <- paste0(dir_out, "EMTMarker.ExpNotScaled.png")
+png(file = file2write, width = 900, height = 1200, res = 150)
+print(p)
+dev.off()
+
+# plot not scaled -------------------------------------------------------------
+cat("Start scaled!\n\n\n")
+plotdata_df <- expdata_df %>%
+  filter(features.plot %in% featurenames_filtered)
+expvalue_top <- quantile(x = plotdata_df$avg.exp.scaled, probs = 0.975)
+plotdata_df <- plotdata_df %>%
+  mutate(expvalue_plot = ifelse(avg.exp.scaled >= expvalue_top, expvalue_top, avg.exp.scaled))
+plotdata_df$gene_group2 <- paste0(plyr::mapvalues(plotdata_df$features.plot, from = gene2celltype_df$Gene, to = gene2celltype_df$Gene_Group2), 
+                                  "\n",
+                                  "Markers")
+p <- ggplot()
+p <- p + geom_point(data = plotdata_df, mapping = aes(x = features.plot, y = id, color = expvalue_plot, size = pct.exp), shape = 16)
+p <- p + scale_color_gradientn(colours = rev(RColorBrewer::brewer.pal(n = 9, name = "Spectral")[1:5]), guide = guide_legend(direction = "horizontal", nrow = 2, byrow = T))
+p <- p + scale_size_continuous(range = c(0, 8), name="% Expressed", guide = guide_legend(direction = "horizontal"))
+p <- p + facet_grid(.~gene_group2, scales = "free", space = "free", drop = T)
+p <- p + theme(axis.text.x = element_text(angle = 90, face = "bold", size = 10))
+p <- p + theme(axis.text.y = element_text( face = "bold", size = 12))
+p <- p + theme(panel.spacing = unit(0, "lines"), panel.grid.major = element_line(colour = "grey80"), 
+               panel.border = element_rect(color = "black", fill = NA, size = 0.5),
+               panel.background = element_blank())
+p <- p + theme(strip.background = element_rect(color = NA, fill = NA, size = 0.5), 
+               strip.text.x = element_text(angle = 90, vjust = 0.5, size = 12, face = "bold"), strip.text.y = element_text(angle = 0, vjust = 0.5))
+p <- p + theme(axis.title = element_blank())
+p <- p + labs(colour = "Scaled Expression value")
+p <- p + theme(legend.position = "bottom")
+file2write <- paste0(dir_out, "EMTMarker.ExpScaled.png")
 png(file = file2write, width = 900, height = 1200, res = 150)
 print(p)
 dev.off()
