@@ -58,7 +58,7 @@ Idents(srat) <- "seurat_clusters"
 featurenames <-  intersect(gene2celltype_df$feature_name, srat@assays$RNA@data@Dimnames[[1]])
 featurenames <- unique(featurenames)
 ## get the pct expressed for each gene in each cluster
-p <- DotPlot(object = srat, features = genes2plot, col.min = 0, assay = "RNA")
+p <- DotPlot(object = srat, features = featurenames, col.min = 0, assay = "RNA")
 expdata_df <- p$data
 ## transform the dataframe to matrix to better filter out genes with too low expressin
 ## filter genes based on the percentage expressed
