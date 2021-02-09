@@ -3,7 +3,7 @@
 
 # set up libraries and output directory -----------------------------------
 ## set run id
-version_tmp <- 2
+version_tmp <- 3
 run_id <- paste0(format(Sys.Date(), "%Y%m%d") , ".v", version_tmp)
 ## set time stamp for log file
 timestamp <- paste0(run_id, ".", format(Sys.time(), "%H%M%S"))
@@ -41,7 +41,7 @@ path_rds <- "./Resources/Analysis_Results/snrna_processing/integration/run_human
 srat <- readRDS(file = path_rds)
 DefaultAssay(srat) <- "RNA"
 ## input marker gene table
-gene2celltype_df <- fread("./Resources/Knowledge/Gene_Lists/Kidney_Specific_EMT_Genes.20200911.v1.tsv", data.table = F)
+gene2celltype_df <- fread("./Resources/Knowledge/Gene_Lists/Kidney_Specific_EMT_Genes.20210209.v1.tsv", data.table = F)
 
 
 # set parameters ----------------------------------------------------------
@@ -102,6 +102,6 @@ p <- p + theme(axis.title = element_blank())
 p <- p + labs(colour = "Expression value")
 p <- p + theme(legend.position = "bottom")
 file2write <- paste0(dir_out, "EMTMarker.ExpNotScaled.png")
-png(file = file2write, width = 900, height = 1500, res = 150)
+png(file = file2write, width = 900, height = 1200, res = 150)
 print(p)
 dev.off()
