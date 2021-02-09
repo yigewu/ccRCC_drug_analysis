@@ -3,7 +3,7 @@
 
 # set up libraries and output directory -----------------------------------
 ## set run id
-version_tmp <- 1
+version_tmp <- 2
 run_id <- paste0(format(Sys.Date(), "%Y%m%d") , ".v", version_tmp)
 ## set time stamp for log file
 timestamp <- paste0(run_id, ".", format(Sys.time(), "%H%M%S"))
@@ -80,7 +80,7 @@ write.table(x = expdata_df, file = file2write, sep = "\t", quote = F, row.names 
 cat("Start not scaled!\n\n\n")
 plotdata_df <- expdata_df %>%
   filter(features.plot %in% featurenames_filtered)
-expvalue_top <- quantile(x = plotdata_df$avg.exp, probs = 0.95)
+expvalue_top <- quantile(x = plotdata_df$avg.exp, probs = 0.975)
 plotdata_df <- plotdata_df %>%
   mutate(expvalue_plot = ifelse(avg.exp >= expvalue_top, expvalue_top, avg.exp))
 plotdata_df$gene_group2 <- paste0(plyr::mapvalues(plotdata_df$features.plot, from = gene2celltype_df$Gene, to = gene2celltype_df$Gene_Group2), 
@@ -102,6 +102,6 @@ p <- p + theme(axis.title = element_blank())
 p <- p + labs(colour = "Expression value")
 p <- p + theme(legend.position = "bottom")
 file2write <- paste0(dir_out, "EMTMarker.ExpNotScaled.png")
-png(file = file2write, width = 900, height = 600, res = 150)
+png(file = file2write, width = 900, height = 1500, res = 150)
 print(p)
 dev.off()
