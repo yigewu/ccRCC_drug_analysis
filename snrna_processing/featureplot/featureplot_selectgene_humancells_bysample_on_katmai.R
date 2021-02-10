@@ -41,7 +41,9 @@ srat <- readRDS(file = path_rds)
 DefaultAssay(srat) <- "RNA"
 
 ## input marker gene table
-genes_plot <- genes_rtk_cabo
+# genes_plot <- genes_rtk_cabo
+genes_plot <- c("VIM", "FN1", "MMP2", "CDH2", "HNF4G", "CA9")
+
 ## set the minimal % of cells expresssing the gene
 min.exp.pct <- 0
 # make plot ---------------------------------------------------------------
