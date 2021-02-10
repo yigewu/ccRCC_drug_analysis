@@ -51,9 +51,12 @@ cat("###########################################\n")
 markers_df <- FindAllMarkers(object = srat, test.use = "wilcox", only.pos = F,
                              min.pct = min.pct.run, logfc.threshold = logfc.threshold.run, min.diff.pct = min.diff.pct.run, verbose = T, assay = assay_process)
 markers_df$deg_gene_symbol <- rownames(markers_df)
+cat(paste0("Finished FindAllMarkers", "\n"))
+cat("###########################################\n")
 
 # write output ------------------------------------------------------------
 file2write <- paste0(dir_out, "FindAllMarkers.", "Wilcox.", "ByCluster.", run_id, ".tsv")
 write.table(x = markers_df, file = file2write, sep = "\t", quote = F, row.names = F)
-
+cat(paste0("Finished write.table", "\n"))
+cat("###########################################\n")
 
