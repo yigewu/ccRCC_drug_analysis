@@ -26,6 +26,9 @@ anova_results_df <- fread(data.table = F, input = "./Resources/Analysis_Results/
 
 # set parameters ----------------------------------------------------------
 genes_filter <- c(genes_pi3k_mtor, genes_rtk_cabo)
+genegroup_df <- data.frame(Gene = c(ras_pathway_genes, pi3k_pathway_genes, mtor_pathway_genes, genes_rtk_cabo),
+                           Pathway = c(rep("RAS", length(ras_pathway_genes)), rep("PI3K", length(pi3k_pathway_genes)), rep("mTOR", length(mtor_pathway_genes)),
+                                       rep("RTK", length(genes_rtk_cabo))))
 
 # make data matrix --------------------------------------------------------
 colnames_id <- intersect(x = colnames(anova_results_df), y = colnames(exp_df))
@@ -81,6 +84,9 @@ colors_unscaledexp = circlize::colorRamp2(14:22,
 ## make colors for species
 colors_genespecies <- RColorBrewer::brewer.pal(name = "Dark2", n = 3)
 names(colors_genespecies) <- c("Human", "Mouse", "Ambiguous")
+## make colors for gene group
+colors_genegroup <- RColorBrewer::brewer.pal(name = "Dark2", n = 7)[4:7]
+names(colors_genegroup) <- unique(genegroup_df$Pathway)
 
 # make row annotation -----------------------------------------------------
 orig_avgexp_vec <- rowMeans(x = plot_data_raw_mat, na.rm = T)
@@ -89,7 +95,13 @@ ishuman_vec <- grepl(pattern = "HUMAN", x = proteinnames_mat)
 ismouse_vec <- grepl(pattern = "MOUSE", x = proteinnames_mat)
 protein_species_vec <- ifelse(ishuman_vec & !ismouse_vec, "Human",
                            ifelse(ismouse_vec & !ishuman_vec, "Mouse", "Ambiguous"))
-row_anno_obj <- rowAnnotation(Unscaled_Expression = anno_simple(x = orig_avgexp_vec, col = colors_unscaledexp), 
+genegroup_vec <- sapply(plot_data_df$PG.Genes, function(gene_string, genegroup_df) {
+  genes_vec <- str_split(string = gene_string, pattern = ";")[[1]]
+  genegroup_tmp <- genegroup_df$Pathway[genegroup_df$Gene %in% genes_vec]
+  return(genegroup_tmp)
+}, genegroup_df = genegroup_df)
+row_anno_obj <- rowAnnotation(Gene_Group = anno_simple(x = genegroup_vec, col = colors_genegroup),
+                              Unscaled_Expression = anno_simple(x = orig_avgexp_vec, col = colors_unscaledexp), 
                               Species = anno_simple(x = protein_species_vec, col = colors_genespecies),
                               annotation_name_side = "top")
 
@@ -131,6 +143,9 @@ annotation_lgd = list(
   Legend(labels = names(colors_treatmentlength), 
          title = "Treatment length", 
          legend_gp = gpar(fill = colors_treatmentlength)),
+  Legend(labels = names(colors_genegroup), 
+         title = "Protein pathway", 
+         legend_gp = gpar(fill = colors_genegroup)),
   Legend(labels = names(colors_genespecies), 
          title = "Protein species", 
          legend_gp = gpar(fill = colors_genespecies)),

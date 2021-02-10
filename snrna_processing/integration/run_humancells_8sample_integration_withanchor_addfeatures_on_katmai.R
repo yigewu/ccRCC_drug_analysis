@@ -39,6 +39,8 @@ sink(file = paste0(dir_out, "Log.", timestamp, ".txt"))
 # set dependencies --------------------------------------------------------
 ## set the directory containing the SCTransformed seurat objects in RDS file format
 path_rds_df <- fread(data.table = F, input = "./Resources/Analysis_Results/snrna_processing/filtering/make_human_seuratfiltered_srat_obj_katmai/20210208.v1/Path_to_Seurat_Objects.HumanCellsss.Filtered.20210208.v1.tsv")
+## input marker gene table
+gene2celltype_df <- fread("./Resources/Knowledge/Gene_Lists/Kidney_Specific_EMT_Genes.20210209.v1.tsv", data.table = F)
 
 # input per object in for loop--------------------------------------------------------
 list_srat <- list()
@@ -54,7 +56,10 @@ cat("Finished creating the seurat object list!\n\n\n")
 # Select the most variable features to use for integration
 features_integ <- SelectIntegrationFeatures(object.list = list_srat, 
                                             nfeatures = num_var_features, verbose = T) 
+print(head(features_integ))
 cat("Finished SelectIntegrationFeatures!\n\n\n")
+features_integ <- unique(c(features_integ, gene2celltype_df$Gene))
+print(length(features_integ))
 # Prepare the SCT list object for integration
 list_srat <- PrepSCTIntegration(object.list = list_srat, 
                                 anchor.features = features_integ, verbose = T)
