@@ -44,23 +44,24 @@ gene2celltype_df <- fread("./Resources/Knowledge/Gene_Lists/Kidney_Specific_EMT_
 
 # input per object in for loop--------------------------------------------------------
 list_srat <- list()
+genes_add <- gene2celltype_df$Gene
 for (id_sample_tmp in path_rds_df$id_sample) {
   ## get the path for RDS file
   path_rds <-path_rds_df$path_output_relative[path_rds_df$id_sample == id_sample_tmp]
   ## read RDS file and store in the list
   list_srat[[id_sample_tmp]] <- readRDS(file = path_rds)
-  print(dim(list_srat[[id_sample_tmp]]))
+  genes_add <- intersect(genes_add, list_srat[[id_sample_tmp]]@assays$RNA@data@Dimnames[[1]])
+  print(length(genes_add))
 }
 cat("Finished creating the seurat object list!\n\n\n")
 # start integration -------------------------------------------------------
 # Select the most variable features to use for integration
 features_integ <- SelectIntegrationFeatures(object.list = list_srat, 
                                             nfeatures = num_var_features, verbose = T) 
-print(head(features_integ))
 cat("Finished SelectIntegrationFeatures!\n\n\n")
-features_integ <- unique(c(features_integ, gene2celltype_df$Gene))
-features_integ <- intersect(features_integ, list_srat[[id_sample_tmp]]@assays$RNA@data@Dimnames[[1]])
-print(length(features_integ))
+features_integ <- unique(c(features_integ, genes_add))
+cat(paste0(length(features_integ), "\n\n\n"))
+cat("Finished adding features!\n\n\n")
 # Prepare the SCT list object for integration
 list_srat <- PrepSCTIntegration(object.list = list_srat, 
                                 anchor.features = features_integ, verbose = T)
