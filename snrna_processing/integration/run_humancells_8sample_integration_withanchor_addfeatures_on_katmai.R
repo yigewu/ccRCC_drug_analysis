@@ -59,6 +59,7 @@ features_integ <- SelectIntegrationFeatures(object.list = list_srat,
 print(head(features_integ))
 cat("Finished SelectIntegrationFeatures!\n\n\n")
 features_integ <- unique(c(features_integ, gene2celltype_df$Gene))
+features_integ <- intersect(features_integ, list_srat[[id_sample_tmp]]@assays$RNA@data@Dimnames[[1]])
 print(length(features_integ))
 # Prepare the SCT list object for integration
 list_srat <- PrepSCTIntegration(object.list = list_srat, 
