@@ -38,7 +38,7 @@ path_rds <- "./Resources/Analysis_Results/snrna_processing/integration/run_human
 ## input RDS file
 srat <- readRDS(file = path_rds)
 ## input manual cluster
-barcode2cluster_df <- fread(data.table = F, input = "./Resources/Analysis_Results/snrna_processing/map_barcode/map_barcode2idmanualcluster_humancells_integration_withanchor/20210211.v1/barcode2idmanualcluster_umapdata.20210211.v1.tsv")
+barcode2cluster_df <- fread(data.table = F, input = "./Resources/Analysis_Results/snrna_processing/map_barcode/map_barcode2idmanualcluster_humancells_integration_withanchor/20210212.v1/barcode2idmanualcluster_umapdata.20210212.v1.tsv")
 
 # set parameters for findmarkers ------------------------------------------
 logfc.threshold.run <- 0

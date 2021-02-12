@@ -25,12 +25,12 @@ fetcheddata_df <- merge(fetcheddata_df,
                         by.x = c("seurat_clusters"),
                         by.y = c("Id_Seurat_Cluster"), all.x = T)
 fetcheddata_df <- fetcheddata_df %>%
-  rename(Id_Seurat_Cluster = seurat_clusters) %>%
-  rename(Barcode_Integrated = V1) %>%
-  rename(Id_Sample = orig.ident) %>%
-  select(-barcode) %>%
-  mutate(Treatment_Group = str_split_fixed(string = Id_Sample, pattern = "-", n = 3)[,3]) %>%
-  mutate(Treatment_Group = gsub(pattern = "2", replacement = "", x = Treatment_Group))
+  dplyr::rename(Id_Seurat_Cluster = seurat_clusters) %>%
+  dplyr::rename(Barcode_Integrated = V1) %>%
+  dplyr::rename(Id_Sample = orig.ident) %>%
+  dplyr::select(-barcode) %>%
+  dplyr::mutate(Treatment_Group = str_split_fixed(string = Id_Sample, pattern = "-", n = 3)[,3]) %>%
+  dplyr::mutate(Treatment_Group = gsub(pattern = "2", replacement = "", x = Treatment_Group))
 # write output ------------------------------------------------------------
 file2write <- paste0(dir_out, "barcode2idmanualcluster_umapdata.", run_id, ".tsv")
 write.table(x = fetcheddata_df, file = file2write, quote = F, row.names = F, sep = "\t")
