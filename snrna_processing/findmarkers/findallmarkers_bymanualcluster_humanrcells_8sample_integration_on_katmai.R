@@ -51,7 +51,7 @@ cat("###########################################\n")
 
 # add manual cluster ------------------------------------------------------
 srat@meta.data$Id_Manual_Cluster <- mapvalues(x = rownames(srat@meta.data), from = barcode2cluster_df$Barcode_Integrated, to = as.vector(barcode2cluster_df$Id_Manual_Cluster))
-cat(table(srat@meta.data$Id_Manual_Cluster))
+print(table(srat@meta.data$Id_Manual_Cluster))
 Idents(srat) <- "Id_Manual_Cluster"
 
 # run findallmarkers ------------------------------------------------------
