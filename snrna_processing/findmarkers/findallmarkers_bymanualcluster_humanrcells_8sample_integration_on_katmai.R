@@ -3,7 +3,7 @@
 
 # set up libraries and output directory -----------------------------------
 ## set run id
-version_tmp <- 1
+version_tmp <- 2
 run_id <- paste0(format(Sys.Date(), "%Y%m%d") , ".v", version_tmp)
 ## set time stamp for log file
 timestamp <- paste0(run_id, ".", format(Sys.time(), "%H%M%S"))
@@ -46,6 +46,7 @@ min.pct.run <- 0.1
 min.diff.pct.run <- 0.1
 ## spcify assay
 assay_process <- "RNA"
+DefaultAssay(srat) <- assay_process
 cat(paste0("Assay: ", assay_process, "\n"))
 cat("###########################################\n")
 

@@ -45,6 +45,15 @@ barcode2cluster_df <- fread(data.table = F, input = "./Resources/Analysis_Result
 sampleids <- unique(srat@meta.data$orig.ident)
 sampleids_group2 <- sampleids[grepl(x = sampleids, pattern = "-CT")]
 sampleids_group1 <- sampleids[!grepl(x = sampleids, pattern = "-CT")]
+## spcify assay
+assay_process <- "RNA"
+DefaultAssay(srat) <- assay_process
+cat(paste0("Assay: ", assay_process, "\n"))
+cat("###########################################\n")
+## set findmarkers parameters
+logfc.threshold.run <- 0
+min.pct.run <- 0.1
+min.diff.pct.run <- 0.1
 
 # loop for pair of RESL5 & RESL10 ------------------------------------------------------
 markers_all_df <- NULL
@@ -79,7 +88,9 @@ for (sampleid_group1 in sampleids_group1) {
       rename(group_findmarkers = '.')
     
     # run findallmarkers ------------------------------------------------------
-    markers_df <- FindMarkers(object = srat, test.use = "wilcox", ident.1 = "group1", ident.2 = "group2", logfc.threshold = 0)
+    markers_df <- FindMarkers(object = srat, test.use = "wilcox", 
+                              min.pct = min.pct.run, logfc.threshold = logfc.threshold.run, min.diff.pct = min.diff.pct.run, verbose = T, assay = assay_process,
+                              ident.1 = "group1", ident.2 = "group2")
     markers_df$deg_gene_symbol <- rownames(markers_df)
     markers_df$cellcount_group1_findmarkers <- cellcount_group_df$Freq[cellcount_group_df$group_findmarkers == "group1"]
     markers_df$cellcount_group2_findmarkers <- cellcount_group_df$Freq[cellcount_group_df$group_findmarkers == "group2"]
