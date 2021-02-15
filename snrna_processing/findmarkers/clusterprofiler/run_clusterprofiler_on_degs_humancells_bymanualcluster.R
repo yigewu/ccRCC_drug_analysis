@@ -10,6 +10,7 @@ source("./ccRCC_drug_analysis/variables.R")
 library(clusterProfiler)
 library(biomaRt)
 library(org.Hs.eg.db)
+library(ggplot2)
 ## set run id
 version_tmp <- 1
 run_id <- paste0(format(Sys.Date(), "%Y%m%d") , ".v", version_tmp)
