@@ -52,7 +52,7 @@ for (sampleid_group1 in sampleids_group1) {
   print(paste0("Group1:", sampleid_group1))
   ## get RESL10 model id
   model_name <- str_split_fixed(string = sampleid_group1, pattern = "-", n = 3)[,1]
-  sampleid_group2 <- sampleids_group2[grepl(x = sampleids_group2, pattern = sampleid_group2)]
+  sampleid_group2 <- sampleids_group2[grepl(x = sampleids_group2, pattern = model_name)]
   print(paste0("Group2:", sampleid_group2))
   ## make add manual cluster
   srat@meta.data$Id_Manual_Cluster <- mapvalues(x = rownames(srat@meta.data), from = barcode2cluster_df$Barcode_Integrated, to = as.vector(barcode2cluster_df$Id_Manual_Cluster))
