@@ -54,6 +54,7 @@ cat("Finished creating the seurat object list!\n\n\n")
 ## integrate without anchor
 srat <- merge(x = list_srat[[1]], y = list_srat[2:length(list_srat)], project = "integrated")
 rm(list_srat)
+cat("Finished merge!\n")
 ## scale data with all the features
 srat <- SCTransform(srat, vars.to.regress = c("mitoRatio", 'nFeature_RNA', "nCount_RNA", 'S.Score', 'G2M.Score'), return.only.var.genes = F)
 cat("Finished SCTransform!\n")
@@ -71,13 +72,22 @@ cat("Finished FindClusters!\n")
 ### visualize UMAP
 p <- DimPlot(object = srat, split.by = "orig.ident", reduction = "umap")
 file2write <- paste0(dir_out, "umap.bysample", ".png")
-png(filename = file2write, width = 6000, height = 1000, res = 150)
+png(filename = file2write, width = 4000, height = 1000, res = 150)
 print(p)
 dev.off()
-cat("Finished DimPlot!\n\n\n")
+cat("Finished RunUMAP!\n\n\n")
+
+# cluster the cells -------------------------------------------------------
+# Determine the K-nearest neighbor graph
+srat <- FindNeighbors(object = srat, dims = 1:num_pcs)
+cat("Finished FindNeighbors!\n\n\n")
+
+# Determine the clusters for various resolutions                                
+srat <- FindClusters(object = srat, resolution = findclusters_res)
+cat("Finished FindClusters!\n\n\n")
 
 # save output -------------------------------------------------------------
-file2write <- paste0(dir_out, "Humancells_8sample_merge.", run_id, ".RDS")
+file2write <- paste0(dir_out, "Humancells_8sample_integration.withanchor.", run_id, ".RDS")
 saveRDS(object = srat, file = file2write, compress = T)
 cat("Finished saveRDS!\n\n\n")
 sink()
