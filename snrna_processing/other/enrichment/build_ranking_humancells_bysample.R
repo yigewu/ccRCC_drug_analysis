@@ -52,7 +52,7 @@ for (filename_expmat in filenames_expmat[1]) {
   ## get sample id
   sampleid_tmp <- str_split_fixed(string = filename_expmat, pattern = "\\.", n = 2)[1,1]
   cat(paste0(sampleid_tmp, "\n"))
-  path_expmat <- paste0(dir_expmat, filenames_expmat)
+  path_expmat <- paste0(dir_expmat, filename_expmat)
   
   ## input data
   exp_df <- fread(data.table = F, input = path_expmat)
