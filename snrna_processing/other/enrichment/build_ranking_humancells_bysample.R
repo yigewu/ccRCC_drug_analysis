@@ -48,7 +48,7 @@ filenames_expmat <- filenames_expmat[grepl(pattern = "RESL", x = filenames_expma
 # 1. Build gene-expression rankings for each cell -------------------------
 paths_rdata <- NULL
 sampleids <- NULL
-for (filename_expmat in filenames_expmat[1]) {
+for (filename_expmat in filenames_expmat) {
   ## get sample id
   sampleid_tmp <- str_split_fixed(string = filename_expmat, pattern = "\\.", n = 2)[1,1]
   cat(paste0(sampleid_tmp, "\n"))
@@ -65,7 +65,8 @@ for (filename_expmat in filenames_expmat[1]) {
   
   
   plot2write <- paste0(dir_out, sampleid_tmp, ".png")
-  cells_rankings <- AUCell_buildRankings(exprMatrix, nCores=1, plotStats=TRUE)
+  png(plot2write, width = 1000, height = 800, res = 150)
+  cells_rankings <- AUCell_buildRankings(exprMatrix, nCores=4, plotStats=TRUE)
   dev.off()
   
   ## write output

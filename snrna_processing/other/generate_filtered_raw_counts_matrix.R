@@ -49,13 +49,17 @@ for (id_sample_tmp in path_rds_df$id_sample) {
   print(dim(srat))
   
   ## get raw read count matrix
-  raw_exp_mat <- as.matrix(srat@assays$RNA@counts)
-  print(dim(raw_exp_mat))
-  print(raw_exp_mat[1:5,1:4])
+  # raw_exp_mat <- as.matrix(srat@assays$RNA@counts)
+  # print(dim(raw_exp_mat))
+  # print(raw_exp_mat[1:5,1:4])
+  raw_exp_df <- as.data.frame(srat@assays$RNA@counts)
+  print(dim(raw_exp_df))
+  raw_exp_df <- cbind(data.frame(gene_symbol = rownames(srat@assays$RNA@counts)), raw_exp_df)
+  print(raw_exp_df[1:5,1:4])
 
   ## write table
   file2write <- paste0(dir_out, id_sample_tmp, ".filtered.raw_counts.txt.gz")
-  fwrite(x = raw_exp_mat, file = file2write, quote = F, sep = "\t", row.names = T)
+  fwrite(x = raw_exp_df, file = file2write, quote = F, sep = "\t", row.names = F)
   cat(paste0("Finished fwrite for ", id_sample_tmp, " !\n\n\n"))
 }
 
