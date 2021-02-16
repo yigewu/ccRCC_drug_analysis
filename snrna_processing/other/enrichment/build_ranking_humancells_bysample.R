@@ -67,7 +67,7 @@ for (filename_expmat in filenames_expmat) {
   
   plot2write <- paste0(dir_out, sampleid_tmp, ".png")
   png(plot2write, width = 1000, height = 800, res = 150)
-  cells_rankings <- AUCell_buildRankings(exprMatrix, nCores=4, plotStats=TRUE)
+  cells_rankings <- AUCell_buildRankings(exprMatrix, nCores=1, plotStats=TRUE)
   dev.off()
   
   ## write output
