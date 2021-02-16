@@ -121,7 +121,18 @@ load(paste(file.path(system.file('examples', package='AUCell')), "cellsTsne.RDat
 cellsTsne <- cellsTsne$Y
 plot(cellsTsne, pch=16, cex=.3)
 
+selectedThresholds <- getThresholdSelected(cells_assignment)
 
 test_obj <- getAUC(cells_AUC)
+nBreaks <- 5 # Number of levels in the color palettes
+# Color palette for the cells that do not pass the threshold
+colorPal_Neg <- grDevices::colorRampPalette(c("black","blue", "skyblue"))(nBreaks)
+# Color palette for the cells that pass the threshold
+colorPal_Pos <- grDevices::colorRampPalette(c("pink", "magenta", "red"))(nBreaks)
 
-getAUC(cells_AUC)[1,]
+passThreshold <- getAUC(cells_AUC)[1,] >  selectedThresholds[1]
+aucSplit <- split(getAUC(cells_AUC)[1,], passThreshold)
+cut(aucSplit[[1]], breaks=nBreaks)
+colorPal_Neg[cut(aucSplit[[1]], breaks=nBreaks)]
+
+
