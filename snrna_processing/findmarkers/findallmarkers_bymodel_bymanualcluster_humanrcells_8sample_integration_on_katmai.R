@@ -3,7 +3,7 @@
 
 # set up libraries and output directory -----------------------------------
 ## set run id
-version_tmp <- 2
+version_tmp <- 1
 run_id <- paste0(format(Sys.Date(), "%Y%m%d") , ".v", version_tmp)
 ## set time stamp for log file
 timestamp <- paste0(run_id, ".", format(Sys.time(), "%H%M%S"))
@@ -81,6 +81,8 @@ for (model_tmp in c("RESL5", "RESL10")) {
     markers_df <- FindMarkers(object = srat, test.use = "wilcox", 
                               min.pct = min.pct.run, logfc.threshold = logfc.threshold.run, min.diff.pct = min.diff.pct.run, verbose = T, assay = assay_process,
                               ident.1 = "group1", ident.2 = "group2")
+    cat(paste0("Finished FindMarkers", "\n"))
+    cat("###########################################\n")
     markers_df$deg_gene_symbol <- rownames(markers_df)
     markers_df$cellcount_group1_findmarkers <- cellcount_group_df$Freq[cellcount_group_df$group_findmarkers == "group1"]
     markers_df$cellcount_group2_findmarkers <- cellcount_group_df$Freq[cellcount_group_df$group_findmarkers == "group2"]
@@ -89,8 +91,7 @@ for (model_tmp in c("RESL5", "RESL10")) {
     markers_all_df <- rbind(markers_all_df, markers_df)
   }
 }
-cat(paste0("Finished FindAllMarkers", "\n"))
-cat("###########################################\n")
+
 
 # write output ------------------------------------------------------------
 file2write <- paste0(dir_out, "FindAllMarkers.", "Wilcox.", "ByModel.", "ByCluster.", run_id, ".tsv")
