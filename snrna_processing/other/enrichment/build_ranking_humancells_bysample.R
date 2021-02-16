@@ -29,6 +29,8 @@ source("./ccRCC_drug_analysis/functions.R")
 source("./ccRCC_drug_analysis/variables.R")
 library(AUCell)
 library(GSEABase)
+library(doMC)
+library(doRNG)
 ## set output directory
 dir_out <- paste0(makeOutDir_katmai(path_this_script), run_id, "/")
 dir.create(dir_out)
