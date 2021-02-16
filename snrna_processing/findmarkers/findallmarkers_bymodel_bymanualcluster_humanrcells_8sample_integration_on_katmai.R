@@ -64,7 +64,7 @@ for (model_tmp in c("RESL5", "RESL10")) {
     metadata_tmp$integrated_barcode <- rownames(metadata_tmp)
     metadata_tmp <- metadata_tmp %>%
       mutate(group_findmarkers = ifelse(grepl(x = orig.ident, pattern = model_tmp),
-                                        ifelse(Id_Manual_Cluster == cluster_tmp, "group1", "group2")),
+                                        ifelse(Id_Manual_Cluster == cluster_tmp, "group1", "group2"),
                                         "other"))
     rownames(metadata_tmp) <- metadata_tmp$integrated_barcode
     srat@meta.data <- metadata_tmp
