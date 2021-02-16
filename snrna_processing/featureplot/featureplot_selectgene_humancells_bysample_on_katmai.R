@@ -43,7 +43,9 @@ DefaultAssay(srat) <- "RNA"
 ## input marker gene table
 # genes_plot <- genes_rtk_cabo
 # genes_plot <- c("VIM", "FN1", "MMP2", "CDH2", "HNF4G", "CA9")
-genes_plot <- c("PGF", "COL1A2", "SPP1", "COL1A1", "TGFA", "COL6A3")
+genes_plot <- c("MKI67", "RRM2",
+                "EEF1A1", "RPS27",
+                "MT-ND4")
 
 ## set the minimal % of cells expresssing the gene
 min.exp.pct <- 0

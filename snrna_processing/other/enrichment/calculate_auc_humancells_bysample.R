@@ -38,46 +38,35 @@ dir.create(dir_out)
 sink(file = paste0(dir_out, "Log.", timestamp, ".txt"))
 
 # input dependencies ------------------------------------------------------
-## set directory to raw gene count
-dir_expmat <- "./Resources/Analysis_Results/snrna_processing/other/generate_filtered_raw_counts_matrix/20210216.v1/"
+## input path to the gene rankings
+rankings_df <- fread(data.table = F, input = "./Resources/Analysis_Results/snrna_processing/other/enrichment/build_ranking_humancells_bysample/20210216.v1/HumanCells.cell_rankings.paths.20210216.v1.tsv")
+## input gene set
+geneSets_hallmark <- getGmt("./Resources/Knowledge/Databases/MSigDB/h.all.v7.2.symbols.gmt")
+geneSets_kegg <- getGmt("./Resources/Knowledge/Databases/MSigDB/c2.cp.kegg.v7.2.symbols.gmt")
+geneSets_react <- getGmt("./Resources/Knowledge/Databases/MSigDB/c2.cp.reactome.v7.2.symbols.gmt")
+geneSets_wiki <- getGmt("./Resources/Knowledge/Databases/MSigDB/c2.cp.wikipathways.v7.2.symbols.gmt")
 
 # preprocess --------------------------------------------------------------
-filenames_expmat <- list.files(path = dir_expmat)
-filenames_expmat <- filenames_expmat[grepl(pattern = "RESL", x = filenames_expmat)]
+# geneSets <- GeneSetCollection(c(geneSets_hallmark, geneSets_kegg, geneSets_react, geneSets_wiki))
+geneSets <- geneSets_hallmark
 
-# 1. Build gene-expression rankings for each cell -------------------------
-paths_rdata <- NULL
-sampleids <- NULL
-for (filename_expmat in filenames_expmat) {
-  ## get sample id
-  sampleid_tmp <- str_split_fixed(string = filename_expmat, pattern = "\\.", n = 2)[1,1]
-  cat(paste0(sampleid_tmp, "\n"))
-  path_expmat <- paste0(dir_expmat, filename_expmat)
+# Calculate enrichment for the gene signatures (AUC) ----------------------
+paths_auc <- NULL
+for (sampleid_tmp in rankings_df$sampleid) {
+  path_rds <- rankings_df$path_rdata[rankings_df$sampleid == sampleid_tmp]
+  ## input rds
+  cells_rankings <- readRDS(file = path_rds)
   
-  ## input data
-  exp_df <- fread(data.table = F, input = path_expmat)
-  print(exp_df[1:5, 1:4])
-  
-  ## transform
-  exprMatrix <- as.matrix(exp_df[,-1])
-  rownames(exprMatrix) <- exp_df$gene_symbol
-  print(exprMatrix[1:5, 1:4])
-  
-  plot2write <- paste0(dir_out, sampleid_tmp, ".png")
-  png(plot2write, width = 1000, height = 800, res = 150)
-  cells_rankings <- AUCell_buildRankings(exprMatrix, nCores=1, plotStats=TRUE)
-  dev.off()
-  
-  ## write output
-  rdata2write <- paste0(dir_out, sampleid_tmp, ".cells_rankings.rds")
-  saveRDS(cells_rankings, file = rdata2write, compress = T)
-  
-  ## store paths
-  paths_rdata <- c(paths_rdata, rdata2write)
-  sampleids <- c(sampleids, sampleid_tmp)
+  ## run AUCell_calcAUC
+  cells_AUC <- AUCell_calcAUC(geneSets, cells_rankings, nCores = 4)
+  file2write <- paste0(dir_out, sampleid_tmp, ".AUC.rds")
+ 
+  ## store path
+  paths_auc <- c(paths_auc, file2write)
 }
 
 # write paths -------------------------------------------------------------
-paths_df <- data.frame(sampleid = sampleids, path_rdata = paths_rdata)
-table2write <- paste0(dir_out, "HumanCells.cell_rankings.paths.", run_id, ".tsv")
+paths_df <- data.frame(sampleid = rankings_df$sampleid, path_rankings = rankings_df$path_rdata, path_auc = paths_auc)
+table2write <- paste0(dir_out, "HumanCells.AUC.paths.", run_id, ".tsv")
 write.table(x = paths_df, file = table2write, quote = F, sep = "\t", row.names = F)
+
