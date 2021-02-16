@@ -51,7 +51,7 @@ for (id_sample_tmp in path_rds_df$id_sample) {
   print(dim(srat))
   
   ## get raw read count matrix
-  raw_exp_mat <- seurat_object@assays$RNA@counts
+  raw_exp_mat <- srat@assays$RNA@counts
   print(dim(raw_exp_mat))
   print(raw_exp_mat[1:5,1:4])
 
