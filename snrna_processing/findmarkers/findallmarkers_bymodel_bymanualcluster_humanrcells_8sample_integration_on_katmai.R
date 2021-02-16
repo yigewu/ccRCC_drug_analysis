@@ -66,29 +66,31 @@ for (model_tmp in c("RESL5", "RESL10")) {
       mutate(group_findmarkers = ifelse(grepl(x = orig.ident, pattern = model_tmp),
                                         ifelse(Id_Manual_Cluster == cluster_tmp, "group1", "group2"),
                                         "other"))
-    rownames(metadata_tmp) <- metadata_tmp$integrated_barcode
-    srat@meta.data <- metadata_tmp
-    Idents(srat) <- "group_findmarkers"
-    
-    # count cells -------------------------------------------------------------
-    cellcount_group_df <- metadata_tmp %>%
-      select(group_findmarkers) %>%
-      table() %>%
-      as.data.frame() %>%
-      rename(group_findmarkers = '.')
-    
-    # run findallmarkers ------------------------------------------------------
-    markers_df <- FindMarkers(object = srat, test.use = "wilcox", 
-                              min.pct = min.pct.run, logfc.threshold = logfc.threshold.run, min.diff.pct = min.diff.pct.run, verbose = T, assay = assay_process,
-                              ident.1 = "group1", ident.2 = "group2")
-    cat(paste0("Finished FindMarkers", "\n"))
-    cat("###########################################\n")
-    markers_df$deg_gene_symbol <- rownames(markers_df)
-    markers_df$cellcount_group1_findmarkers <- cellcount_group_df$Freq[cellcount_group_df$group_findmarkers == "group1"]
-    markers_df$cellcount_group2_findmarkers <- cellcount_group_df$Freq[cellcount_group_df$group_findmarkers == "group2"]
-    markers_df$manual_cluster <- cluster_tmp
-    markers_df$model <- model_tmp
-    markers_all_df <- rbind(markers_all_df, markers_df)
+    if (length(which(metadata_tmp$group_findmarkers == "group1")) >= 50) {
+      rownames(metadata_tmp) <- metadata_tmp$integrated_barcode
+      srat@meta.data <- metadata_tmp
+      Idents(srat) <- "group_findmarkers"
+      
+      # count cells -------------------------------------------------------------
+      cellcount_group_df <- metadata_tmp %>%
+        select(group_findmarkers) %>%
+        table() %>%
+        as.data.frame() %>%
+        rename(group_findmarkers = '.')
+      
+      # run findallmarkers ------------------------------------------------------
+      markers_df <- FindMarkers(object = srat, test.use = "wilcox", 
+                                min.pct = min.pct.run, logfc.threshold = logfc.threshold.run, min.diff.pct = min.diff.pct.run, verbose = T, assay = assay_process,
+                                ident.1 = "group1", ident.2 = "group2")
+      cat(paste0("Finished FindMarkers", "\n"))
+      cat("###########################################\n")
+      markers_df$deg_gene_symbol <- rownames(markers_df)
+      markers_df$cellcount_group1_findmarkers <- cellcount_group_df$Freq[cellcount_group_df$group_findmarkers == "group1"]
+      markers_df$cellcount_group2_findmarkers <- cellcount_group_df$Freq[cellcount_group_df$group_findmarkers == "group2"]
+      markers_df$manual_cluster <- cluster_tmp
+      markers_df$model <- model_tmp
+      markers_all_df <- rbind(markers_all_df, markers_df)
+    }
   }
 }
 
