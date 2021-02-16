@@ -1,6 +1,4 @@
 # Yige Wu @WashU Apr 2020
-## reference: https://satijalab.org/seurat/archive/v3.0/integration.html
-## reference: https://hbctraining.github.io/scRNA-seq/lessons/06_SC_SCT_and_integration.html
 
 # set up libraries and output directory -----------------------------------
 ## set run id
