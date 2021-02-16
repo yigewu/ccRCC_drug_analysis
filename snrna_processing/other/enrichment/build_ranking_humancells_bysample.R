@@ -60,9 +60,8 @@ for (filename_expmat in filenames_expmat) {
   
   ## transform
   exprMatrix <- as.matrix(exp_df[,-1])
-  rownames(exprMatrix) <- exp_df$V1
+  rownames(exprMatrix) <- exp_df$gene_symbol
   print(exprMatrix[1:5, 1:4])
-  
   
   plot2write <- paste0(dir_out, sampleid_tmp, ".png")
   png(plot2write, width = 1000, height = 800, res = 150)
