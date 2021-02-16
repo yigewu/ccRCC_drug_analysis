@@ -60,6 +60,7 @@ for (sampleid_tmp in rankings_df$sampleid) {
   ## run AUCell_calcAUC
   cells_AUC <- AUCell_calcAUC(geneSets, cells_rankings, nCores = 4)
   file2write <- paste0(dir_out, sampleid_tmp, ".AUC.rds")
+  saveRDS(object = cells_AUC, file = file2write, compress = T)
  
   ## store path
   paths_auc <- c(paths_auc, file2write)
