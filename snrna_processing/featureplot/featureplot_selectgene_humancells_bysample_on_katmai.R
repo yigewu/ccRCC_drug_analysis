@@ -3,7 +3,7 @@
 
 # set up libraries and output directory -----------------------------------
 ## set run id
-version_tmp <- 1
+version_tmp <- 2
 run_id <- paste0(format(Sys.Date(), "%Y%m%d") , ".v", version_tmp)
 ## set time stamp for log file
 timestamp <- paste0(run_id, ".", format(Sys.time(), "%H%M%S"))
@@ -36,6 +36,8 @@ dir.create(dir_out)
 # set dependencies --------------------------------------------------------
 ## set the path to the rds file for integrated object
 path_rds <- "./Resources/Analysis_Results/snrna_processing/integration/run_humancells_8sample_integration_withanchor_on_katmai/20210208.v1/Humancells_8sample_integration.withanchor.20210208.v1.RDS"
+## input DEGs
+deg_df <- fread(data.table = F, input = "./Resources/Analysis_Results/snrna_processing/findmarkers/clusterprofiler/run_clusterprofiler_on_degs_humancells_bymanualcluster_filtered/20210216.v1/ORA.Result.20210216.v1.tsv")
 ## input RDS file
 srat <- readRDS(file = path_rds)
 DefaultAssay(srat) <- "RNA"
@@ -43,10 +45,15 @@ DefaultAssay(srat) <- "RNA"
 ## input marker gene table
 # genes_plot <- genes_rtk_cabo
 # genes_plot <- c("VIM", "FN1", "MMP2", "CDH2", "HNF4G", "CA9")
-genes_plot <- c("EEF1A1", "EIF1", "RPS8", "RPS6", "HSPA1A", "HSPB1", "JUN", "DNAJB1",
-                "MKI67", "RRM2", "BRCA1", "BRIP1", "ANLN",
-                "MT-ND4", "MT-ND2", "MT-CYB", "MT-CO3",
-                "IFIT2", "DDX58", "MX1", "IFI44L")
+# genes_plot <- c("EEF1A1", "EIF1", "RPS8", "RPS6", "HSPA1A", "HSPB1", "JUN", "DNAJB1",
+#                 "MKI67", "RRM2", "BRCA1", "BRIP1", "ANLN",
+#                 "MT-ND4", "MT-ND2", "MT-CYB", "MT-CO3",
+#                 "IFIT2", "DDX58", "MX1", "IFI44L")
+genes_plot <- sapply(deg_df$geneID[deg_df$DEG_Group == 2], function(x) {
+  genes_tmp <- str_split(string = x, pattern = "\\/")[[1]]
+  return(genes_tmp)
+})
+genes_plot <- unique(unlist(genes_plot))
 
 ## set the minimal % of cells expresssing the gene
 min.exp.pct <- 0
