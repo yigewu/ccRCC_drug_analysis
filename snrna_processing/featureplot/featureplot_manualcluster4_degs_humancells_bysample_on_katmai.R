@@ -3,7 +3,7 @@
 
 # set up libraries and output directory -----------------------------------
 ## set run id
-version_tmp <- 4
+version_tmp <- 1
 run_id <- paste0(format(Sys.Date(), "%Y%m%d") , ".v", version_tmp)
 ## set time stamp for log file
 timestamp <- paste0(run_id, ".", format(Sys.time(), "%H%M%S"))
@@ -43,12 +43,6 @@ srat <- readRDS(file = path_rds)
 DefaultAssay(srat) <- "RNA"
 
 ## input marker gene table
-# genes_plot <- genes_rtk_cabo
-# genes_plot <- c("VIM", "FN1", "MMP2", "CDH2", "HNF4G", "CA9")
-# genes_plot <- c("EEF1A1", "EIF1", "RPS8", "RPS6", "HSPA1A", "HSPB1", "JUN", "DNAJB1",
-#                 "MKI67", "RRM2", "BRCA1", "BRIP1", "ANLN",
-#                 "MT-ND4", "MT-ND2", "MT-CYB", "MT-CO3",
-#                 "IFIT2", "DDX58", "MX1", "IFI44L")
 genes_plot <- sapply(deg_df$geneID[deg_df$DEG_Group == 4], function(x) {
   genes_tmp <- str_split(string = x, pattern = "\\/")[[1]]
   return(genes_tmp)
