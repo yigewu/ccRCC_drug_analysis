@@ -84,3 +84,17 @@ png(filename = file2write, width = 1000, height = 600, res = 150)
 print(p)
 dev.off()
 
+p <- ggplot(data = subset(plot_data_df, treatment_group != "Sap"), mapping = aes(x = treatment_group, y = frac_bysample_bycluster, group = cluster, color = cluster))
+p <- p + geom_line()
+p <- p + geom_point()
+p <- p + scale_color_manual(values = colors_cluster)
+p <- p + facet_grid(cols = vars(id_model), scales = "free")
+p <- p + theme_classic()
+p <- p + guides(colour = guide_legend(ncol = 2))
+p <- p + ylim(c(0, 0.1))
+p
+file2write <- paste0(dir_out, "CT-Cabo-Combo.", "limit10",  ".png")
+png(filename = file2write, width = 1000, height = 600, res = 150)
+print(p)
+dev.off()
+
