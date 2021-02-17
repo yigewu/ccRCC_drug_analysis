@@ -2,7 +2,7 @@
 
 # set up libraries and output directory -----------------------------------
 ## set run id
-version_tmp <- 1
+version_tmp <- 2
 run_id <- paste0(format(Sys.Date(), "%Y%m%d") , ".v", version_tmp)
 ## set time stamp for log file
 timestamp <- paste0(run_id, ".", format(Sys.time(), "%H%M%S"))
@@ -47,8 +47,8 @@ geneSets_react <- getGmt("./Resources/Knowledge/Databases/MSigDB/c2.cp.reactome.
 geneSets_wiki <- getGmt("./Resources/Knowledge/Databases/MSigDB/c2.cp.wikipathways.v7.2.symbols.gmt")
 
 # preprocess --------------------------------------------------------------
-# geneSets <- GeneSetCollection(c(geneSets_hallmark, geneSets_kegg, geneSets_react, geneSets_wiki))
-geneSets <- geneSets_hallmark
+geneSets <- GeneSetCollection(c(geneSets_hallmark, geneSets_kegg, geneSets_react, geneSets_wiki))
+# geneSets <- geneSets_hallmark
 
 # Calculate enrichment for the gene signatures (AUC) ----------------------
 paths_auc <- NULL
@@ -62,7 +62,7 @@ for (sampleid_tmp in rankings_df$sampleid) {
   print(cbind(nGenes(geneSets)))
   
   ## run AUCell_calcAUC
-  cells_AUC <- AUCell_calcAUC(geneSets, cells_rankings, nCores = 4)
+  cells_AUC <- AUCell_calcAUC(geneSets, cells_rankings, nCores = 8)
   file2write <- paste0(dir_out, sampleid_tmp, ".AUC.rds")
   saveRDS(object = cells_AUC, file = file2write, compress = T)
  
