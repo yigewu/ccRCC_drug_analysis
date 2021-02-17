@@ -57,6 +57,10 @@ for (sampleid_tmp in rankings_df$sampleid) {
   ## input rds
   cells_rankings <- readRDS(file = path_rds)
   
+  ## identify number of genes in the gene sets
+  geneSets <- subsetGeneSets(geneSets, rownames(cells_rankings)) 
+  print(cbind(nGenes(geneSets)))
+  
   ## run AUCell_calcAUC
   cells_AUC <- AUCell_calcAUC(geneSets, cells_rankings, nCores = 4)
   file2write <- paste0(dir_out, sampleid_tmp, ".AUC.rds")

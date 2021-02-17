@@ -95,7 +95,7 @@ cells_rankings <- AUCell_buildRankings(exprMatrix, nCores=1, plotStats=TRUE)
 save(cells_rankings, file="cells_rankings.RData")
 
 # 2. Calculate enrichment for the gene signatures (AUC) -------------------
-cells_AUC <- AUCell_calcAUC(geneSets, cells_rankings)
+cells_AUC <- AUCell_calcAUC(geneSets, cells_rankings, verbose = T)
 save(cells_AUC, file="cells_AUC.RData")
 
 # 3. Determine the cells with the given gene signatures or active  --------
