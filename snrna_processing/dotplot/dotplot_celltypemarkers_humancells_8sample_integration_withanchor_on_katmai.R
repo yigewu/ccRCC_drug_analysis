@@ -41,15 +41,14 @@ path_rds <- "./Resources/Analysis_Results/snrna_processing/integration/run_human
 srat <- readRDS(file = path_rds)
 DefaultAssay(srat) <- "RNA"
 ## input marker gene table
-gene2celltype_df <- fread("./Resources/Analysis_Results/dependencies/merge_celltypemarkergenes_btw_human_and_mouse/20200409.v1/celltypemarkergenes_mouse_human.rcc.20200409.v1.tsv", data.table = F)
+gene2celltype_df <- fread("./Resources/Knowledge/Gene_Lists/Cell_Type_Marker_Genes/Human.Gene2CellType.20210219.tsv", data.table = F)
 ## set the minimal % of cells expresssing the gene
 min.exp.pct <- 10
 
 # get gene to plot --------------------------------------------------------
 ## make feature name
 gene2celltype_df <- gene2celltype_df %>%
-  filter(Species == "Human") %>%
-  mutate(feature_name = Gene_Symbol)
+  mutate(feature_name = Gene)
 ## change ident
 srat@meta.data$id_by_cluster_species <- paste0(srat@meta.data$seurat_clusters, "_", srat@meta.data$call)
 Idents(srat) <- "id_by_cluster_species"
@@ -93,5 +92,9 @@ file2write <- paste0(dir_out, "dotplot.", ".png")
 png(filename = file2write, width = 3000, height = 2000, res = 150)
 print(p)
 dev.off()
-cat("Finished output!\n\n\n")
+cat("Finished writing png!\n\n\n")
+
+file2write <- paste0(dir_out, "Expression.tsv")
+write.table(x = plot_data, file = file2write, sep = "\t", row.names = F, quote = F)
+cat("Finished write.table!\n\n\n")
 
