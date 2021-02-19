@@ -67,17 +67,21 @@ featurenames_filtered <- as.vector(plot_matrix[rowSums(plot_matrix[,unique(as.ve
 print(length(featurenames_filtered))
 cat("Finished making plot data!\n\n\n")
 
+# write expression data ---------------------------------------------------
+file2write <- paste0(dir_out, "Expression.tsv")
+write.table(x = plot_data, file = file2write, sep = "\t", row.names = F, quote = F)
+cat("Finished write.table!\n\n\n")
+
 # make Dimplot ------------------------------------------------------------
 cat("Start plotting!\n\n\n")
 p <- DotPlot(object = srat, features = featurenames_filtered, col.min = 0, assay = "RNA")
-p$data$gene_species <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$feature_name, to = gene2celltype_df$Species)
 p$data$gene_cell_type_group <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$feature_name, to = gene2celltype_df$Cell_Type_Group)
 p$data$gene_cell_type1 <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$feature_name, to = gene2celltype_df$Cell_Type1)
 p$data$gene_cell_type2 <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$feature_name, to = gene2celltype_df$Cell_Type2)
 p$data$gene_cell_type3 <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$feature_name, to = gene2celltype_df$Cell_Type3)
 p$data$gene_cell_type4 <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$feature_name, to = gene2celltype_df$Cell_Type4)
 # p <- p + RotatedAxis()
-p <- p + facet_grid(.~gene_species + gene_cell_type_group + gene_cell_type1 + gene_cell_type2 + gene_cell_type3 + gene_cell_type4, scales = "free", space = "free", drop = T)
+p <- p + facet_grid(.~gene_cell_type_group + gene_cell_type1 + gene_cell_type2 + gene_cell_type3 + gene_cell_type4, scales = "free", space = "free", drop = T)
 p <- p + theme(panel.spacing = unit(0, "lines"),
                strip.background = element_blank(),
                panel.border = element_rect(colour = "black"),
@@ -94,7 +98,4 @@ print(p)
 dev.off()
 cat("Finished writing png!\n\n\n")
 
-file2write <- paste0(dir_out, "Expression.tsv")
-write.table(x = plot_data, file = file2write, sep = "\t", row.names = F, quote = F)
-cat("Finished write.table!\n\n\n")
 
