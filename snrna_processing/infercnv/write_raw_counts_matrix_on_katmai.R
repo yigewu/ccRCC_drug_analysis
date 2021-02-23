@@ -60,6 +60,8 @@ for (id_sample_tmp in path_rds_df$id_sample) {
   clean_exp_mat <- raw_exp_mat[!(rownames(raw_exp_mat) %in% missing_sym), ]
   rm(raw_exp_mat)
   clean_exp_mat <- as.matrix(clean_exp_mat)
-  write.table(x = clean_exp_mat, file = path_infercnv_counts_out, quote = F, row.names = T, col.names = T, sep = "\t")
+  
+  path_out <- paste0(dir_out, id_sample_tmp, ".Filtered.Count_Matrix.tsv")
+  write.table(x = clean_exp_mat, file = path_out, quote = F, row.names = T, col.names = T, sep = "\t")
 }
 
