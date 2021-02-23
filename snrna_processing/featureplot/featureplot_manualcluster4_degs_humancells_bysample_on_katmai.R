@@ -37,17 +37,13 @@ dir.create(dir_out)
 ## set the path to the rds file for integrated object
 path_rds <- "./Resources/Analysis_Results/snrna_processing/integration/run_humancells_8sample_integration_withanchor_on_katmai/20210208.v1/Humancells_8sample_integration.withanchor.20210208.v1.RDS"
 ## input DEGs
-deg_df <- fread(data.table = F, input = "./Resources/Analysis_Results/snrna_processing/findmarkers/clusterprofiler/run_clusterprofiler_on_degs_humancells_bymanualcluster_filtered/20210216.v1/ORA.Result.20210216.v1.tsv")
+deg_df <- fread(data.table = F, input = "./Resources/Analysis_Results/snrna_processing/findmarkers/examine_degs/filter_manualcluster_specific_degs_humancells/20210216.v1/ManualCluster_Specific_DEGs.20210216.v1.tsv")
 ## input RDS file
 srat <- readRDS(file = path_rds)
 DefaultAssay(srat) <- "RNA"
 
 ## input marker gene table
-genes_plot <- sapply(deg_df$geneID[deg_df$DEG_Group == 4], function(x) {
-  genes_tmp <- str_split(string = x, pattern = "\\/")[[1]]
-  return(genes_tmp)
-})
-genes_plot <- unique(unlist(genes_plot))
+genes_plot <- deg_df$deg_gene_symbol[deg_df$manual_cluster == 4]
 
 ## set the minimal % of cells expresssing the gene
 min.exp.pct <- 0
