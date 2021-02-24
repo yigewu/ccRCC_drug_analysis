@@ -1,5 +1,4 @@
 # Yige Wu @WashU Apr 2020
-## for making dimplot for RESL5_4sample_integration
 
 # set up libraries and output directory -----------------------------------
 ## set run id
