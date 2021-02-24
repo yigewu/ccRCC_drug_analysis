@@ -50,8 +50,8 @@ min.exp.pct <- 10
 gene2celltype_df <- gene2celltype_df %>%
   mutate(feature_name = Gene)
 ## change ident
-srat@meta.data$id_by_cluster_species <- paste0(srat@meta.data$seurat_clusters, "_", srat@meta.data$call)
-Idents(srat) <- "id_by_cluster_species"
+srat@meta.data$id_plot <- paste0(srat@meta.data$seurat_clusters, "_", str_split_fixed(string = srat@meta.data$orig.ident, pattern = "\\-", n = 3)[,1])
+Idents(srat) <- "id_plot"
 ## get feature names in RNA count data
 featurenames <-  intersect(gene2celltype_df$feature_name, srat@assays$RNA@data@Dimnames[[1]])
 featurenames <- unique(featurenames)
@@ -117,8 +117,7 @@ p <- p + scale_size_continuous(range = c(0, 8), name="% Expressed", guide = guid
 p <- p + facet_grid(.~gene_cell_type_group + gene_cell_type1 + gene_cell_type2 + gene_cell_type3 + gene_cell_type4, scales = "free", space = "free", drop = T)
 p <- p + theme(axis.text.x = element_text(angle = 90, size = 10))
 p <- p + theme(axis.text.y = element_text(size = 12))
-p <- p + theme(panel.spacing = unit(0, "lines"), 
-               panel.grid.major = element_line(colour = "grey80"), 
+p <- p + theme(panel.spacing = unit(0, "lines"), panel.grid.major = element_line(colour = "grey80"), 
                panel.border = element_rect(color = "black", fill = NA, size = 0.5),
                panel.background = element_blank())
 p <- p + theme(strip.background = element_blank(),
@@ -128,7 +127,7 @@ p <- p + labs(colour = "Expression value")
 p <- p + theme(legend.position = "bottom")
 cat("Finished plotting not-scaled!\n\n\n")
 file2write <- paste0(dir_out, "dotplot.", "not_scaled.", "png")
-png(filename = file2write, width = 3000, height = 1700, res = 150)
+png(filename = file2write, width = 3000, height = 1500, res = 150)
 print(p)
 dev.off()
 cat("Finished writing png!\n\n\n")
