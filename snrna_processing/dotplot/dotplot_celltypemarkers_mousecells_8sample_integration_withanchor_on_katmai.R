@@ -41,7 +41,7 @@ path_rds <- "./Resources/Analysis_Results/snrna_processing/integration/run_mouse
 srat <- readRDS(file = path_rds)
 DefaultAssay(srat) <- "RNA"
 ## input marker gene table
-gene2celltype_df <- fread("./Resources/Knowledge/Gene_Lists/Cell_Type_Marker_Genes/Mouse.Gene2CellType.20210223.v2.tsv", data.table = F)
+gene2celltype_df <- fread("./Resources/Knowledge/Gene_Lists/Cell_Type_Marker_Genes/Mouse.Gene2CellType.20210224.tsv", data.table = F)
 ## set the minimal % of cells expresssing the gene
 min.exp.pct <- 10
 
