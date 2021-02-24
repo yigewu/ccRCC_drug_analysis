@@ -3,7 +3,7 @@
 
 # set up libraries and output directory -----------------------------------
 ## set run id
-version_tmp <- 2
+version_tmp <- 3
 run_id <- paste0(format(Sys.Date(), "%Y%m%d") , ".v", version_tmp)
 ## set time stamp for log file
 timestamp <- paste0(run_id, ".", format(Sys.time(), "%H%M%S"))
@@ -41,7 +41,7 @@ path_rds <- "./Resources/Analysis_Results/snrna_processing/integration/run_mouse
 srat <- readRDS(file = path_rds)
 DefaultAssay(srat) <- "RNA"
 ## input marker gene table
-gene2celltype_df <- fread("./Resources/Knowledge/Gene_Lists/Cell_Type_Marker_Genes/Mouse.Gene2CellType.20210224.tsv", data.table = F)
+gene2celltype_df <- fread("./Resources/Knowledge/Gene_Lists/Cell_Type_Marker_Genes/Mouse.Gene2CellType.20210224.v2.tsv", data.table = F)
 ## set the minimal % of cells expresssing the gene
 min.exp.pct <- 10
 
