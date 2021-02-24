@@ -47,7 +47,9 @@ snRNA_mutation_df <- snRNA_mutation_df %>%
 var_cells_all_df <- snRNA_mutation_df %>%
   filter(Is_Silent == F) %>%
   filter(allele_type == "Var")
-for (gene_tmp in unique(var_cells_all_df$gene_symbol)) {
+# for (gene_tmp in unique(var_cells_all_df$gene_symbol)) {
+for (gene_tmp in "PIK3CA") {
+    
   ## input barcodes with mapped varaint alleles and reference alleles
   ref_cells_df <- snRNA_mutation_df %>%
     filter(gene_symbol == gene_tmp) %>%
