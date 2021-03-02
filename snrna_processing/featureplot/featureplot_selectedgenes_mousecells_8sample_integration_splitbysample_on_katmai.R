@@ -59,7 +59,7 @@ for (featurename in featurenames) {
                    split.by = "orig.ident",
                    min.cutoff = "q10", max.cutoff = "q90", sort.cell = TRUE,
                    cols = c("grey", "red"), reduction = "umap", label = T)
-  p <- p + ggtitle(label = featurename)
+  # p <- p + ggtitle(label = featurename)
   # save output -------------------------------------------------------------
   file2write <- paste0(dir_out, featurename, ".featureplot", ".png")
   png(filename = file2write, width = 6000, height = 800, res = 150)
