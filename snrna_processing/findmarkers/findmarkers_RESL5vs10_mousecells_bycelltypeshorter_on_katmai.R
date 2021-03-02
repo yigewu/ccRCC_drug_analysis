@@ -34,7 +34,7 @@ dir.create(dir_out)
 
 # set dependencies --------------------------------------------------------
 ## set the path to the rds file for integrated object
-path_rds <- "./Resources/Analysis_Results/snrna_processing/integration/run_humancells_8sample_integration_withanchor_on_katmai/20210208.v1/Humancells_8sample_integration.withanchor.20210208.v1.RDS"
+path_rds <- "./Resources/Analysis_Results/snrna_processing/integration/run_mousecells_8sample_integration_withanchor_on_katmai/20210208.v1/MouseCells_8sample_integration.withanchor.20210208.v1.RDS"
 ## input RDS file
 srat <- readRDS(file = path_rds)
 ## input manual cluster group
