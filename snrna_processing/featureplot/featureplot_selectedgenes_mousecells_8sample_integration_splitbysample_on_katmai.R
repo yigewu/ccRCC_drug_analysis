@@ -1,4 +1,5 @@
 # Yige Wu @WashU Apr 2020
+## for making featureplot for RESL5_4sample_integration
 
 # set up libraries and output directory -----------------------------------
 ## set run id
@@ -34,37 +35,31 @@ dir.create(dir_out)
 
 # set dependencies --------------------------------------------------------
 ## set the path to the rds file for integrated object
-path_rds <- "./Resources/Analysis_Results/snrna_processing/integration/run_8sample_integration_withanchor_on_katmai/20210128.v1/RESL_8sample_integration.withanchor.20210128.v1.RDS"
+path_rds <- "./Resources/Analysis_Results/snrna_processing/integration/run_mousecells_8sample_integration_withanchor_on_katmai/20210208.v1/MouseCells_8sample_integration.withanchor.20210208.v1.RDS"
 ## input RDS file
 srat <- readRDS(file = path_rds)
 DefaultAssay(srat) <- "RNA"
 
 ## input marker gene table
-genes_plot_df <- data.frame(Gene_Symbol = c("VIM", "VEGFA", "Vegfa", "Flt1", "HGF", "Hgf"), Species = c("Human", "Human", "Mouse", "Mouse", "Human", "Mouse"))
+genes_plot <- c("Kdr", "Vegfa", "Nrp1", "Tek")
+
 ## set the minimal % of cells expresssing the gene
 min.exp.pct <- 0
 # make plot ---------------------------------------------------------------
-## make feature name
-genes_plot_df <- genes_plot_df %>%
-  mutate(feature_name = ifelse(Species == "Human", paste0("GRCh38-", Gene_Symbol), paste0("mm10---", Gene_Symbol)))
 ## get feature names in RNA count data
-featurenames <-  intersect(genes_plot_df$feature_name, srat@assays$RNA@counts@Dimnames[[1]])
+featurenames <-  intersect(genes_plot, srat@assays$RNA@counts@Dimnames[[1]])
 featurenames <- unique(featurenames)
 
 # modify srat object ------------------------------------------------------
 print(dim(srat))
-Idents(srat) <- "call"
-srat_sub <- subset(srat, idents = "mm10")
-rm(srat)
-print(dim(srat_sub))
 
 for (featurename in featurenames) {
-  p <- FeaturePlot(object = srat_sub, 
+  p <- FeaturePlot(object = srat, 
                    features = featurename,
-                   split.by = "orig.ident", ncol = 4,
+                   split.by = "orig.ident",
                    min.cutoff = "q10", max.cutoff = "q90", sort.cell = TRUE,
-                   cols = c("grey", "red"), reduction = "umap", label = T,)
-  
+                   cols = c("grey", "red"), reduction = "umap", label = T)
+  p <- p + ggtitle(label = featurename)
   # save output -------------------------------------------------------------
   file2write <- paste0(dir_out, featurename, ".featureplot", ".png")
   png(filename = file2write, width = 6000, height = 800, res = 150)
