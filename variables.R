@@ -73,6 +73,7 @@ genes_pi3k_mtor <- c(ras_pathway_genes, pi3k_pathway_genes, mtor_pathway_genes)
 met_related_genes <- c("HGF", "MET", "AXL")
 vegfr_genes <- c("FLT1", "KDR", "FLT3", "FLT4", "NRP1", "NRP2")
 vegf_genes <- c("VEGFA", "VEGFB", "VEGFC", "VEGFD", "VEGFE")
-other_cabo_related_genes <- c("KIT", "RET", "NTRK2", "TEK", "ROS1", "MERTK", "TYRO3")
-genes_rtk_cabo <- c(met_related_genes, vegfr_genes, vegf_genes, other_cabo_related_genes)
+other_cabo_related_genes <- c("KIT", "RET", "NTRK2", "TEK", "ROS1", "MERTK", "TYRO3",
+                              "NTRK1", "IGF1R", "FGFR1", "SOX18")
+genes_rtk_cabo <- c(met_related_genes, vegfr_genes, vegf_genes, other_cabo_related_genes, other_cabo_related_genes)
 

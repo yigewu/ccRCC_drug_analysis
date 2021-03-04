@@ -26,16 +26,10 @@ deg_ec_cabo_df <- deg_ec_df %>%
   mutate(deg_gene_symbol_up = toupper(deg_gene_symbol)) %>%
   filter(deg_gene_symbol_up %in% genes_rtk_cabo) %>%
   filter(p_val_adj < 0.05)
-
-
-
-deg_ct_allcluster_df <- dcast(data = deg_ct_df, formula = deg_gene_symbol ~ manual_cluster, value.var = "avg_logFC")
-deg_ct_allcluster_df$number_up <- rowSums(deg_ct_allcluster_df[, 2:5] > 0, na.rm = T)
-deg_ct_allcluster_df$number_down <- rowSums(deg_ct_allcluster_df[, 2:5] < 0, na.rm = T)
-deg_ct_allcluster_df$mean_avg_logFC <- rowMeans(deg_ct_allcluster_df[, 2:5], na.rm = T)
-deg_ct_allcluster_df <- deg_ct_allcluster_df %>%
-  arrange(desc(abs(number_up - number_down)), desc(number_down), mean_avg_logFC)
+deg_ec_ct_df <- deg_ec_df %>%
+  filter(sampleid_group1 == "RESL5E-14541-CT2") %>%
+  filter(p_val_adj < 0.05)
 
 # write output ------------------------------------------------------------
-file2write <- paste0(dir_out, "CT.Model_Specific_DEGs.", run_id, ".tsv")
-write.table(x = deg_ct_allcluster_df, file = file2write, quote = F, sep = "\t", row.names = F)
+file2write <- paste0(dir_out, "MouseEndothelialCells.", "CT.Model_Specific_DEGs.", run_id, ".tsv")
+write.table(x = deg_ec_ct_df, file = file2write, quote = F, sep = "\t", row.names = F)
