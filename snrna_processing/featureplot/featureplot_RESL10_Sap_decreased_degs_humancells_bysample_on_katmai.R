@@ -41,7 +41,7 @@ deg_df <- fread(data.table = F, input = "./Resources/Analysis_Results/snrna_proc
 ## input RDS file
 srat <- readRDS(file = path_rds)
 DefaultAssay(srat) <- "RNA"
-srat@orig.ident <- factor(x = srat$orig.ident, levels = c("RESL10F-12462-CT2", "RESL10F-12465-Sap2", "RESL10F-12467-Cabo2", "RESL10F-12473-Cabo_Sap2",
+srat$orig.ident <- factor(x = srat$orig.ident, levels = c("RESL10F-12462-CT2", "RESL10F-12465-Sap2", "RESL10F-12467-Cabo2", "RESL10F-12473-Cabo_Sap2",
                                                           "RESL5E-14541-CT2", "RESL5E-14542-Sap2", "RESL5E-14539-Cabo2", "RESL5E-14529-Cabo_Sap2"))
 
 ## input marker gene table
