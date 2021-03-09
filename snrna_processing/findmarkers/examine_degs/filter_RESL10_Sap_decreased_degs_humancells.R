@@ -74,26 +74,26 @@ deg_merged_df <- deg_merged_df %>%
                                               ifelse(log2Intensity_FC_RESL10_1m_SapvsCT > 0, "Up", "Down"))) %>%
   mutate(RESL10_vs_RESL5.bulkRNA = ifelse(is.na(RESL10_vs_RESL5.bulkRNA), "NA", RESL10_vs_RESL5.bulkRNA))
 
-deg_merged_filtered_df1 <- deg_merged_df %>%
-  filter(RESL10_vs_RESL5.protein.2m_CT != "Down") %>%
-  filter(Sap_vs_CT.protein.2m_RESL10 != "Up") %>%
-  # filter(RESL10_vs_RESL5.protein.1m_CT != "Down") %>%
-  # filter(Sap_vs_CT.protein.1m_RESL10 != "Up") %>%
-  filter(pct.1 < pct.2) %>%
-  filter(RESL10_vs_RESL5.bulkRNA != "Down")
-nrow(deg_merged_filtered_df1)
-table(deg_merged_filtered_df1 %>%
-        select(Sap_vs_CT.protein.2m_RESL10, RESL10_vs_RESL5.protein.2m_CT, RESL10_vs_RESL5.bulkRNA))
-
-deg_merged_filtered_df2 <- deg_merged_filtered_df1 %>%
-  filter(RESL10_vs_RESL5.protein.2m_CT == "Up") %>%
-  filter(Sap_vs_CT.protein.2m_RESL10 == "Down") %>%
-  arrange(avg_logFC)
-
-deg_merged_filtered_df3 <- deg_merged_filtered_df1 %>%
-  filter(RESL10_vs_RESL5.protein.2m_CT == "Up") %>%
-  filter(Sap_vs_CT.protein.2m_RESL10 == "Down") %>%
-  filter(RESL10_vs_RESL5.bulkRNA == "Up")
+# deg_merged_filtered_df1 <- deg_merged_df %>%
+#   filter(RESL10_vs_RESL5.protein.2m_CT != "Down") %>%
+#   filter(Sap_vs_CT.protein.2m_RESL10 != "Up") %>%
+#   # filter(RESL10_vs_RESL5.protein.1m_CT != "Down") %>%
+#   # filter(Sap_vs_CT.protein.1m_RESL10 != "Up") %>%
+#   filter(pct.1 < pct.2) %>%
+#   filter(RESL10_vs_RESL5.bulkRNA != "Down")
+# nrow(deg_merged_filtered_df1)
+# table(deg_merged_filtered_df1 %>%
+#         select(Sap_vs_CT.protein.2m_RESL10, RESL10_vs_RESL5.protein.2m_CT, RESL10_vs_RESL5.bulkRNA))
+# 
+# deg_merged_filtered_df2 <- deg_merged_filtered_df1 %>%
+#   filter(RESL10_vs_RESL5.protein.2m_CT == "Up") %>%
+#   filter(Sap_vs_CT.protein.2m_RESL10 == "Down") %>%
+#   arrange(avg_logFC)
+# 
+# deg_merged_filtered_df3 <- deg_merged_filtered_df1 %>%
+#   filter(RESL10_vs_RESL5.protein.2m_CT == "Up") %>%
+#   filter(Sap_vs_CT.protein.2m_RESL10 == "Down") %>%
+#   filter(RESL10_vs_RESL5.bulkRNA == "Up")
 
 
 # write output ------------------------------------------------------------
