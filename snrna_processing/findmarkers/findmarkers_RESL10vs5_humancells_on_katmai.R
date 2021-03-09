@@ -74,8 +74,9 @@ for (sampleid_group1 in sampleids_group1) {
   metadata_tmp <- metadata_tmp %>%
     mutate(group_findmarkers = ifelse(orig.ident == sampleid_group1, "group1",
                                       ifelse(orig.ident == sampleid_group2, "group2", "other")))
-  rownames(metadata_tmp) <- metadata_tmp$integrated_barcode
+  # rownames(metadata_tmp) <- metadata_tmp$integrated_barcode
   srat@meta.data <- metadata_tmp
+  srat@meta.data$group_findmarkers <- mapvalues(x = rownames(srat@meta.data), from = metadata_tmp$integrated_barcode, to = as.vector(metadata_tmp$group_findmarkers))
   Idents(srat) <- "group_findmarkers"
   
   # count cells -------------------------------------------------------------
