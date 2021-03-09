@@ -63,17 +63,13 @@ for (sampleid_group1 in sampleids_group1) {
   model_name <- str_split_fixed(string = sampleid_group1, pattern = "-", n = 3)[,1]
   sampleid_group2 <- sampleids_group2[grepl(x = sampleids_group2, pattern = model_name)]
   print(paste0("Group2:", sampleid_group2))
-  ## make add manual cluster
-  srat@meta.data$Id_Manual_Cluster <- mapvalues(x = rownames(srat@meta.data), from = barcode2cluster_df$Barcode_Integrated, to = as.vector(barcode2cluster_df$Id_Manual_Cluster))
-  
-  print(unique(srat@meta.data$Id_Manual_Cluster))
   metadata_tmp <- srat@meta.data
   metadata_tmp$integrated_barcode <- rownames(metadata_tmp)
   metadata_tmp <- metadata_tmp %>%
     mutate(group_findmarkers = ifelse(orig.ident == sampleid_group1, "group1",
                                       ifelse(orig.ident == sampleid_group2, "group2", "other")))
-  rownames(metadata_tmp) <- metadata_tmp$integrated_barcode
-  srat@meta.data <- metadata_tmp
+  # rownames(metadata_tmp) <- metadata_tmp$integrated_barcode
+  srat@meta.data$group_findmarkers <- mapvalues(x = rownames(srat@meta.data), from = metadata_tmp$integrated_barcode, to = as.vector(metadata_tmp$group_findmarkers))
   Idents(srat) <- "group_findmarkers"
   
   # count cells -------------------------------------------------------------
