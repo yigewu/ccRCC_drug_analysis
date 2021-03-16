@@ -51,13 +51,19 @@ avg_pro_new_df$PG.ProteinName <- unlist(proteinnames_uniq_vc)
 avg_pro_new_df$PG.ProteinAccession <- unlist(proteinaccessions_uniq_vc)
 ## select columns
 avg_pro_new_df <- avg_pro_new_df %>%
+  mutate(log2Intensity_FC_RESL10_2m_CabvsCT = (RESL10_B1_F12467 - RESL10_B1_F12462)) %>%
   mutate(log2Intensity_FC_RESL10_2m_SapvsCT = (RESL10_B1_F12465 - RESL10_B1_F12462)) %>%
+  mutate(log2Intensity_FC_RESL10_1m_CabvsCT = (RESL10_B1_F12468 - RESL10_B1_F12477)) %>%
   mutate(log2Intensity_FC_RESL10_1m_SapvsCT = (RESL10_B1_F12471 - RESL10_B1_F12477)) %>%
+  mutate(log2Intensity_FC_RESL5_2m_CabvsCT = (RESL5_B2_E14537 - RESL5_B2_E14540)) %>%
   mutate(log2Intensity_FC_RESL5_2m_SapvsCT = (RESL5_B2_E14542 - RESL5_B2_E14540)) %>%
+  mutate(log2Intensity_FC_RESL5_1m_CabvsCT = (RESL5_B2_E14533 - RESL5_B2_E14532)) %>%
   mutate(log2Intensity_FC_RESL5_1m_SapvsCT = (RESL5_B2_E14536 - RESL5_B2_E14532)) %>%
   select(PG.Gene, PG.ProteinName, PG.ProteinAccession, PG.ProteinNames,
          log2Intensity_FC_RESL10_2m_SapvsCT, log2Intensity_FC_RESL10_1m_SapvsCT, 
-         log2Intensity_FC_RESL5_2m_SapvsCT, log2Intensity_FC_RESL5_1m_SapvsCT)
+         log2Intensity_FC_RESL10_2m_CabvsCT, log2Intensity_FC_RESL10_1m_CabvsCT, 
+         log2Intensity_FC_RESL5_2m_SapvsCT, log2Intensity_FC_RESL5_1m_SapvsCT,
+         log2Intensity_FC_RESL5_2m_CabvsCT, log2Intensity_FC_RESL5_1m_CabvsCT)
 
 # write output ------------------------------------------------------------
 file2write <- paste0(dir_out, "Treated_vs_CT.", "Protein.", run_id, ".tsv")
