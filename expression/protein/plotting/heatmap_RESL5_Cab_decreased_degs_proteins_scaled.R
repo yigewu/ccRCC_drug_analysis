@@ -22,7 +22,7 @@ protein_df <- fread(data.table = F, input = "./Resources/Analysis_Results/expres
 ## input the sample info
 sampleinfo_df <- readxl::read_excel(path = "./Data_Freeze/v1.dataFreeze.washU_rcc/4.protein/WUSTL to JHU_ccRCC PDX_sample information_01062021_YW.xlsx")
 ## input the anova results
-deg_df <- fread(data.table = F, input = "./Resources/Analysis_Results/snrna_processing/findmarkers/examine_degs/filter_RESL10_Sap_decreased_degs_humancells/20210309.v1/DEGs_Decreased_in_RESL10_Sap_vs_CT.20210309.v1.tsv")
+deg_df <- fread(data.table = F, input = "./Resources/Analysis_Results/snrna_processing/findmarkers/examine_degs/filter_RESL5_Cab_decreased_degs_humancells/20210316.v1/DEGs_Decreased.Cabo_vs_CT.HumanCells.RESL5.ProteinFiltered.20210316.v1.tsv")
 
 # set parameters ----------------------------------------------------------
 ## sum up the genes

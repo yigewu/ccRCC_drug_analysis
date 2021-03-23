@@ -34,6 +34,13 @@ deg_cab_dec_resl5_df <- deg_bytreatment_snRNA_df %>%
   filter(p_val_adj < 0.05) %>%
   filter(pct.1 < pct.2) %>%
   arrange(avg_logFC)
+## add Sap treatment fold chnage
+deg_cab_dec_resl5_df <- merge(x = deg_cab_dec_resl5_df,
+                              y = deg_bytreatment_snRNA_df %>%
+                                filter(sampleid_group1 == "RESL5E-14542-Sap2") %>%
+                                select(deg_gene_symbol, pct.1, pct.2, p_val_adj, avg_logFC),
+                              by = c("deg_gene_symbol"), all.x = T, suffixes = c("", ".snRNA.Sap_vs_CT"))
+
 nrow(deg_cab_dec_resl5_df)
 deg_resl5_high_df <- deg_bymodel_snRNA_df %>%
   filter(sampleid_group1 == "RESL10F-12462-CT2" & avg_logFC < 0 & p_val_adj < 0.05)
