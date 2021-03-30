@@ -1,6 +1,4 @@
-# Yige Wu @WashU Jan 2021
-## filter the Cell Ranger filtered barcode by the same threshold
-## create the seurat object
+# Yige Wu @WashU March 2021
 
 # set up libraries and output directory -----------------------------------
 ## set working directory
@@ -16,7 +14,7 @@ dir_out <- paste0(makeOutDir(), run_id, "/")
 dir.create(dir_out)
 
 # input dependencies ------------------------------------------------------
-metrics_df <- fread(data.table = F, input = "./Resources/Analysis_Results/snrna_processing/filtering/make_seuratfiltered_srat_obj_katmai/20210127.v1/Seurat_Filtered.Barcode_Metrics.tsv")
+metrics_df <- fread(data.table = F, input = "./Resources/Analysis_Results/snrna_processing/filtering/make_seuratfiltered_srat_obj_katmai/20210127.v1/CellRanger_Filtered.Barcode_Metrics.tsv")
 
 # summarize ---------------------------------------------------------------
 summary_df <- metrics_df %>%
@@ -24,5 +22,5 @@ summary_df <- metrics_df %>%
   summarise(count_cells = n(), median_nCount_RNA = median(nCount_RNA), median_nFeature_RNA = median(nFeature_RNA))
 
 # write output ------------------------------------------------------------
-file2write <- paste0(dir_out, "Seurat_Filtered.", "Quality_Metric_Summary.", run_id, ".tsv")
+file2write <- paste0(dir_out, "CellRanger_Filtered.", "Quality_Metric_Summary.", run_id, ".tsv")
 write.table(file = file2write, x = summary_df, quote = F, sep = "\t", row.names = F)
