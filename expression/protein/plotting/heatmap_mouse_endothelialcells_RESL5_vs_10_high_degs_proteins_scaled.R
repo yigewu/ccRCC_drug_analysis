@@ -10,7 +10,7 @@ source("./ccRCC_drug_analysis/variables.R")
 source("./ccRCC_drug_analysis/plotting.R")
 library(ComplexHeatmap)
 ## set run id
-version_tmp <- 1
+version_tmp <- 2
 run_id <- paste0(format(Sys.Date(), "%Y%m%d") , ".v", version_tmp)
 ## set output directory
 dir_out <- paste0(makeOutDir(), run_id, "/")
@@ -21,21 +21,18 @@ dir.create(dir_out)
 protein_df <- fread(data.table = F, input = "./Resources/Analysis_Results/expression/protein/preprocess/impute_protein_data_using_DreamAI/20210201.v1/RCC_PDX.DIA_Protein.Log2.QuantileNormalized.RegImpute.tsv")
 ## input the sample info
 sampleinfo_df <- readxl::read_excel(path = "./Data_Freeze/v1.dataFreeze.washU_rcc/4.protein/WUSTL to JHU_ccRCC PDX_sample information_01062021_YW.xlsx")
+## input the anova results
+deg_df <- fread(data.table = F, input = "./Resources/Analysis_Results/snrna_processing/findmarkers/examine_degs/filter_mouse_endothelialcells_RESL5_high/20210330.v1/Mouse.Endothelial.RESL5_vs_RESL10_CT.High.20210330.v1.tsv")
 
 # set parameters ----------------------------------------------------------
-genes_filter <- genes_rtk_cabo
+## sum up the genes
+proteins_plot <- deg_df$PG.ProteinNames[!is.na(deg_df$PG.ProteinNames)]
+proteins_plot <- unique(proteins_plot)
+length(proteins_plot)
 
 # make data matrix --------------------------------------------------------
-plot_data_df <- protein_df
 ## filter by gene
-idx_keep <- sapply(plot_data_df$PG.Genes, function(gene_string, genes_filter_vec) {
-  genes_vec <- str_split(string = gene_string, pattern = ";")[[1]]
-  idx_keep_human <- any(genes_vec %in% genes_filter_vec)
-  idx_keep_mouse <- any(genes_vec %in% tolower(genes_filter_vec))
-  idx_keep_tmp <- (idx_keep_human || idx_keep_mouse)
-  return(idx_keep_tmp)
-}, genes_filter_vec = genes_filter)
-plot_data_df <- plot_data_df[idx_keep,]
+plot_data_df <- protein_df[protein_df$PG.ProteinNames %in% proteins_plot,]
 plot_data_raw_mat <- as.matrix(plot_data_df[,5:ncol(plot_data_df)])
 rownames(plot_data_raw_mat) <- plot_data_df$PG.ProteinNames
 
@@ -71,9 +68,8 @@ names(colors_treatment) <- c("Cabo", "Sap", "Cabo+ Sap", "Con")
 colors_treatmentlength <- RColorBrewer::brewer.pal(name = "Set1", n = 8)[c(7, 5)]
 names(colors_treatmentlength) <- c("2 month", "1 month")
 ## make colors for the original unscaled expression
-# summary(orig_avgexp_vec)
-colors_unscaledexp = circlize::colorRamp2(13:17, 
-                                          RColorBrewer::brewer.pal(name = "RdPu", n = 6))
+colors_unscaledexp = circlize::colorRamp2(14:22, 
+                                          RColorBrewer::brewer.pal(name = "RdPu", n = 9))
 ## make colors for species
 colors_genespecies <- RColorBrewer::brewer.pal(name = "Dark2", n = 3)
 names(colors_genespecies) <- c("Human", "Mouse", "Ambiguous")
@@ -84,7 +80,7 @@ orig_avgexp_vec <- rowMeans(x = plot_data_raw_mat, na.rm = T)
 ishuman_vec <- grepl(pattern = "HUMAN", x = proteinnames_mat)
 ismouse_vec <- grepl(pattern = "MOUSE", x = proteinnames_mat)
 protein_species_vec <- ifelse(ishuman_vec & !ismouse_vec, "Human",
-                              ifelse(ismouse_vec & !ishuman_vec, "Mouse", "Ambiguous"))
+                           ifelse(ismouse_vec & !ishuman_vec, "Mouse", "Ambiguous"))
 row_anno_obj <- rowAnnotation(Unscaled_Expression = anno_simple(x = orig_avgexp_vec, col = colors_unscaledexp), 
                               Species = anno_simple(x = protein_species_vec, col = colors_genespecies),
                               annotation_name_side = "top")
@@ -123,7 +119,7 @@ p <- ComplexHeatmap::Heatmap(matrix = plot_data_mat,
                              column_split = col_split_factor, show_column_names = F,
                              # column_names_side = "top", 
                              top_annotation = top_col_anno, 
-                             cluster_column_slices = T, cluster_columns = F,
+                             cluster_column_slices = F, cluster_columns = F,
                              show_column_dend = F, column_dend_height = unit(2, "cm"), 
                              # column_km = 6, column_km_repeats = 200,
                              show_heatmap_legend = F)
@@ -156,6 +152,7 @@ annotation_lgd = list(
 
 # write output ------------------------------------------------------------
 file2write <- paste0(dir_out, "heatmap.png")
-png(file2write, width = 1800, height = 700, res = 150)
-draw(p, annotation_legend_side = "right", annotation_legend_list = annotation_lgd)  #Show the heatmap
+png(file2write, width = 1800, height = 2000, res = 150)
+p <- ComplexHeatmap::draw(p, annotation_legend_side = "right", annotation_legend_list = annotation_lgd)  #Show the heatmap
+print(p)
 dev.off()
