@@ -18,7 +18,7 @@ dir.create(dir_out)
 maf_df <- fread(data.table = F, input = "./Data_Freeze/v1.dataFreeze.washU_rcc/1.somaticMut/rcc.somaticMut.meta3.20200812.tsv")
 
 # make mutation short amino acid change matrix ---------------------------------------
-mut_mat <- get_somatic_mutation_aachange_vaf_matrix(pair_tab = ccRCC_SMGs, maf = maf_df)
+mut_mat <- get_somatic_mutation_aachange_vaf_matrix(pair_tab = c(ccRCC_SMGs, "NF2"), maf = maf_df)
 mut_df <- t(mut_mat[,-1]) %>% as.data.frame()
 ## order
 genesymbols_mut <- colnames(mut_df)
