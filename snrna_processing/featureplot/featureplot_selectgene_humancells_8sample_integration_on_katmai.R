@@ -62,7 +62,7 @@ for (featurename in featurenames) {
   
   # save output -------------------------------------------------------------
   file2write <- paste0(dir_out, featurename, ".featureplot", ".png")
-  png(filename = file2write, width = 6000, height = 800, res = 150)
+  png(filename = file2write, width = 900, height = 800, res = 150)
   print(p)
   dev.off()
 }
