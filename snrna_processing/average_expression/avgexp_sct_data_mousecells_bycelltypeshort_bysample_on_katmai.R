@@ -36,18 +36,22 @@ sink(file = paste0(dir_out, "Log.", timestamp, ".txt"))
 
 # set dependencies --------------------------------------------------------
 ## set the path to the rds file for integrated object
-path_rds <- "./Resources/Analysis_Results/snrna_processing/integration/run_humancells_8sample_integration_withanchor_on_katmai/20210208.v1/Humancells_8sample_integration.withanchor.20210208.v1.RDS"
+path_rds <- "./Resources/Analysis_Results/snrna_processing/integration/run_mousecells_8sample_integration_withanchor_on_katmai/20210208.v1/MouseCells_8sample_integration.withanchor.20210208.v1.RDS"
 ## input RDS file
 srat <- readRDS(file = path_rds)
 print("Finish reading RDS file")
+## input manual cluster group
+barcode2celltype_df <- fread(data.table = F, input = "./Resources/Analysis_Results/snrna_processing/map_barcode/map_barcode2celltype_mousecells_integration_withanchor/20210225.v1/MouseCells.Barcode2CellType.20210225.v1.tsv")
 # spcify assay
 assay_process <- "SCT"
 slot_process <- "data"
 cat(paste0("Assay: ", assay_process, "\n"))
 
 # modify srat object ------------------------------------------------------
+srat@meta.data$Cell_Type.Short <- mapvalues(x = rownames(srat@meta.data), from = barcode2celltype_df$Barcode_Integrated, to = as.vector(barcode2celltype_df$Cell_Type.Short))
+srat@meta.data$Id_Manual_Cluster <- paste0(srat@meta.data$orig.ident, "_", srat@meta.data$Cell_Type.Short)
 ## change ident
-Idents(srat) <- "orig.ident"
+Idents(srat) <- "Id_Manual_Cluster"
 
 ## run average expression
 aliquot.averages <- AverageExpression(srat, assays = assay_process, slot = slot_process)
@@ -55,7 +59,7 @@ print("Finish running AverageExpression!\n")
 cat("###########################################\n")
 
 ## write output
-file2write <- paste0(dir_out, "HumanCells.", "BySample.", "AverageExpression.", run_id, ".tsv")
+file2write <- paste0(dir_out, "AverageExpression.", "ByCellTypeShorter.", run_id, ".tsv")
 write.table(aliquot.averages, file = file2write, quote = F, sep = "\t", row.names = T)
 cat("Finished saving the output\n")
 cat("###########################################\n")
