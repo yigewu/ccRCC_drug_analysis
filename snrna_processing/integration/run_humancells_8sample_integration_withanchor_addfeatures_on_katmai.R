@@ -35,16 +35,19 @@ dir_out <- paste0(makeOutDir_katmai(path_this_script), run_id, "/")
 dir.create(dir_out)
 ## set log file
 sink(file = paste0(dir_out, "Log.", timestamp, ".txt"))
+library(clusterProfiler)
 
 # set dependencies --------------------------------------------------------
 ## set the directory containing the SCTransformed seurat objects in RDS file format
 path_rds_df <- fread(data.table = F, input = "./Resources/Analysis_Results/snrna_processing/filtering/make_human_seuratfiltered_srat_obj_katmai/20210208.v1/Path_to_Seurat_Objects.HumanCellsss.Filtered.20210208.v1.tsv")
 ## input marker gene table
-gene2celltype_df <- fread("./Resources/Knowledge/Gene_Lists/Kidney_Specific_EMT_Genes.20210209.v1.tsv", data.table = F)
+# gene2celltype_df <- fread("./Resources/Knowledge/Gene_Lists/Kidney_Specific_EMT_Genes.20210209.v1.tsv", data.table = F)
+genes_add_df <- fread("./Resources/Analysis_Results/dependencies/make_EMT_genes_from_MSigDB/20211112.v1/MSigDB_EMT_genesymbols.tsv", data.table = F)
 
 # input per object in for loop--------------------------------------------------------
 list_srat <- list()
-genes_add <- gene2celltype_df$Gene
+# genes_add <- gene2celltype_df$Gene
+genes_add <- genes_add_df$hgnc_symbol
 for (id_sample_tmp in path_rds_df$id_sample) {
   ## get the path for RDS file
   path_rds <-path_rds_df$path_output_relative[path_rds_df$id_sample == id_sample_tmp]
@@ -61,6 +64,7 @@ features_integ <- SelectIntegrationFeatures(object.list = list_srat,
 cat("Finished SelectIntegrationFeatures!\n\n\n")
 features_integ <- unique(c(features_integ, genes_add))
 cat(paste0(length(features_integ), "\n\n\n"))
+features_integ[!(features_integ %in% row.names(srat@assays$SCT@data))]
 cat("Finished adding features!\n\n\n")
 # Prepare the SCT list object for integration
 list_srat <- PrepSCTIntegration(object.list = list_srat, 
@@ -78,6 +82,7 @@ srat <- IntegrateData(anchorset = anchors_integ,
                       normalization.method = "SCT", verbose = T)
 cat("Finished IntegrateData!\n\n\n")
 rm(anchors_integ)
+dim(srat@assays$SCT)
 
 # dimension reduction -----------------------------------------------------
 ## PCA

@@ -59,7 +59,7 @@ print("Finish running AverageExpression!\n")
 cat("###########################################\n")
 
 ## write output
-file2write <- paste0(dir_out, "AverageExpression.", "ByCellTypeShorter.", run_id, ".tsv")
+file2write <- paste0(dir_out, "AverageExpression.", "BySample.", "ByCellTypeShorter.", run_id, ".tsv")
 write.table(aliquot.averages, file = file2write, quote = F, sep = "\t", row.names = T)
 cat("Finished saving the output\n")
 cat("###########################################\n")

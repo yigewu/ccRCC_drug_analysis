@@ -42,22 +42,18 @@ interacting_pair_plot_sorted <- c(
 # make plot data ----------------------------------------------------------
 plotdata_df <- str_split_fixed(string = interacting_pair_plot_sorted, pattern = "_", n = 2) %>% as.data.frame()
 colnames(plotdata_df) <- c("genesymbol_ligand", "genesymbol_receptor")
-plotdata_df <- unique(plotdata_df)
 plotdata_df$genesymbol_ligand <- factor(x = plotdata_df$genesymbol_ligand, levels = unique(plotdata_df$genesymbol_ligand))
 plotdata_df$genesymbol_receptor <- factor(x = plotdata_df$genesymbol_receptor, levels = unique(plotdata_df$genesymbol_receptor))
 
 # plot --------------------------------------------------------------------
 p <- ggplot(data = plotdata_df,
        aes(axis1 = genesymbol_ligand, axis2 = genesymbol_receptor)) +
-  geom_alluvium(alpha = 0.7, color = "black") +
+  geom_alluvium() +
   geom_stratum() +
   geom_text(stat = "stratum", aes(label = after_stat(stratum))) +
-  theme_classic()
-p <- p + theme(axis.line = element_blank(),
-               axis.ticks = element_blank(),
-               axis.text = element_blank())
+  theme_minimal()
 p
-file2write <- paste0(dir_out, "LigandReceptor", ".png")
+file2write <- paste0(dir_out, "LigandGenes", ".png")
 png(file2write, width = 800, height = 800, res = 150)
 print(p)
 dev.off()

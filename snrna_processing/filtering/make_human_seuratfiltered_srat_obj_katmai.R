@@ -137,6 +137,7 @@ for (id_sample in ids_sample) {
   ## store path to the outputs
   path_outputs <- c(path_outputs, file2write)
 }
+
 # make and write path to the quality metrics ------------------------------
 path_outputs_df <- data.frame(id_sample = ids_sample, 
                               path_output_katmai = path_outputs, 
