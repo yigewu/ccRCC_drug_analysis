@@ -35,7 +35,6 @@ dir_out <- paste0(makeOutDir_katmai(path_this_script), run_id, "/")
 dir.create(dir_out)
 ## set log file
 sink(file = paste0(dir_out, "Log.", timestamp, ".txt"))
-library(clusterProfiler)
 
 # set dependencies --------------------------------------------------------
 ## set the directory containing the SCTransformed seurat objects in RDS file format
