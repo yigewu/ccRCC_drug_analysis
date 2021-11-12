@@ -63,7 +63,6 @@ features_integ <- SelectIntegrationFeatures(object.list = list_srat,
 cat("Finished SelectIntegrationFeatures!\n\n\n")
 features_integ <- unique(c(features_integ, genes_add))
 cat(paste0(length(features_integ), "\n\n\n"))
-features_integ[!(features_integ %in% row.names(srat@assays$SCT@data))]
 cat("Finished adding features!\n\n\n")
 # Prepare the SCT list object for integration
 list_srat <- PrepSCTIntegration(object.list = list_srat, 
