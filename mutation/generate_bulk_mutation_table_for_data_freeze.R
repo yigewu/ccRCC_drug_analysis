@@ -15,10 +15,19 @@ dir_out <- paste0(makeOutDir(), run_id, "/")
 dir.create(dir_out)
 
 # input dependencies --------------------------------------------
-maf_df <- fread(data.table = F, input = "./Data_Freeze/v1.dataFreeze.washU_rcc/1.somaticMut/rcc.somaticMut.meta3.20200812.tsv")
+maf_df <- fread(data.table = F, input = "./Data_Freeze/v1.dataFreeze.washU_rcc/1.somaticMut/rcc.somaticMut.meta3.20201007.tsv")
 
 # make mutation short amino acid change matrix ---------------------------------------
-mut_mat <- get_somatic_mutation_aachange_vaf_matrix(pair_tab = c(ccRCC_SMGs, "NF2"), maf = maf_df)
+genes4mat <- c(ccRCC_SMGs, "NF2")
+maf_filtered_df <- maf_df[maf_df$Hugo_Symbol %in% genes4mat & maf_df$Variant_Classification != "Silent",]
+maf_filtered_df$vaf <- maf_filtered_df$t_alt_count/(maf_filtered_df$t_alt_count + maf_filtered_df$t_ref_count)
+maf_filtered_df$HGVSp_sim <- gsub(x = maf_filtered_df$HGVSp_Short, pattern = "p\\.", replacement = "")
+maf_filtered_df$aachange_vaf <- paste0(maf_filtered_df$HGVSp_sim, "(", signif(x = maf_filtered_df$vaf, digits = 2), ")")
+mut_mat <- reshape2::dcast(data = maf_filtered_df, Hugo_Symbol ~ Tumor_Sample_Barcode, fun =  function(x) {
+  aahange_vaf <- paste0(unique(x), collapse = ",")
+  return(aahange_vaf)
+}, value.var = "aachange_vaf", drop=FALSE)
+rownames(mut_mat) <- as.vector(mut_mat$Hugo_Symbol)
 mut_df <- t(mut_mat[,-1]) %>% as.data.frame()
 ## order
 genesymbols_mut <- colnames(mut_df)

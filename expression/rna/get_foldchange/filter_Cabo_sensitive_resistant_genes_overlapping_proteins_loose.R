@@ -36,9 +36,9 @@ meta_data_treated_df <- meta_data_df %>%
 fc_protein_filtered_df <- fc_protein_df %>%
   filter(RESL5_Cabo_1month < 0 & RESL5_Cabo_1month < RESL5_Sap_1month)
 fc_rna_filtered_df <- fc_rna_df %>%
-  # filter(!is.infinite(RESL5_Treated.Cabo_1month) & RESL5_Treated.Cabo_1month < 1 & (RESL5_Treated.Cabo_1month/RESL5_Control_1month) < 1)
-  filter(!is.infinite(RESL5_Treated.Cabo_1month) & RESL5_Treated.Cabo_1month < 0.5 & (RESL5_Treated.Cabo_1month/RESL5_Control_1month) < 1 & (RESL5_Treated.Cabo_1month < RESL5_Treated.Sap_1month))
-  # filter(RESL5_Treated.Cabo_1month > 0 & !is.infinite(RESL5_Treated.Cabo_1month) & RESL5_Treated.Cabo_1month <= 0.5 & (RESL5_Treated.Cabo_1month/RESL5_Control_1month) <= 0.5)
+  filter(!is.infinite(RESL5_Treated.Cabo_1month) & RESL5_Treated.Cabo_1month < 1 & 
+           (RESL5_Treated.Cabo_1month/RESL5_Control_1month) < 1 & 
+           (RESL5_Treated.Cabo_1month < RESL5_Treated.Sap_1month))
 nrow(fc_rna_filtered_df)
 fc_rna_filtered_df <- fc_rna_filtered_df %>%
   filter(genesymbol %in% fc_protein_filtered_df$PG.Gene)
@@ -50,8 +50,10 @@ fn_rna_filtered_merged_df <- fc_rna_filtered_df
 fc_protein_filtered_df <- fc_protein_df %>%
   filter(RESL10_Cabo_1month > 0 & RESL4_Cabo_1month > 0 & RESL10_Cabo_1month > RESL10_Sap_1month & RESL4_Cabo_1month > RESL4_Sap_1month)
 fc_rna_filtered_df <- fc_rna_df %>%
-  # filter(RESL10_Treated.Cabo_1month > 0 & !is.infinite(RESL10_Treated.Cabo_1month) & (RESL4_Treated.Cabo_1month >= 1 | RESL10_Treated.Cabo_1month >= 1) & (RESL10_Treated.Cabo_1month/RESL10_Control_1month) >= 1 & (RESL4_Treated.Cabo_1month/RESL4_Control_1month) >= 1)
-  filter(!is.infinite(RESL10_Treated.Cabo_1month) & (RESL4_Treated.Cabo_1month >= 2 | RESL10_Treated.Cabo_1month >= 2) & (RESL10_Treated.Cabo_1month/RESL10_Control_1month) >= 1 &  RESL10_Treated.Cabo_1month >= RESL10_Treated.Sap_1month & (RESL4_Treated.Cabo_1month/RESL4_Control_1month) >= 1 & RESL4_Treated.Cabo_1month >= RESL4_Treated.Sap_1month)
+  filter(RESL10_Treated.Cabo_1month > 0 & !is.infinite(RESL10_Treated.Cabo_1month) & 
+           (RESL4_Treated.Cabo_1month >= 1 | RESL10_Treated.Cabo_1month >= 1) & 
+           (RESL10_Treated.Cabo_1month/RESL10_Control_1month) >= 1 & (RESL10_Treated.Cabo_1month/RESL10_Treated.Sap_1month) >= 1 & 
+           (RESL4_Treated.Cabo_1month/RESL4_Control_1month) >= 1 & (RESL4_Treated.Cabo_1month/RESL4_Treated.Sap_1month) >= 1)
 nrow(fc_rna_filtered_df)
 fc_rna_filtered_df <- fc_rna_filtered_df %>%
   filter(genesymbol %in% fc_protein_filtered_df$PG.Gene)
@@ -61,7 +63,7 @@ fn_rna_filtered_merged_df <- rbind(fn_rna_filtered_merged_df, fc_rna_filtered_df
 
 # write output ------------------------------------------------------------
 file2write <- paste0(dir_out, "Cabo_related_genes.", run_id, ".tsv")
-write.table(x = fn_rna_filtered_merged_df, file = file2write, quote = F, sep = "\t", row.names = F)
+write.table(x = fn_rna_filtered_merged_df,  file = file2write, quote = F, sep = "\t", row.names = F)
 
 # make background gene list ----------------------------------------------
 fc_rna_df <- data.frame(fc_rna_df)
@@ -75,7 +77,10 @@ write.table(x = background_genes_df, file = file2write, quote = F, sep = "\t", r
 # make background gene list ----------------------------------------------
 background_genes_df <- fc_rna_df %>%
   filter(!is.infinite(RESL10_Treated.Cabo_1month) & !is.infinite(RESL4_Treated.Cabo_1month)) %>%
-  filter(genesymbol %in% fc_protein_df$PG.Gene[!is.na(fc_protein_df$RESL10_Cabo_1month) & !is.na(fc_protein_df$RESL4_Cabo_1month) & !is.na(fc_protein_df$RESL10_Sap_1month) & !is.na(fc_protein_df$RESL4_Sap_1month)]) %>%
+  filter(genesymbol %in% fc_protein_df$PG.Gene[!is.na(fc_protein_df$RESL10_Cabo_1month) & 
+                                                 !is.na(fc_protein_df$RESL4_Cabo_1month) & 
+                                                 !is.na(fc_protein_df$RESL10_Sap_1month) & 
+                                                 !is.na(fc_protein_df$RESL4_Sap_1month)]) %>%
   dplyr::select(genesymbol)
 file2write <- paste0(dir_out, "Cabo_resistant_background_genes.", run_id, ".tsv")
 write.table(x = background_genes_df, file = file2write, quote = F, sep = "\t", row.names = F)

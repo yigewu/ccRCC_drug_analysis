@@ -18,7 +18,7 @@ library(clusterProfiler)
 library(org.Hs.eg.db)
 
 # input dependencies ------------------------------------------------------
-markers_df <- fread(data.table = F, input = "./Resources/Analysis_Results/expression/rna/get_foldchange/filter_Cabo_sensitive_resistant_genes_overlapping_proteins/20211110.v2/Cabo_related_genes.20211110.v2.tsv")
+markers_df <- fread(data.table = F, input = "./Resources/Analysis_Results/expression/rna/get_foldchange/filter_Cabo_sensitive_resistant_genes_overlapping_proteins_loose/20211123.v1/Cabo_related_genes.20211123.v1.tsv")
 background_genes_df <- fread(data.table = F, input = "./Resources/Analysis_Results/expression/rna/get_foldchange/filter_Cabo_sensitive_resistant_genes_overlapping_proteins/20211111.v1/Cabo_resistant_background_genes.20211111.v1.tsv")
 ## input wikipathway 
 wp2gene1 <- read.gmt("./Resources/Knowledge/Databases/MSigDB/h.all.v7.4.entrez.gmt")
@@ -26,18 +26,18 @@ wp2gene2 <- read.gmt("./Resources/Knowledge/Databases/MSigDB/c2.cp.v7.4.entrez.g
 wp2gene <- rbind(wp2gene1, wp2gene2)
 
 # get entrez ids ----------------------------------------------------------
-genes2convert <- unique(background_genes_df$genesymbol)
-## retrieve entrezgene_id
-## get biomart
-ensembl <- useMart("ensembl")
-datasets <- listDatasets(ensembl)
-ensembl = useDataset("hsapiens_gene_ensembl",mart=ensembl)
-filters = listFilters(ensembl)
-genesymbol2entrezid_df <- getBM(attributes=c('entrezgene_id', 'hgnc_symbol'), 
-                                filters = 'hgnc_symbol', 
-                                values = genes2convert, 
-                                mart = ensembl)
-
+# genes2convert <- unique(background_genes_df$genesymbol)
+# ## retrieve entrezgene_id
+# ## get biomart
+# ensembl <- useMart("ensembl")
+# datasets <- listDatasets(ensembl)
+# ensembl = useDataset("hsapiens_gene_ensembl",mart=ensembl)
+# filters = listFilters(ensembl)
+# genesymbol2entrezid_df <- getBM(attributes=c('entrezgene_id', 'hgnc_symbol'), 
+#                                 filters = 'hgnc_symbol', 
+#                                 values = genes2convert, 
+#                                 mart = ensembl)
+genesymbol2entrezid_df <- fread(data.table = F, input = "./Resources/Analysis_Results/expression/rna/pathway/ora_msigdb_H_CP_Cabo_resistant_markers/20211117.v1/genesymbol2entrezid.tsv")
 ## map for markers to be tested
 markers_df$entrezgene_id <- mapvalues(x = markers_df$genesymbol, from = genesymbol2entrezid_df$hgnc_symbol, to = as.vector(genesymbol2entrezid_df$entrezgene_id))
 genes_process_df <- markers_df %>%
@@ -58,7 +58,7 @@ if (length(enricher_out) > 0 ) {
   enricher_out <- setReadable(enricher_out, org.Hs.eg.db, keyType = "ENTREZID")
   enricher_out_all_df <- enricher_out@result
 }
-enricher_out_pairwise <- enrichplot::pairwise_termsim(enricher_out)
+# enricher_out_pairwise <- enrichplot::pairwise_termsim(enricher_out)
 
 # plot --------------------------------------------------------------------
 # p <- emapplot(x = enricher_out,showCategory = min(50, nrow(enricher_out_all_df[enricher_out_all_df$pvalue < 0.05,]))) 
@@ -67,18 +67,20 @@ enricher_out_pairwise <- enrichplot::pairwise_termsim(enricher_out)
 # print(p)
 # dev.off()
 
-p <- dotplot(object = enricher_out, showCategory=min(50, nrow(enricher_out_all_df[enricher_out_all_df$pvalue < 0.01,])))
-file2write <- paste(dir_out, "dotplot.pdf")
-pdf(file2write, width = 7, height = 4, useDingbats = F)
-print(p)
-dev.off()
-
+# p <- dotplot(object = enricher_out, showCategory=min(50, nrow(enricher_out_all_df[enricher_out_all_df$pvalue < 0.01,])))
+# file2write <- paste(dir_out, "dotplot.pdf")
+# pdf(file2write, width = 7, height = 4, useDingbats = F)
+# print(p)
+# dev.off()
 
 # save output -------------------------------------------------------------
 # store results
 file2write <- paste0(dir_out, "ORA_Results", ".RDS")
-saveRDS(object = enricher_out_pairwise, file = file2write, compress = T)
+saveRDS(object = enricher_out, file = file2write, compress = T)
 ## store results
 file2write <- paste0(dir_out, "ORA_Results", ".tsv")
 write.table(x = enricher_out_all_df, file = file2write, quote = F, row.names = F, sep = "\t")
+## store results
+file2write <- paste0(dir_out, "genesymbol2entrezid", ".tsv")
+write.table(x = genesymbol2entrezid_df, file = file2write, quote = F, row.names = F, sep = "\t")
 

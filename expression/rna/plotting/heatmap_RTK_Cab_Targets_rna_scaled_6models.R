@@ -10,7 +10,7 @@ source("./ccRCC_drug_analysis/variables.R")
 source("./ccRCC_drug_analysis/plotting.R")
 library(ComplexHeatmap)
 ## set run id
-version_tmp <- 1
+version_tmp <- 2
 run_id <- paste0(format(Sys.Date(), "%Y%m%d") , ".v", version_tmp)
 ## set output directory
 dir_out <- paste0(makeOutDir(), run_id, "/")
@@ -26,7 +26,7 @@ data_status_df <- readxl::read_excel(path = "./Data_Freeze/v1.dataFreeze.washU_r
 
 # set parameters ----------------------------------------------------------
 ## sum up the genes
-genes2plot <- genes_rtk_cabo
+genes2plot <- genes_rtk_cabo[!(genes_rtk_cabo %in% c("PDGFRA", "PDGFRB", "CSF1R"))]
 ## set plotting metrics
 num_nonna <- 0
 row_fontsize <- 9
@@ -35,7 +35,9 @@ row_fontsize <- 9
 ## sort data status
 data_status_filtered_df <- data_status_df %>%
   filter((Analysis_ID %in% colnames(rna_exp_df))) %>%
-  filter(ShortTag %in% c("Baseline", "Control", "Treated.Cabo", "Treated.Cabo+Sap", "Treated.Sap"))
+  filter(ShortTag %in% c("Baseline", "Control", "Treated.Cabo", "Treated.Cabo+Sap", "Treated.Sap")) %>%
+  filter(ModelID %in% paste0("RESL", c(3,4,5,10,11,12))) %>%
+  filter(Treatment.Month %in% c(0,1)) %>%
   arrange(ModelID, Treatment.Month, ShortTag)
 analysis_ids <- data_status_filtered_df$Analysis_ID
 analysis_ids
@@ -93,7 +95,7 @@ names(colors_genespecies) <- c("Human", "Mouse", "Ambiguous")
 # make row annotation -----------------------------------------------------
 orig_avgexp_vec <- rowMeans(x = plot_data_raw_mat, na.rm = T)
 row_anno_obj <- rowAnnotation(Unscaled_Expression = anno_simple(x = orig_avgexp_vec, col = colors_unscaledexp), 
-                              annotation_name_side = "top")
+                              annotation_name_side = "top", annotation_name_gp = gpar(fontsize = 10))
 
 
 # make column annotation --------------------------------------------------
@@ -115,11 +117,11 @@ col_split_factor
 
 # make row split ----------------------------------------------------------
 rownames_mat <- rownames(plot_data_mat)
-row_split_vec <- ifelse(rownames_mat %in% met_related_genes, "MET pathway",
+row_split_vec <- ifelse(rownames_mat %in% met_related_genes, "MET\npathway",
                         ifelse(rownames_mat %in% vegfr_genes, "VEGFRs", 
                                ifelse(rownames_mat %in% vegf_genes, "VEGFs",
-                                      ifelse(rownames_mat %in% other_cabo_related_genes, "Other Cabo targets", "Sunitinib targets"))))
-row_split_factor <- factor(x = row_split_vec, levels = c("MET pathway", "VEGFs", "VEGFRs", "Other Cabo targets", "Sunitinib targets"))
+                                      ifelse(rownames_mat %in% other_cabo_related_genes, "Other\nCabo\ntargets", "Sunitinib targets"))))
+row_split_factor <- factor(x = row_split_vec, levels = c("MET\npathway", "VEGFs", "VEGFRs", "Other\nCabo\ntargets", "Sunitinib targets"))
 
 
 # make heatmap ------------------------------------------------------------
@@ -147,26 +149,28 @@ annotation_lgd = list(
   Legend(labels = names(colors_treatmentlength), 
          title = "Treatment length", 
          legend_gp = gpar(fill = colors_treatmentlength)),
-  Legend(labels = names(colors_genespecies), 
-         title = "Protein species", 
-         legend_gp = gpar(fill = colors_genespecies)),
   Legend(col_fun = colors_heatmapbody, 
          title = "Scaled gene\nexpression", 
          title_gp = gpar(fontsize = 10),
          labels_gp = gpar(fontsize = 10),
-         legend_width = unit(3, "cm"),
-         legend_height = unit(3, "cm"),
-         direction = "vertical"),
+         legend_width = unit(2, "cm"),
+         legend_height = unit(1, "cm"),
+         direction = "horizontal"),
   Legend(col_fun = colors_unscaledexp, 
          title = "Unscaled gene\nexpression", 
          title_gp = gpar(fontsize = 10),
          labels_gp = gpar(fontsize = 10),
-         legend_width = unit(3, "cm"),
-         legend_height = unit(3, "cm"),
-         direction = "vertical"))
+         legend_width = unit(2, "cm"),
+         legend_height = unit(1, "cm"),
+         direction = "horizontal"))
 
 # write output ------------------------------------------------------------
 file2write <- paste0(dir_out, "heatmap.png")
 png(file2write, width = 1800, height = 800, res = 150)
+draw(p, annotation_legend_side = "right", annotation_legend_list = annotation_lgd)  #Show the heatmap
+dev.off()
+
+file2write <- paste0(dir_out, "heatmap.pdf")
+pdf(file2write, width = 8, height = 5, useDingbats = F)
 draw(p, annotation_legend_side = "right", annotation_legend_list = annotation_lgd)  #Show the heatmap
 dev.off()

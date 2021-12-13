@@ -41,6 +41,7 @@ sink(file = paste0(dir_out, "Log.", timestamp, ".txt"))
 
 # input dependencies ------------------------------------------------------
 ## set directory to the cell ranger outputs
+## used include-introns argument for the cell ranger
 dir_cellranger_outputs <- "./Resources/snRNA_Processed_Data/Cell_Ranger/cellranger-5.0.1_Ref-2020-A/"
 ## set sample ids
 ids_sample <- list.files(path = dir_cellranger_outputs)

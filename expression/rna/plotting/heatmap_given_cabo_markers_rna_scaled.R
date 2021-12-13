@@ -10,7 +10,7 @@ source("./ccRCC_drug_analysis/variables.R")
 source("./ccRCC_drug_analysis/plotting.R")
 library(ComplexHeatmap)
 ## set run id
-version_tmp <- 3
+version_tmp <- 1
 run_id <- paste0(format(Sys.Date(), "%Y%m%d") , ".v", version_tmp)
 ## set output directory
 dir_out <- paste0(makeOutDir(), run_id, "/")
@@ -19,15 +19,15 @@ dir.create(dir_out)
 # input dependencies ------------------------------------------------------
 ## input the protein data
 rna_exp_df <- fread("./Data_Freeze/v1.dataFreeze.washU_rcc/3.geneExp/v3.20210116/datafreeze.v3.kallisto.geneExp.protein_coding.tsv", data.table = F)
-## input the sample info
-sampleinfo_df <- readxl::read_excel(path = "./Data_Freeze/v1.dataFreeze.washU_rcc/4.protein/WUSTL to JHU_ccRCC PDX_sample information_01062021_YW.xlsx")
 ## input the DEGs
 data_status_df <- readxl::read_excel(path = "./Data_Freeze/v1.dataFreeze.washU_rcc/0.sample_info/v3.20210116/RCC_PDX_Samples.20210115.v2.xlsx")
 markers_df <- fread(data.table = F, input = "./Resources/Analysis_Results/expression/rna/get_foldchange/filter_Cabo_sensitive_resistant_genes_overlapping_proteins/20211110.v1/Cabo_related_genes.20211110.v1.tsv")
 
 # set parameters ----------------------------------------------------------
 ## sum up the genes
-genes_process <- markers_df$genesymbol[markers_df$gene_category == "Cabo resistant"]
+# genes_process <- markers_df$genesymbol[markers_df$gene_category == "Cabo resistant"]
+genes_process <- strsplit(x = "COX6C/NDUFA12/NDUFA6/NDUFA9/NDUFB6/NDUFC2/NDUFS4/NDUFS5/UQCR10/UQCRFS1/UQCRQ", split = "\\/")[[1]]
+genes_process <- c("PXDN", "LTBP1", "ICAM1", "ITGA7")
 ## set plotting metrics
 num_nonna <- 0
 row_fontsize <- 9
@@ -65,8 +65,11 @@ plot_data_raw_mat <- log2(plot_data_raw_mat+1)
 plot_data_raw_mat <- plot_data_raw_mat[intersect(genes_process, rownames(plot_data_raw_mat)),]
 ## scale by row
 plot_data_mat <- t(apply(plot_data_raw_mat, 1, scale))
+## add row and column names
 rownames(plot_data_mat) <- rownames(plot_data_raw_mat)
 colnames(plot_data_mat) <- colnames(plot_data_raw_mat)
+## reorder rows
+plot_data_mat <- plot_data_mat[genes_process,]
 
 # specify colors ----------------------------------------------------------
 ## specify color for NA values
@@ -133,14 +136,15 @@ row_split_vec <- mapvalues(x = rownames_mat, from = markers_df$genesymbol, to = 
 # make heatmap ------------------------------------------------------------
 p <- ComplexHeatmap::Heatmap(matrix = plot_data_mat, col = colors_heatmapbody,
                              ## row
-                             cluster_rows = T, cluster_row_slices = F,
+                             cluster_rows = F, cluster_row_slices = F,
                              show_row_dend = F,
                              row_names_gp = grid::gpar(fontsize = row_fontsize), 
                              row_names_side = "left", #right_annotation = row_anno_obj, 
                              # row_split = row_split_vec, row_title_rot = 0, row_title_gp = grid::gpar(fontsize = 12),
                              ## column
                              column_split = col_split_factor, cluster_column_slices = T,
-                             column_title_rot = 90, column_title_gp = grid::gpar(fontsize = 10), top_annotation = top_col_anno,
+                             column_title_rot = 0, column_title_gp = grid::gpar(fontsize = 9), 
+                             top_annotation = top_col_anno,
                              # top_annotation = top_col_anno,
                              show_column_names = F, 
                              cluster_columns = F, 
@@ -155,7 +159,7 @@ annotation_lgd = list(
          labels_gp = gpar(fontsize = 10),
          legend_width = unit(3, "cm"),
          legend_height = unit(1.5, "cm"),
-         direction = "vertical"),
+         direction = "horizontal"),
   Legend(labels = names(colors_treatment), 
          title = "Treatment", 
          legend_gp = gpar(fill = colors_treatment)),
@@ -165,6 +169,10 @@ annotation_lgd = list(
 
 
 # write output ------------------------------------------------------------
+file2write <- paste0(dir_out, "heatmap.pdf")
+pdf(file2write, width = 6, height = 2.75, useDingbats = F)
+draw(p, annotation_legend_side = "bottom", annotation_legend_list = annotation_lgd)  #Show the heatmap
+dev.off()
 file2write <- paste0(dir_out, "heatmap.png")
 png(file2write, width = 1000, height = 600, res = 150)
 draw(p, annotation_legend_side = "bottom", annotation_legend_list = annotation_lgd)  #Show the heatmap

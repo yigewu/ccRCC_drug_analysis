@@ -26,7 +26,8 @@ meta_data_df <- readxl::read_excel(path = "./Data_Freeze/v1.dataFreeze.washU_rcc
 fc_protein_filtered_df <- fc_protein_df %>%
   filter(RESL10_Sap_1month < 0 & RESL10_Sap_1month < RESL10_Cabo_1month)
 fc_rna_filtered_df <- fc_rna_df %>%
-  filter(RESL10_Treated.Sap_1month < 0.5 & (RESL10_Treated.Sap_1month/RESL10_Control_1month) < 1 & (RESL10_Treated.Sap_1month < RESL10_Treated.Cabo_1month))
+  filter(RESL10_Treated.Sap_1month < 1 & (RESL10_Treated.Sap_1month/RESL10_Control_1month) < 1 & (RESL10_Treated.Sap_1month < RESL10_Treated.Cabo_1month))
+  # filter(RESL10_Treated.Sap_1month < 0.5 & (RESL10_Treated.Sap_1month/RESL10_Control_1month) < 1 & (RESL10_Treated.Sap_1month < RESL10_Treated.Cabo_1month))
   # filter(RESL5_Treated.Cabo_1month > 0 & !is.infinite(RESL5_Treated.Cabo_1month) & RESL5_Treated.Cabo_1month <= 0.5 & (RESL5_Treated.Cabo_1month/RESL5_Control_1month) <= 0.5)
 nrow(fc_rna_filtered_df)
 fc_rna_filtered_df <- fc_rna_filtered_df %>%
@@ -39,7 +40,8 @@ fn_rna_filtered_merged_df <- fc_rna_filtered_df
 fc_protein_filtered_df <- fc_protein_df %>%
   filter(RESL5_Sap_1month > 0 & RESL5_Sap_1month > RESL5_Cabo_1month)
 fc_rna_filtered_df <- fc_rna_df %>%
-  filter(!is.infinite(RESL5_Treated.Sap_1month) & RESL5_Treated.Sap_1month >= 2 & (RESL5_Treated.Sap_1month/RESL5_Control_1month) >= 1 & RESL5_Treated.Sap_1month > RESL5_Treated.Cabo_1month)
+  filter(!is.infinite(RESL5_Treated.Sap_1month) & RESL5_Treated.Sap_1month >= 1 & (RESL5_Treated.Sap_1month/RESL5_Control_1month) >= 1 & RESL5_Treated.Sap_1month > RESL5_Treated.Cabo_1month)
+  # filter(!is.infinite(RESL5_Treated.Sap_1month) & RESL5_Treated.Sap_1month >= 2 & (RESL5_Treated.Sap_1month/RESL5_Control_1month) >= 1 & RESL5_Treated.Sap_1month > RESL5_Treated.Cabo_1month)
 nrow(fc_rna_filtered_df)
 fc_rna_filtered_df <- fc_rna_filtered_df %>%
   filter(genesymbol %in% fc_protein_filtered_df$PG.Gene)
@@ -49,4 +51,22 @@ fn_rna_filtered_merged_df <- rbind(fn_rna_filtered_merged_df, fc_rna_filtered_df
 
 file2write <- paste0(dir_out, "Sap_related_genes.", run_id, ".tsv")
 write.table(x = fn_rna_filtered_merged_df, file = file2write, quote = F, sep = "\t", row.names = F)
+
+# make background gene list ----------------------------------------------
+fc_rna_df <- data.frame(fc_rna_df)
+background_genes_df <- fc_rna_df %>%
+  filter(!is.infinite(RESL10_Treated.Sap_1month)) %>%
+  filter(genesymbol %in% fc_protein_df$PG.Gene[!is.na(fc_protein_df$RESL10_Sap_1month) & !is.na(fc_protein_df$RESL10_Cabo_1month)]) %>%
+  dplyr::select(genesymbol)
+file2write <- paste0(dir_out, "Sap_sensitive_background_genes.", run_id, ".tsv")
+write.table(x = background_genes_df, file = file2write, quote = F, sep = "\t", row.names = F)
+
+# make background gene list ----------------------------------------------
+background_genes_df <- fc_rna_df %>%
+  filter(!is.infinite(RESL5_Treated.Sap_1month)) %>%
+  filter(genesymbol %in% fc_protein_df$PG.Gene[!is.na(fc_protein_df$RESL5_Sap_1month) & !is.na(fc_protein_df$RESL5_Cabo_1month)]) %>%
+  dplyr::select(genesymbol)
+file2write <- paste0(dir_out, "Sap_resistant_background_genes.", run_id, ".tsv")
+write.table(x = background_genes_df, file = file2write, quote = F, sep = "\t", row.names = F)
+
 

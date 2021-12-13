@@ -10,7 +10,7 @@ source("./ccRCC_drug_analysis/variables.R")
 source("./ccRCC_drug_analysis/plotting.R")
 library(ComplexHeatmap)
 ## set run id
-version_tmp <- 3
+version_tmp <- 1
 run_id <- paste0(format(Sys.Date(), "%Y%m%d") , ".v", version_tmp)
 ## set output directory
 dir_out <- paste0(makeOutDir(), run_id, "/")
@@ -26,7 +26,11 @@ sampleinfo_df <- readxl::read_excel(path = "./Data_Freeze/v1.dataFreeze.washU_rc
 anova_results_df <- fread(data.table = F, input = "./Resources/Analysis_Results/expression/protein/test/test_diff_phosphosite_anova_treated_and_control/20210205.v1/Phosphosite.ANOVA.Treated_Groups_and_CT.20210205.v1.tsv")
 
 # set parameters ----------------------------------------------------------
-genes_filter <- c(genes_pi3k_mtor, genes_rtk_cabo)
+# genes_filter <- c(genes_pi3k_mtor, genes_rtk_cabo)
+genegroup_df <- data.frame(Gene = c(ras_pathway_genes, pi3k_pathway_genes, mtor_pathway_genes, genes_rtk_cabo),
+                           Pathway = c(rep("RAS", length(ras_pathway_genes)), rep("PI3K", length(pi3k_pathway_genes)), rep("mTOR", length(mtor_pathway_genes)),
+                                       rep("RTK", length(genes_rtk_cabo))))
+genes_filter <- genegroup_df$Gene
 
 # make data matrix --------------------------------------------------------
 colnames_id <- intersect(x = colnames(anova_results_df), y = colnames(exp_df))
@@ -43,10 +47,12 @@ idx_keep <- sapply(plot_data_df$PG.Genes, function(gene_string, genes_filter_vec
 plot_data_df <- plot_data_df[idx_keep,]
 plot_data_df <- plot_data_df %>%
   arrange(pvalue) %>%
-  mutate(Phosphosite_Name = paste0(PG.ProteinNames, "_", PTM_Name_Aggr))
-plot_data_raw_mat <- as.matrix(plot_data_df[, colnames_data])
-rownames(plot_data_raw_mat) <- plot_data_df$Phosphosite_Name
-
+  mutate(Genesymbol_Human = str_split_fixed(string = PG.Genes, pattern = ";", n = 2)[,1]) %>%
+  mutate(Phosphosite_Name = paste0(Genesymbol_Human, "_", PTM_Name_Human))
+## filter by column
+sampleinfo_filtered_df <- sampleinfo_df %>%
+  filter(Treatment_length == "1 month")
+plot_data_raw_mat <- as.matrix(plot_data_df[,sampleinfo_filtered_df$`Sample ID`])
 ## scale by row
 plot_data_mat <- t(apply(plot_data_raw_mat, 1, scale))
 rownames(plot_data_mat) <- plot_data_df$Phosphosite_Name
@@ -54,7 +60,7 @@ colnames(plot_data_mat) <- colnames(plot_data_raw_mat)
 
 # matrix row and column ids -----------------------------------------------
 sampleids_mat <- colnames(plot_data_mat)
-phosphositenames_mat <- rownames(plot_data_mat)
+rownames_mat <- rownames(plot_data_mat)
 
 # specify colors ----------------------------------------------------------
 ## specify color for NA values
@@ -110,20 +116,25 @@ top_col_anno = HeatmapAnnotation(TreatmentLength = anno_simple(x = treatmentleng
                                                          col = colors_treatment[treatment_vec]),
                                  annotation_name_side = "left")
 
+# make column split -------------------------------------------------------
+col_split_vec <- str_split_fixed(string = sampleids_mat, pattern = "_", 3)[,1]
+col_split_factor <- factor(x = col_split_vec, levels = c("RESL5", "RESL11","RESL12", "RESL3", "RESL4", "RESL10"))
+col_split_factor
 
 # plot  ------------------------------------------------------------
 p <- ComplexHeatmap::Heatmap(matrix = plot_data_mat, 
                              col = colors_heatmapbody,
                              na_col = color_na,
                              ## row args
-                             right_annotation = row_anno_obj,
-                             show_row_names = T, row_names_side = "right",
+                             # right_annotation = row_anno_obj,
+                             show_row_names = T, row_names_side = "left", show_row_dend = F,
                              # row_names_side = "left", 
                              # show_row_dend = T, row_dend_width = unit(4, "cm"),
                              # row_km = 6, row_km_repeats = 100,
                              ## column args
                              column_names_side = "top",
                              top_annotation = top_col_anno, 
+                             column_split = col_split_factor, show_column_names = F, cluster_columns = F,
                              # show_column_dend = T, column_dend_height = unit(2, "cm"), 
                              # column_km = 6, column_km_repeats = 200,
                              show_heatmap_legend = F)
@@ -144,40 +155,27 @@ annotation_lgd = list(
          title_gp = gpar(fontsize = 10),
          labels_gp = gpar(fontsize = 10),
          legend_width = unit(3, "cm"),
-         legend_height = unit(3, "cm"),
-         direction = "vertical"),
-  Legend(col_fun = colors_unscaledexp, 
-         title = "Unscaled phosphoprotein\nabundance", 
-         title_gp = gpar(fontsize = 10),
-         labels_gp = gpar(fontsize = 10),
-         legend_width = unit(3, "cm"),
-         legend_height = unit(3, "cm"),
-         direction = "vertical"))
+         legend_height = unit(1, "cm"),
+         direction = "horizontal"))
+  # ,
+  # Legend(col_fun = colors_unscaledexp, 
+  #        title = "Unscaled phosphoprotein\nabundance", 
+  #        title_gp = gpar(fontsize = 10),
+  #        labels_gp = gpar(fontsize = 10),
+  #        legend_width = unit(3, "cm"),
+  #        legend_height = unit(3, "cm"),
+  #        direction = "vertical"))
 
 # write output ------------------------------------------------------------
+file2write <- paste0(dir_out, "heatmap.pdf")
+pdf(file2write, width = 6, height = 2.5, useDingbats = F)
+draw(p, annotation_legend_side = "bottom", annotation_legend_list = annotation_lgd)  #Show the heatmap
+dev.off()
 file2write <- paste0(dir_out, "heatmap.png")
-png(file2write, width = 2000, height = 800, res = 150)
-p <- ComplexHeatmap::draw(p, annotation_legend_side = "bottom", annotation_legend_list = annotation_lgd)  #Show the heatmap
-print(p)
+png(file2write, width = 1200, height = 400, res = 150)
+draw(p, annotation_legend_side = "bottom", annotation_legend_list = annotation_lgd)  #Show the heatmap
 dev.off()
 # file2write <- paste0(dir_out, "heatmap.RDS")
 # saveRDS(object = p, file = file2write, compress = T)
-
-# # extracting clusters -----------------------------------------------------
-# rcl.list <- row_order(p)  #Extract clusters (output is a list)
-# lapply(rcl.list, function(x) length(x))  #check/confirm size gene clusters
-# library(magrittr)
-# clu_df <- lapply(names(rcl.list), function(i){
-#   out <- data.frame(GeneID = rownames(plot_data_mat[rcl.list[[i]],]),
-#                     Cluster = paste0("cluster", i),
-#                     stringsAsFactors = FALSE)
-#   return(out)
-# }) %>%  #pipe (forward) the output 'out' to the function rbind to create 'clu_df'
-#   do.call(rbind, .)
-# clu_df <- clu_df %>%
-#   rename(ProteinName = GeneID) %>%
-#   mutate(ProteinName_single = str_split_fixed(string = ProteinName, pattern = ";", n = 2)[,1])
-# file2write <- paste0(dir_out, "protein2cluster.", "tsv")
-# write.table(x = clu_df, file = file2write, quote = F, sep = "\t", row.names = F)
 
 

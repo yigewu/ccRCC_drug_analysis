@@ -10,7 +10,7 @@ source("./ccRCC_drug_analysis/variables.R")
 source("./ccRCC_drug_analysis/plotting.R")
 library(ComplexHeatmap)
 ## set run id
-version_tmp <- 3
+version_tmp <- 1
 run_id <- paste0(format(Sys.Date(), "%Y%m%d") , ".v", version_tmp)
 ## set output directory
 dir_out <- paste0(makeOutDir(), run_id, "/")
@@ -26,6 +26,7 @@ markers_df <- fread(data.table = F, input = "./Resources/Analysis_Results/expres
 # set parameters ----------------------------------------------------------
 ## sum up the genes
 genes_process <- markers_df$genesymbol[markers_df$gene_category == "Cabo resistant"]
+genes_process <- c("PXDN", "LTBP1", "ICAM1", "ITGA7")
 
 # make data matrix --------------------------------------------------------
 plot_data_df <- protein_df
@@ -43,11 +44,13 @@ sampleinfo_filtered_df <- sampleinfo_df %>%
   filter(Treatment_length == "1 month")
 plot_data_raw_mat <- as.matrix(plot_data_df[,sampleinfo_filtered_df$`Sample ID`])
 rownames(plot_data_raw_mat) <- plot_data_df$PG.ProteinNames
-
 ## scale by row
 plot_data_mat <- t(apply(plot_data_raw_mat, 1, scale))
-rownames(plot_data_mat) <- plot_data_df$PG.ProteinNames
+## add row and column names
+rownames(plot_data_mat) <- plot_data_df$PG.Genes
 colnames(plot_data_mat) <- colnames(plot_data_raw_mat)
+## change row order
+plot_data_mat <- plot_data_mat[genes_process,]
 
 # matrix row and column ids -----------------------------------------------
 sampleids_mat <- colnames(plot_data_mat)
@@ -60,14 +63,23 @@ color_na <- "grey50"
 color_blue <- RColorBrewer::brewer.pal(n = 3, name = "Set1")[2]
 color_red <- RColorBrewer::brewer.pal(n = 3, name = "Set1")[1]
 summary(as.vector(plot_data_mat))
-# colors_heatmapbody = circlize::colorRamp2(c(rev(seq(-2, -5, -1)), rev(seq(-0.2, -1, -0.2)), 
-#                                   0,
-#                                   seq(0.2, 1, 0.2), seq(2, 5, 1)),
-#                                 c(rev(brewer.pal(n = 9, name = "Blues")), "white", brewer.pal(n = 9, name = "YlOrRd")))
 colors_heatmapbody = circlize::colorRamp2(c(-1.25,
                                             0,
                                             1.25),
                                           c(color_blue, "white", color_red))
+## make color function for heatmap body colors
+color_blue <- RColorBrewer::brewer.pal(n = 3, name = "Set1")[2]
+color_red <- RColorBrewer::brewer.pal(n = 3, name = "Set1")[1]
+summary(as.vector(plot_data_mat))
+# colors_heatmapbody <- circlize::colorRamp2(c(quantile(plot_data_mat, 0.1, na.rm=T), 
+#                                              quantile(plot_data_mat, 0.5, na.rm=T), 
+#                                              quantile(plot_data_mat, 0.9, na.rm=T)),c(color_blue, "white", color_red))
+colors_heatmapbody <- circlize::colorRamp2(c(seq(-1.2, -0.2, 0.2), 
+                                             0, 
+                                             seq(0.2, 1.8, 0.2)),
+                                           c(rev(brewer.pal(n = 6, name = "Blues")), 
+                                             "white", 
+                                             brewer.pal(n = 9, name = "YlOrRd")))
 ## make color for treatment type
 RColorBrewer::display.brewer.pal(name = "Set1", n = 8)
 colors_treatment <- RColorBrewer::brewer.pal(n = 5, name = "Set1")[c(1,2,4,3)]
@@ -125,9 +137,9 @@ p <- ComplexHeatmap::Heatmap(matrix = plot_data_mat,
                              ## row args
                              # right_annotation = row_anno_obj,
                              show_row_names = T,
-                             row_names_side = "left", row_labels = plot_data_df$PG.Genes, 
+                             row_names_side = "left", #row_labels = plot_data_df$PG.Genes, 
                              # row_split = row_split_vec,
-                             show_row_dend = F, 
+                             show_row_dend = F, cluster_rows = F,
                              # row_km = 6, row_km_repeats = 100,
                              ## column args
                              column_split = col_split_factor, show_column_names = F,
@@ -146,7 +158,7 @@ annotation_lgd = list(
          labels_gp = gpar(fontsize = 10),
          legend_width = unit(3, "cm"),
          legend_height = unit(1, "cm"),
-         direction = "vertical"),
+         direction = "horizontal"),
   Legend(labels = names(colors_treatment), 
          title = "Treatment", 
          legend_gp = gpar(fill = colors_treatment)),
@@ -155,6 +167,10 @@ annotation_lgd = list(
          legend_gp = gpar(fill = colors_treatmentlength)))
 
 # write output ------------------------------------------------------------
+file2write <- paste0(dir_out, "heatmap.pdf")
+pdf(file2write, width = 6, height =2.75, useDingbats = F)
+draw(p, annotation_legend_side = "bottom", annotation_legend_list = annotation_lgd)  #Show the heatmap
+dev.off()
 file2write <- paste0(dir_out, "heatmap.png")
 png(file2write, width = 1000, height = 600, res = 150)
 draw(p, annotation_legend_side = "bottom", annotation_legend_list = annotation_lgd)  #Show the heatmap

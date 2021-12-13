@@ -3,7 +3,7 @@
 
 # set up libraries and output directory -----------------------------------
 ## set run id
-version_tmp <- "Tumor"
+version_tmp <- "1"
 run_id <- paste0(format(Sys.Date(), "%Y%m%d") , ".v", version_tmp)
 ## set time stamp for log file
 timestamp <- paste0(run_id, ".", format(Sys.time(), "%H%M%S"))
@@ -41,8 +41,7 @@ srat <- readRDS(file = path_rds)
 DefaultAssay(srat) <- "RNA"
 
 ## input marker gene table
-genes_plot <- c("COL1A1", "COL6A1", "COL1A2", "COL5A1", "COL12A1", "MMP2")
-genes_plot <- c("NDUFA4L2", "CA9", "PAX8", "PAX2")
+genes_plot <- c("HGF", "MET")
 genes_plot <- unique(unlist(genes_plot))
 
 ## set the minimal % of cells expresssing the gene
@@ -60,9 +59,14 @@ for (featurename in featurenames) {
                    features = featurename,
                    split.by = "orig.ident",
                    min.cutoff = "q10", max.cutoff = "q90", sort.cell = TRUE,
-                   cols = c("grey", "red"), reduction = "umap", label = T)
+                   cols = c("grey", "red"), reduction = "umap", label = F)  & NoLegend() & NoAxes()
   
   # save output -------------------------------------------------------------
+  file2write <- paste0(dir_out, featurename, ".featureplot", ".pdf")
+  pdf(file2write, width = 10, height = 3, useDingbats = F)
+  print(p)
+  dev.off()
+  
   file2write <- paste0(dir_out, featurename, ".featureplot", ".png")
   png(filename = file2write, width = 6000, height = 800, res = 150)
   print(p)
