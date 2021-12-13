@@ -29,6 +29,7 @@ source("./ccRCC_drug_analysis/load_pkgs.R")
 source("./ccRCC_drug_analysis/functions.R")
 source("./ccRCC_drug_analysis/variables.R")
 library(Seurat)
+library(ggrastr)
 ## set output directory
 dir_out <- paste0(makeOutDir_katmai(path_this_script), run_id, "/")
 dir.create(dir_out)
@@ -59,11 +60,11 @@ for (featurename in featurenames) {
                    features = featurename,
                    split.by = "orig.ident",
                    min.cutoff = "q10", max.cutoff = "q90", sort.cell = TRUE,
-                   cols = c("grey", "red"), reduction = "umap", label = F)  & NoLegend() & NoAxes()
+                   cols = c("grey", "red"), reduction = "umap", label = F, raster = T)  & NoLegend() & NoAxes()
   
   # save output -------------------------------------------------------------
   file2write <- paste0(dir_out, featurename, ".featureplot", ".pdf")
-  pdf(file2write, width = 10, height = 3, useDingbats = F)
+  pdf(file2write, width = 20, height = 3, useDingbats = F)
   print(p)
   dev.off()
   
