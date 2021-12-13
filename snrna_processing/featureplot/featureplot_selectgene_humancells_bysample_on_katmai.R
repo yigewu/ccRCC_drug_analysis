@@ -29,7 +29,6 @@ source("./ccRCC_drug_analysis/load_pkgs.R")
 source("./ccRCC_drug_analysis/functions.R")
 source("./ccRCC_drug_analysis/variables.R")
 library(Seurat)
-library(ggrastr)
 ## set output directory
 dir_out <- paste0(makeOutDir_katmai(path_this_script), run_id, "/")
 dir.create(dir_out)
