@@ -2,8 +2,7 @@
 
 # set up libraries and output directory -----------------------------------
 ## set working directory
-# dir_base = "~/Box/Ding_Lab/Projects_Current/RCC/ccRCC_Drug/"
-dir_base = "~/Library/CloudStorage/Box-Box/Ding_Lab/Projects_Current/RCC/ccRCC_Drug"
+dir_base = "~/Box/Ding_Lab/Projects_Current/RCC/ccRCC_Drug/"
 setwd(dir_base)
 source("./ccRCC_drug_analysis/load_pkgs.R")
 source("./ccRCC_drug_analysis/functions.R")
@@ -19,29 +18,28 @@ dir.create(dir_out)
 
 # input dependencies ------------------------------------------------------
 ## input the protein data
-protein_df <- fread(data.table = F, input = "./Resources/Analysis_Results/expression/protein/preprocess/impute_protein_data_using_DreamAI/20210201.v1/RCC_PDX.DIA_Protein.Log2.QuantileNormalized.RegImpute.tsv")
+exp_df <- fread(data.table = F, input = "./Resources/Analysis_Results/expression/protein/other/unite_protein_phospho_diff_treated_vs_control_bylog2intensity/20220110.v1/Protein_Phospho_Diff_Log2Intensity.Treated_vs_Control.20220110.v1.tsv")
 ## input the sample info
 sampleinfo_df <- readxl::read_excel(path = "./Data_Freeze/v1.dataFreeze.washU_rcc/4.protein/WUSTL to JHU_ccRCC PDX_sample information_01062021_YW.xlsx")
 
-# set parameters ----------------------------------------------------------
-## sum up the genes
-genes_process <- genes_rtk_cabo
+# get proteins to plot ----------------------------------------------------------
+exp_filtered_df <- exp_df %>%
+  
+proteins_plot <- degs_df$PG.ProteinNames[degs_df$RESL10_vs_RESL5 == "Up"]
+proteins_plot <- unique(proteins_plot)
+length(proteins_plot)
 
 # make data matrix --------------------------------------------------------
-plot_data_df <- protein_df
 ## filter by gene
-idx_keep <- sapply(plot_data_df$PG.Genes, function(gene_string, genes_process_vec) {
-  genes_vec <- str_split(string = gene_string, pattern = ";")[[1]]
-  idx_keep_human <- any(genes_vec %in% genes_process_vec)
-  idx_keep_mouse <- any(genes_vec %in% tolower(genes_process_vec))
-  idx_keep_tmp <- (idx_keep_human || idx_keep_mouse)
-  return(idx_keep_tmp)
-}, genes_process_vec = genes_process)
-plot_data_df <- plot_data_df[idx_keep,]
-## filter by column
-sampleinfo_filtered_df <- sampleinfo_df %>%
-  filter(Treatment_length == "1 month")
-plot_data_raw_mat <- as.matrix(plot_data_df[,sampleinfo_filtered_df$`Sample ID`])
+plot_data_df <- exp_df %>%
+  filter(number_nonna_Cabo >= 5)
+cutoff_high <- head(sort(plot_data_df$mean_log2ratio_CabovsCon, decreasing = T), n = 50)[50]
+cutoff_low <- tail(sort(plot_data_df$mean_log2ratio_CabovsCon, decreasing = T), n = 50)[1]
+
+plot_data_df <- plot_data_df %>%
+  filter(mean_log2ratio_CabovsCon >= cutoff_high | mean_log2ratio_CabovsCon <= cutoff_low)
+
+plot_data_raw_mat <- as.matrix(plot_data_df[,5:ncol(plot_data_df)])
 rownames(plot_data_raw_mat) <- plot_data_df$PG.ProteinNames
 
 ## scale by row
@@ -76,9 +74,8 @@ names(colors_treatment) <- c("Cabo", "Sap", "Cabo+ Sap", "Con")
 colors_treatmentlength <- RColorBrewer::brewer.pal(name = "Set1", n = 8)[c(7, 5)]
 names(colors_treatmentlength) <- c("2 month", "1 month")
 ## make colors for the original unscaled expression
-# summary(orig_avgexp_vec)
-colors_unscaledexp = circlize::colorRamp2(13:17, 
-                                          RColorBrewer::brewer.pal(name = "RdPu", n = 5))
+colors_unscaledexp = circlize::colorRamp2(14:22, 
+                                          RColorBrewer::brewer.pal(name = "RdPu", n = 9))
 ## make colors for species
 colors_genespecies <- RColorBrewer::brewer.pal(name = "Dark2", n = 3)
 names(colors_genespecies) <- c("Human", "Mouse", "Ambiguous")
@@ -89,10 +86,10 @@ orig_avgexp_vec <- rowMeans(x = plot_data_raw_mat, na.rm = T)
 ishuman_vec <- grepl(pattern = "HUMAN", x = proteinnames_mat)
 ismouse_vec <- grepl(pattern = "MOUSE", x = proteinnames_mat)
 protein_species_vec <- ifelse(ishuman_vec & !ismouse_vec, "Human",
-                              ifelse(ismouse_vec & !ishuman_vec, "Mouse", "Ambiguous"))
+                           ifelse(ismouse_vec & !ishuman_vec, "Mouse", "Ambiguous"))
 row_anno_obj <- rowAnnotation(Unscaled_Expression = anno_simple(x = orig_avgexp_vec, col = colors_unscaledexp), 
-                              # Species = anno_simple(x = protein_species_vec, col = colors_genespecies),
-                              annotation_name_side = "top", annotation_name_gp = gpar(fontsize = 10))
+                              Species = anno_simple(x = protein_species_vec, col = colors_genespecies),
+                              annotation_name_side = "top")
 
 # make column annotation --------------------------------------------------
 treatment_vec <- mapvalues(x = sampleids_mat, from = sampleinfo_df$`Sample ID`, to = as.vector(sampleinfo_df$Treatment))
@@ -108,66 +105,74 @@ top_col_anno = HeatmapAnnotation(TreatmentLength = anno_simple(x = treatmentleng
                                                          col = colors_treatment[treatment_vec]),
                                  annotation_name_side = "left")
 
-# make column split -------------------------------------------------------
-col_split_vec <- str_split_fixed(string = sampleids_mat, pattern = "_", 3)[,1]
-col_split_factor <- factor(x = col_split_vec, levels = c("RESL5", "RESL11","RESL12", "RESL3", "RESL4", "RESL10"))
-col_split_factor
-
-# make row split ----------------------------------------------------------
-rownames_mat <- rownames(plot_data_mat)
-row_split_vec <- mapvalues(x = plot_data_df$PG.Genes, from = markers_df$genesymbol, to = as.vector(markers_df$gene_category))
-# row_split_factor <- factor(x = row_split_vec, levels = c("sensitivity\nmarkers", "resistance\nmarkers"))
 
 # plot  ------------------------------------------------------------
 p <- ComplexHeatmap::Heatmap(matrix = plot_data_mat, 
                              col = colors_heatmapbody,
                              na_col = color_na,
                              ## row args
-                             # right_annotation = row_anno_obj,
+                             right_annotation = row_anno_obj,
                              show_row_names = T,
-                             row_names_side = "left", row_labels = plot_data_df$PG.Genes, right_annotation = row_anno_obj,
-                             # row_split = row_split_vec,
+                             row_names_side = "left",
                              show_row_dend = F, 
                              # row_km = 6, row_km_repeats = 100,
                              ## column args
-                             column_split = col_split_factor, show_column_names = F,
-                             # column_names_side = "top", 
+                             column_names_side = "top",
                              top_annotation = top_col_anno, 
-                             cluster_column_slices = F, cluster_columns = F,
-                             show_column_dend = F, column_dend_height = unit(2, "cm"), 
+                             show_column_dend = T, column_dend_height = unit(2, "cm"), 
                              # column_km = 6, column_km_repeats = 200,
                              show_heatmap_legend = F)
 
 # make legend -------------------------------------------------------------
 annotation_lgd = list(
-  Legend(col_fun = colors_heatmapbody, 
-         title = "Scaled protein\nabundance", 
-         title_gp = gpar(fontsize = 10),
-         labels_gp = gpar(fontsize = 10),
-         legend_width = unit(2, "cm"),
-         legend_height = unit(1, "cm"),
-         direction = "horizontal"),
-  Legend(col_fun = colors_unscaledexp, 
-         title = "Unscaled protein\nabundance", 
-         title_gp = gpar(fontsize = 10),
-         labels_gp = gpar(fontsize = 10),
-         legend_width = unit(2, "cm"),
-         legend_height = unit(1, "cm"),
-         direction = "horizontal"),
   Legend(labels = names(colors_treatment), 
          title = "Treatment", 
          legend_gp = gpar(fill = colors_treatment)),
   Legend(labels = names(colors_treatmentlength), 
          title = "Treatment length", 
-         legend_gp = gpar(fill = colors_treatmentlength)))
+         legend_gp = gpar(fill = colors_treatmentlength)),
+  Legend(labels = names(colors_genespecies), 
+         title = "Protein species", 
+         legend_gp = gpar(fill = colors_genespecies)),
+  Legend(col_fun = colors_heatmapbody, 
+         title = "Scaled protein\nabundance", 
+         title_gp = gpar(fontsize = 10),
+         labels_gp = gpar(fontsize = 10),
+         legend_width = unit(3, "cm"),
+         legend_height = unit(3, "cm"),
+         direction = "vertical"),
+  Legend(col_fun = colors_unscaledexp, 
+         title = "Unscaled protein\nabundance", 
+         title_gp = gpar(fontsize = 10),
+         labels_gp = gpar(fontsize = 10),
+         legend_width = unit(3, "cm"),
+         legend_height = unit(3, "cm"),
+         direction = "vertical"))
 
 # write output ------------------------------------------------------------
-file2write <- paste0(dir_out, "heatmap.pdf")
-pdf(file2write, width = 6, height = 4, useDingbats = F)
-draw(p, annotation_legend_side = "bottom", annotation_legend_list = annotation_lgd)  #Show the heatmap
-dev.off()
-
 file2write <- paste0(dir_out, "heatmap.png")
-png(file2write, width = 1000, height = 600, res = 150)
-draw(p, annotation_legend_side = "bottom", annotation_legend_list = annotation_lgd)  #Show the heatmap
+png(file2write, width = 1800, height = 2000, res = 150)
+p <- ComplexHeatmap::draw(p, annotation_legend_side = "right", annotation_legend_list = annotation_lgd)  #Show the heatmap
+p
 dev.off()
+# file2write <- paste0(dir_out, "heatmap.RDS")
+# saveRDS(object = p, file = file2write, compress = T)
+
+# extracting clusters -----------------------------------------------------
+rcl.list <- row_order(p)  #Extract clusters (output is a list)
+lapply(rcl.list, function(x) length(x))  #check/confirm size gene clusters
+library(magrittr)
+clu_df <- lapply(names(rcl.list), function(i){
+  out <- data.frame(GeneID = rownames(plot_data_mat[rcl.list[[i]],]),
+                    Cluster = paste0("cluster", i),
+                    stringsAsFactors = FALSE)
+  return(out)
+}) %>%  #pipe (forward) the output 'out' to the function rbind to create 'clu_df'
+  do.call(rbind, .)
+clu_df <- clu_df %>%
+  rename(ProteinName = GeneID) %>%
+  mutate(ProteinName_single = str_split_fixed(string = ProteinName, pattern = ";", n = 2)[,1])
+file2write <- paste0(dir_out, "protein2cluster.", "tsv")
+write.table(x = clu_df, file = file2write, quote = F, sep = "\t", row.names = F)
+
+

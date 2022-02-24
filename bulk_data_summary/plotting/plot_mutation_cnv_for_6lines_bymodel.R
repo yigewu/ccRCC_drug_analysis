@@ -2,7 +2,8 @@
 
 # set up libraries and output directory -----------------------------------
 ## set working directory
-dir_base = "~/Box/Ding_Lab/Projects_Current/RCC/ccRCC_Drug/"
+# dir_base = "~/Box/Ding_Lab/Projects_Current/RCC/ccRCC_Drug/"
+dir_base = "~/Library/CloudStorage/Box-Box/Ding_Lab/Projects_Current/RCC/ccRCC_Drug"
 setwd(dir_base)
 source("./ccRCC_drug_analysis/load_pkgs.R")
 source("./ccRCC_drug_analysis/functions.R")
@@ -23,6 +24,8 @@ sampleinfo_df <- readxl::read_excel(path = "./Data_Freeze/v1.dataFreeze.washU_rc
 mutation_df <- fread(data.table = F, input = "./Resources/Analysis_Results/mutation/generate_bulk_mutation_table_for_data_freeze/20211122.v1/RCC_PDX.AAChange_VAF.20211122.v1.tsv")
 ## input CNV
 cnv_arm_df <- fread(data.table = F, input = "./Data_Freeze/v1.dataFreeze.washU_rcc/2.copyNumber/gistic2.broad_values_by_arm.20200818.txt")
+cnv_gene_df <- fread(data.table = F, input = "./Data_Freeze/v1.dataFreeze.washU_rcc/2.copyNumber/rcc.cnvkit.segment.20201007.fixedIntersection.10kb.gene_level.tsv")
+
 ## input the protein meta data
 protein_meta_data_df <- readxl::read_excel(path = "./Data_Freeze/v1.dataFreeze.washU_rcc/4.protein/WUSTL to JHU_ccRCC PDX_sample information_01062021_YW.xlsx")
 
@@ -60,23 +63,23 @@ colors_mut = c("TRUE" = "#e7298a", "FALSE" = "grey90")
 colors_cnstatus = c("Gain" = "#E41A1C", "Loss" = "#377EB8", "Neutral" = "white", "NA" = "grey90")
 
 # make column annotation --------------------------------------------------
-## make CNV data
 cutoff_loss <- -0.3; cutoff_gain <- 0.3
-cn_bysample_df <- data.frame(t(cnv_arm_df[,-1])); colnames(cn_bysample_df) <- cnv_arm_df$`Chromosome Arm`; cn_bysample_df$Analysis_ID = colnames(cnv_arm_df)[-1]
-cn_bysample_df <- cn_bysample_df %>%
+## process CNV arm-level data
+cnv_byarm_bysample_df <- data.frame(t(cnv_arm_df[,-1])); colnames(cnv_byarm_bysample_df) <- cnv_arm_df$`Chromosome Arm`; cnv_byarm_bysample_df$Analysis_ID = colnames(cnv_arm_df)[-1]
+cnv_byarm_bysample_df <- cnv_byarm_bysample_df %>%
   filter(Analysis_ID %in% samples_plot_df$Analysis_ID)
-cn_bysample_df$cnstatus_3p <- ifelse(cn_bysample_df$`3p` <= cutoff_loss, "Loss", ifelse(cn_bysample_df$`3p` >= cutoff_gain, "Gain", "Neutral"))
-cn_bysample_df$cnstatus_5q <- ifelse(cn_bysample_df$`5q` <= cutoff_loss, "Loss", ifelse(cn_bysample_df$`5q` >= cutoff_gain, "Gain", "Neutral"))
-# cn_bysample_df$cnstatus_14q <- ifelse(cn_bysample_df$`14q` <= cutoff_loss, "Loss", ifelse(cn_bysample_df$`14q` >= cutoff_gain, "Gain", "Neutral"))
-cn_bysample_df$cnstatus_14q <- ifelse(cn_bysample_df$`14q` <= cutoff_loss, "Loss", "Neutral")
-cnstatus_bysample_df <- merge(x = cn_bysample_df, y = samples_plot_df %>%
+cnv_byarm_bysample_df$cnstatus_3p <- ifelse(cnv_byarm_bysample_df$`3p` <= cutoff_loss, "Loss", ifelse(cnv_byarm_bysample_df$`3p` >= cutoff_gain, "Gain", "Neutral"))
+cnv_byarm_bysample_df$cnstatus_5q <- ifelse(cnv_byarm_bysample_df$`5q` <= cutoff_loss, "Loss", ifelse(cnv_byarm_bysample_df$`5q` >= cutoff_gain, "Gain", "Neutral"))
+# cnv_byarm_bysample_df$cnstatus_14q <- ifelse(cnv_byarm_bysample_df$`14q` <= cutoff_loss, "Loss", ifelse(cnv_byarm_bysample_df$`14q` >= cutoff_gain, "Gain", "Neutral"))
+cnv_byarm_bysample_df$cnstatus_14q <- ifelse(cnv_byarm_bysample_df$`14q` <= cutoff_loss, "Loss", "Neutral")
+cnstatus_bysample_df <- merge(x = cnv_byarm_bysample_df, y = samples_plot_df %>%
                                 select(Analysis_ID, ModelID, ShortTag, Treatment.Month, column_id), by = c("Analysis_ID"), all.x = T)
 cnstatus_3p_bycolumn_df <- cnstatus_bysample_df %>%
   arrange(column_id, factor(x =cnstatus_3p, levels = c("Loss", "Gain", "Neutral"))) %>%
   group_by(column_id) %>%
   summarise(cnstatus_3p = cnstatus_3p[1])
 cnstatus_5q_bycolumn_df <- cnstatus_bysample_df %>%
-  arrange(column_id, factor(x =cnstatus_5q, levels = c("Loss", "Gain", "Neutral"))) %>%
+  arrange(column_id, factor(x =cnstatus_5q, levels = c("Gain", "Loss","Neutral"))) %>%
   group_by(column_id) %>%
   summarise(cnstatus_5q = cnstatus_5q[1])
 cnstatus_14q_bycolumn_df <- cnstatus_bysample_df %>%
@@ -87,7 +90,16 @@ cnstatus_14q_bycolumn_df <- cnstatus_bysample_df %>%
 cnstatus_3p_vec <- mapvalues(x = column_ids, from = cnstatus_3p_bycolumn_df$column_id, to = as.vector(cnstatus_3p_bycolumn_df$cnstatus_3p)); cnstatus_3p_vec[cnstatus_3p_vec == column_ids] <- "NA"
 cnstatus_5q_vec <- mapvalues(x = column_ids, from = cnstatus_5q_bycolumn_df$column_id, to = as.vector(cnstatus_5q_bycolumn_df$cnstatus_5q)); cnstatus_5q_vec[cnstatus_5q_vec == column_ids] <- "NA"
 cnstatus_14q_vec <- mapvalues(x = column_ids, from = cnstatus_14q_bycolumn_df$column_id, to = as.vector(cnstatus_14q_bycolumn_df$cnstatus_14q)); cnstatus_14q_vec[cnstatus_14q_vec == column_ids] <- "NA"
-
+## process CNV gene-level data
+cnv_bygene_bysample_df <- cnv_gene_df %>%
+  filter(gene == "MET")
+cnv_bygene_bysample_df <- merge(x = cnv_bygene_bysample_df, y = samples_plot_df %>%
+                                select(Analysis_ID, ModelID, ShortTag, Treatment.Month, column_id), by.x = c("sample"), by.y = c("Analysis_ID"), all.x = T)
+cnv_bygene_bymodel_df <- cnv_bygene_bysample_df %>%
+  filter(!is.na(ModelID)) %>%
+  # arrange(ModelID, desc(segment_log2)) %>%
+  group_by(ModelID)%>%
+  summarise(log2cnr = median(segment_log2), cn = median(segment_cn))
 ## make mutation data
 mutation_filtered_df <- merge(x = mutation_df %>%
                                 rename(Analysis_ID = Case) %>%
@@ -148,6 +160,6 @@ annotation_lgd = list(
 # dev.off()
 file2write <- paste0(dir_out, "heatmap.pdf")
 pdf(file2write, width = 3.5, height = 4, useDingbats = F)
-draw(p, annotation_legend_side = "right", annotation_legend_list = annotation_lgd)  #Show the heatmap
+ComplexHeatmap::draw(p, annotation_legend_side = "right", annotation_legend_list = annotation_lgd)  #Show the heatmap
 dev.off()
 
