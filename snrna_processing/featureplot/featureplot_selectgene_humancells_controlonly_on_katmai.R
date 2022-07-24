@@ -57,9 +57,9 @@ featurenames <- unique(featurenames)
 for (featurename in featurenames) {
   p <- FeaturePlot(object = srat, 
                    features = featurename,
-                   split.by = "orig.ident",
+                   # split.by = "orig.ident",
                    min.cutoff = "q10", max.cutoff = "q90", sort.cell = TRUE,
-                   cols = c("grey", "red"), reduction = "umap", label = F, raster = T) # & NoLegend() & NoAxes()
+                   cols = c("grey", "red"), reduction = "umap", label = F, raster = T)  & NoLegend() & NoAxes()
   
   # save output -------------------------------------------------------------
   file2write <- paste0(dir_out, featurename, ".featureplot", ".pdf")

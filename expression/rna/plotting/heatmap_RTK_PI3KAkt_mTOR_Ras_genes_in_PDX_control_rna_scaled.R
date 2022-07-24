@@ -78,6 +78,7 @@ rownames(plot_data_mat) <- rownames(plot_data_raw_mat)
 colnames(plot_data_mat) <- colnames(plot_data_raw_mat)
 
 # specify colors ----------------------------------------------------------
+fontsize_plot <- 15
 ## specify color for NA values
 color_na <- "grey50"
 ## make color function for heatmap body colors
@@ -108,7 +109,7 @@ names(colors_typeofreg) <- c("Negative", "Positive")
 # make row annotation -----------------------------------------------------
 typeofregulation_vec <- mapvalues(x = rownames(plot_data_mat), from = pathway2members_df$Gene_symbol, to = as.vector(pathway2members_df$Type_of_regulation))
 orig_avgexp_vec <- rowMeans(x = plot_data_raw_mat, na.rm = T)
-row_anno_obj <- rowAnnotation(TypeofRegulation = anno_simple(x = typeofregulation_vec, col = colors_typeofreg[typeofregulation_vec]),
+row_anno_obj <- rowAnnotation(#TypeofRegulation = anno_simple(x = typeofregulation_vec, col = colors_typeofreg[typeofregulation_vec]),
                               Unscaled_Expression = anno_simple(x = orig_avgexp_vec, col = colors_unscaledexp), 
                               annotation_name_side = "top")
 
@@ -137,46 +138,42 @@ p <- ComplexHeatmap::Heatmap(matrix = plot_data_mat, col = colors_heatmapbody,
                              ## row
                              cluster_rows = T, cluster_row_slices = F,
                              show_row_dend = F, row_split = row_split_vec,
-                             row_names_gp = grid::gpar(fontsize = row_fontsize), 
+                             row_names_gp = grid::gpar(fontsize = fontsize_plot), 
                              row_names_side = "left", right_annotation = row_anno_obj, 
-                             row_title_rot = 90, row_title_gp = grid::gpar(fontsize = 12),
+                             row_title_rot = 0, row_title_gp = grid::gpar(fontsize = fontsize_plot),
                              ## column
                              column_split = col_split_factor, cluster_column_slices = T,
-                             column_title_rot = 90, column_title_gp = grid::gpar(fontsize = 10), top_annotation = top_col_anno,
+                             column_title_rot = 90, column_title_gp = grid::gpar(fontsize = fontsize_plot), 
                              # top_annotation = top_col_anno,
                              show_column_names = F, 
                              cluster_columns = F, 
                              show_column_dend = F, show_heatmap_legend = F)
-p
 
 # make legend -------------------------------------------------------------
 annotation_lgd = list(
-  # Legend(labels = names(colors_treatment), 
-  #        title = "Treatment", 
-  #        legend_gp = gpar(fill = colors_treatment)),
-  Legend(labels = names(colors_treatmentlength), 
-         title = "Vehicle treatment\nlength", 
-         legend_gp = gpar(fill = colors_treatmentlength)),
-  Legend(labels = names(colors_typeofreg),
-         title = "Type of regulation\non the pathways",
-         legend_gp = gpar(fill = colors_typeofreg)),
+  # Legend(labels = c("2 month", "1 month"), 
+  #        title = "Vehicle treatment\nlength", 
+  #        legend_gp = gpar(fill = colors_treatmentlength[c("2 month", "1 month")])),
   Legend(col_fun = colors_heatmapbody, 
          title = "Scaled gene\nexpression", 
-         title_gp = gpar(fontsize = 10),
-         labels_gp = gpar(fontsize = 10),
-         # legend_width = unit(3, "cm"),
-         legend_height = unit(1.5, "cm"), 
+         title_gp = gpar(fontsize = fontsize_plot),
+         labels_gp = gpar(fontsize = fontsize_plot),
+         legend_width = unit(4, "cm"),
+         legend_height = unit(3, "cm"),
          direction = "horizontal"),
   Legend(col_fun = colors_unscaledexp, 
          title = "Unscaled gene\nexpression", 
-         title_gp = gpar(fontsize = 10),
-         labels_gp = gpar(fontsize = 10),
-         # legend_width = unit(3, "cm"),
+         title_gp = gpar(fontsize = fontsize_plot),
+         labels_gp = gpar(fontsize = fontsize_plot),
          legend_height = unit(1.5, "cm"), 
          direction = "horizontal"))
 
 # write output ------------------------------------------------------------
 file2write <- paste0(dir_out, "heatmap.png")
 png(file2write, width = 800, height = 700, res = 150)
+draw(p, annotation_legend_side = "bottom", annotation_legend_list = annotation_lgd)  #Show the heatmap
+dev.off()
+file2write <- paste0(dir_out, "heatmap.pdf")
+pdf(file2write, width = 6, height = 6, useDingbats = F)
 draw(p, annotation_legend_side = "bottom", annotation_legend_list = annotation_lgd)  #Show the heatmap
 dev.off()

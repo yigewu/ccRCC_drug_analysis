@@ -27,9 +27,11 @@ for (pkg_name_tmp in packages) {
 
 # input dependencies ------------------------------------------------------
 # enricher_top_df <- fread(data.table = F, input = "./Resources/Analysis_Results/expression/protein/pathway/unite_ora_msigdb_H_CP_treated_vs_control_human_proteins/20220216.v1/ora_msigdb_H_CP.treated_vs_control.human.proteins.decreased.top.20220216.v1.tsv")
-enricher_top_df <- fread(data.table = F, input = "./Resources/Analysis_Results/expression/protein/pathway/filter_ora_treated_vs_control_ttest_human_protein_msigdb_HCP/20220323.v1/ora_msigdb_H_CP.treated_vs_control.human.proteins.decreased.top.20220323.v1.tsv")
+enricher_top_df1 <- fread(data.table = F, input = "./Resources/Analysis_Results/expression/protein/pathway/filter_ora_treated_vs_control_ttest_human_protein_msigdb_HCP/20220323.v1/ora_msigdb_H_CP.treated_vs_control.human.proteins.increased.top.20220323.v1.tsv")
+enricher_top_df2 <- fread(data.table = F, input = "./Resources/Analysis_Results/expression/protein/pathway/filter_ora_treated_vs_control_ttest_human_protein_msigdb_HCP/20220323.v1/ora_msigdb_H_CP.treated_vs_control.human.proteins.decreased.top.20220323.v1.tsv")
 
 # make plot data -----------------------------------------------------------
+enricher_top_df <- rbind(enricher_top_df1, enricher_top_df2)
 plotdata_df <- enricher_top_df %>%
   mutate(pathway_name = str_split_fixed(string = ID, pattern = "_", n = 2)[,2]) %>%
   mutate(pathway_database = str_split_fixed(string = ID, pattern = "_", n = 2)[,1]) %>%
@@ -59,6 +61,7 @@ names(colors_rank) <- c(as.character(1:5), ">5")
 # make plot ---------------------------------------------------------------
 p <- ggplot()
 p <- p + geom_point(data = plotdata_df, mapping = aes(x = x_plot, y = y_plot, fill = treatment, size = Count, color = rank, stroke = !is.na(my_ranks)), shape = 21)
+p <- p + facet_wrap(diff_direction~., scales = "free")
 p <- p + xlab("Gene ratio")
 p <- p + scale_fill_manual(values = c("Cabo" = color_red, "Sap" = color_green, "Cabo+ Sap" = color_yellow))
 p <- p + scale_color_manual(values = colors_rank)
@@ -79,7 +82,7 @@ dir_out <- paste0(makeOutDir(), run_id, "/")
 dir.create(dir_out)
 
 file2write <- paste0(dir_out, "ora_msigdb_H_CP_pathways.pdf")
-pdf(file2write, width = 6.5, height = 3.5, useDingbats = F)
+pdf(file2write, width = 12, height = 3.5, useDingbats = F)
 print(p)
 dev.off()
 # file2write <- paste0(dir_out, "ora_msigdb_H_CP_pathways.png")

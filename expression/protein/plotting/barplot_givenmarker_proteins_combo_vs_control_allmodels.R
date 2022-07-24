@@ -26,19 +26,9 @@ for (pkg_name_tmp in packages) {
 
 # input dependencies ------------------------------------------------------
 ## input fold changes
-foldchanges_df <- fread(data.table = F, input = "./Resources/Analysis_Results/expression/protein/other/get_foldchange_treated_vs_control_byprotein/20211109.v1/Protein_diff_treated_vs_control.20211109.v1.tsv")
+foldchanges_df <- fread(data.table = F, input = "./Resources/Analysis_Results/expression/protein/other/get_foldchange_combo_vs_other_byprotein/20220317.v1/Protein_diff_combo_vs_other.20220317.v1.tsv")
 ## input the sample info
 meta_data_df <- readxl::read_excel(path = "./Data_Freeze/v1.dataFreeze.washU_rcc/4.protein/WUSTL to JHU_ccRCC PDX_sample information_01062021_YW.xlsx")
-
-# run by loop -------------------------------------------------------------
-meta_data_control_df <- meta_data_df %>%
-  filter(Treatment == "Con") %>%
-  mutate(ModelID = str_split_fixed(string = `Sample ID`, pattern = "_", n = 3)[,1]) %>%
-  arrange(ModelID)
-meta_data_treated_df <- meta_data_df %>%
-  filter(Treatment != "Con") %>%
-  mutate(ModelID = str_split_fixed(string = `Sample ID`, pattern = "_", n = 3)[,1]) %>%
-  arrange(ModelID)
 
 # prepare plotting parameters ---------------------------------------------
 colors_treatment <- c("grey50", RColorBrewer::brewer.pal(n = 5, name = "Set1")[c(1,2,4,3)])
@@ -46,26 +36,24 @@ names(colors_treatment) <- c("Baseline", "Cabo", "Sap", "Cabo+ Sap", "Con")
 # genes_process <- c("MFGE8", "PLA2G15", "SOD2", "CAVIN1", "LEMD3", "RPL27A", "MRPS6", "PTCD3")
 genes_process <- c("PYCR1", "CLIC6")
 genes_process <- c("PYCR1", "CHMP6", "MRM3", "ERO1B", "CLIC6", "COBLL1", "IGF2BP3", "DNAJC7")
+genes_process <- c("ICAM1", "LRP1", "FTH1", "ICAM1", "ALDH1L1", "CDK4", "BLVRB", "ADK", "MAT1A")
 cap_value <- 2
 # cap_value <- 7
 
 # plot all model -----------------------------------------------------------
-treatment_tmp <- "Cabo"
 treatment.month_tmp <- 1
-model_ids_tmp <- unique(meta_data_control_df$ModelID)
+model_ids_tmp <- c("RESL11", "RESL10", "RESL5", "RESL12", "RESL3","RESL4")
 
 ## prepare plot data
 plotdata_wide_df <- foldchanges_df[, c("PG.Gene", "PG.ProteinName", "PG.ProteinDescriptions", "PG.ProteinAccession", 
-                                       paste0(model_ids_tmp, "_", "Cabo+ Sap", "_", treatment.month_tmp, "month"),
-                                       paste0(model_ids_tmp, "_", "Cabo", "_", treatment.month_tmp, "month"),
-                                       paste0(model_ids_tmp, "_", "Sap", "_", treatment.month_tmp, "month"))]
+                                       paste0(model_ids_tmp, "_Combo.vs.", "Con", "_", treatment.month_tmp, "month"))]
 plotdata_wide_filtered_df <- plotdata_wide_df %>%
   filter(PG.Gene %in% genes_process)
 # plotdata_wide_filtered_df <- plotdata_wide_filtered_df[rowSums(!is.na(plotdata_wide_filtered_df)) == ncol(plotdata_wide_filtered_df),]
 plotdata_df <- plotdata_wide_filtered_df %>%
   melt() %>%
   filter(!is.infinite(value)) %>%
-  mutate(treatment = str_split_fixed(string = variable, pattern = "_", n = 3)[,2]) %>%
+  mutate(comparison = str_split_fixed(string = variable, pattern = "_", n = 3)[,2]) %>%
   # filter(treatment == "Cabo+ Sap") %>%
   mutate(model_id = str_split_fixed(string = variable, pattern = "_", n = 3)[,1]) %>%
   mutate(log2FC = value) %>%
@@ -76,22 +64,22 @@ plotdata_df <- plotdata_wide_filtered_df %>%
 #   filter(treatment == "Sap") %>%
 #   arrange(log2FC)
 plotdata_df$model_id <- factor(x = plotdata_df$model_id, levels = rev(c("RESL11", "RESL10", "RESL5", "RESL12", "RESL3","RESL4")))
-plotdata_df$treatment <- factor(x = plotdata_df$treatment, levels = rev(c("Cabo", "Sap", "Cabo+ Sap")))
+# plotdata_df$treatment <- factor(x = plotdata_df$treatment, levels = rev(c("Cabo", "Sap", "Cabo+ Sap")))
 # plotdata_df$y_plot <- factor(x = plotdata_df$PG.Gene, levels = unique(orderdata_df$PG.Gene))
-plotdata_df$y_plot <- factor(x = plotdata_df$PG.Gene, levels = rev(genes_process))
+# plotdata_df$y_plot <- factor(x = plotdata_df$PG.Gene, levels = rev(genes_process))
 
 ## plot
 p <- ggplot(data = plotdata_df, mapping = aes(x = x_plot, y = y_plot))
 p <- p + geom_vline(xintercept = 0, linetype = 2)
-p <- p + geom_bar(mapping = aes(fill = treatment), stat = "identity", position = 'dodge')
-p <- p + scale_fill_manual(values = colors_treatment)
+p <- p + geom_bar(stat = "identity", position = 'dodge')
+# p <- p + scale_fill_manual(values = colors_treatment)
 p <- p + facet_grid(cols = vars(model_id))
 p <- p + theme_classic()
 p <- p + xlim(c(-cap_value, cap_value))
-p <- p + xlab("Log2(Expression-treated vs. Expression-control)")
+p <- p + xlab("Difference in log2(Intensity) (combination-treated - control)") 
 p <- p + theme(axis.title.y = element_blank()) + theme(legend.position = "bottom")
 p <- p + theme(axis.text.x = element_rect(size = 9))
-
+p
 
 # save output -------------------------------------------------------------
 ## set run id

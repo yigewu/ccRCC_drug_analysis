@@ -2,7 +2,7 @@
 
 # set up libraries and output directory -----------------------------------
 ## set working directory
-dir_base = "~/Box/Ding_Lab/Projects_Current/RCC/ccRCC_Drug/"
+dir_base = "~/Library/CloudStorage/Box-Box/Ding_Lab/Projects_Current/RCC/ccRCC_Drug"
 setwd(dir_base)
 source("./ccRCC_drug_analysis/load_pkgs.R")
 source("./ccRCC_drug_analysis/functions.R")
@@ -23,7 +23,7 @@ rna_exp_df <- fread("./Resources/Bulk_Processed_Data/Data_Files/batch8_cellline/
 # set parameters ----------------------------------------------------------
 ## sum up the genes
 # genes2plot <- c("ABCC3", "TGFA", "SLC6A3", "CA9", "CP", "MGST1", "SNAP25", "EGFR")
-genes2plot <- c("ABCC3",  "SLC6A3", "CA9", "CP")
+genes2plot <- c("ABCC3",  "SLC6A3", "CA9")
 ## set plotting metrics
 num_nonna <- 0
 row_fontsize <- 9
@@ -46,7 +46,7 @@ rownames(plot_data_mat) <- rownames(plot_data_raw_mat)
 colnames(plot_data_mat) <- colnames(plot_data_raw_mat)
 ## filter columns
 plot_data_mat <- plot_data_mat[, c("dr-786-o-vhl-neg_rna.GATCTATC-ATGAGGCT",
-                                   "dr-hek-293t-rna.CATAATAC-TTCTAACG",
+                                   # "dr-hek-293t-rna.CATAATAC-TTCTAACG",
                                    "dr-hk-2-rna.TGCGGCGT-CCTCGGTA",
                                    "dr-rcc-4-vhl-pos_rna.AGCTCGCT-GCAGAATC",
                                    "dr-rcc-4-vhl-neg_rna.CGGAACTG-CACTACGA")]
@@ -59,7 +59,7 @@ color_blue <- RColorBrewer::brewer.pal(n = 3, name = "Set1")[2]
 color_red <- RColorBrewer::brewer.pal(n = 3, name = "Set1")[1]
 summary(as.vector(plot_data_mat))
 colors_heatmapbody <- circlize::colorRamp2(c(quantile(plot_data_mat, 0.1, na.rm=T), 
-                                             quantile(plot_data_mat, 0.5, na.rm=T), 
+                                             0,
                                              quantile(plot_data_mat, 0.9, na.rm=T)),c(color_blue, "white", color_red))
 
 ## make color for treatment type

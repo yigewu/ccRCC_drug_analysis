@@ -3,6 +3,7 @@
 # set up libraries and output directory -----------------------------------
 ## set working directory
 dir_base = "~/Box/Ding_Lab/Projects_Current/RCC/ccRCC_Drug/"
+dir_base = "~/Library/CloudStorage/Box-Box/Ding_Lab/Projects_Current/RCC/ccRCC_Drug"
 setwd(dir_base)
 source("./ccRCC_drug_analysis/load_pkgs.R")
 source("./ccRCC_drug_analysis/functions.R")
@@ -26,6 +27,9 @@ plot_data_df <- summary_df[, c("Name", paste0("RESL", c(5, 10, 12, 4, 3, 11)))]
 plot_data_df <- plot_data_df[rowSums(plot_data_df[,-1] != "Didn’t test") > 0,]
 plot_data_mat <- as.matrix(x = plot_data_df[,-1])
 rownames(plot_data_mat) <- plot_data_df$Name
+plot_data_mat[plot_data_mat == "Less effective"] <- "Effective"
+plot_data_mat[plot_data_mat == "Didn’t test"] <- "Didn't test"
+
 plot_data_mat <- plot_data_mat[c("Cabozantinib",
                                  "Sapanisertib",
                                  "Panobinostat",
@@ -33,18 +37,21 @@ plot_data_mat <- plot_data_mat[c("Cabozantinib",
                                  "Abemaciclib",
                                  "Selumetinib",
                                  "Birinapant",
-                                 "β-hydroxybutyrate",
+                                 "Beta-hydroxybutyrate",
                                  "Acriflavine hydrochloride",
-                                 "Losartan potassium"),]
+                                 "Losartan"),]
 
 # make colors -------------------------------------------------------------
 colors_heatmapbody <- structure(c("black", "grey50", "red", "orange"), names = c("Didn’t test", "Not effective", "Effective", "Less effective"))
+colors_heatmapbody <- structure(c("black", "grey50", "red"), names = c("Didn't test", "Not effective", "Effective"))
+
 # plot --------------------------------------------------------------------
+fontsize_plot <- 15
 p <- Heatmap(matrix = plot_data_mat, col = colors_heatmapbody, show_heatmap_legend = F, 
-             row_names_gp = gpar(fontsize = 12), column_names_gp = gpar(fontsize = 12))
+             row_names_gp = gpar(fontsize = fontsize_plot), column_names_gp = gpar(fontsize = fontsize_plot), cluster_rows = F)
 annotation_lgd = list(
-  Legend(labels = names(colors_heatmapbody), labels_gp = gpar(fontsize = 12),
-         title = "Response", title_gp = gpar(fontsize = 12),
+  Legend(labels = names(colors_heatmapbody), labels_gp = gpar(fontsize = fontsize_plot),
+         title = "Response", title_gp = gpar(fontsize = fontsize_plot),
          legend_gp = gpar(fill = colors_heatmapbody)))
 
 # write output ------------------------------------------------------------

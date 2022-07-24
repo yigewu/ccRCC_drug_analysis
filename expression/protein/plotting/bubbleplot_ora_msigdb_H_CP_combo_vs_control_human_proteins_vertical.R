@@ -27,45 +27,48 @@ for (pkg_name_tmp in packages) {
 
 # input dependencies ------------------------------------------------------
 # enricher_top_df <- fread(data.table = F, input = "./Resources/Analysis_Results/expression/protein/pathway/unite_ora_msigdb_H_CP_treated_vs_control_human_proteins/20220216.v1/ora_msigdb_H_CP.treated_vs_control.human.proteins.decreased.top.20220216.v1.tsv")
-enricher_top_df <- fread(data.table = F, input = "./Resources/Analysis_Results/expression/protein/pathway/filter_ora_treated_vs_control_ttest_human_protein_msigdb_HCP/20220323.v1/ora_msigdb_H_CP.treated_vs_control.human.proteins.decreased.top.20220323.v1.tsv")
+enricher_top_df1 <- fread(data.table = F, input = "./Resources/Analysis_Results/expression/protein/pathway/filter_ora_treated_vs_control_ttest_human_protein_msigdb_HCP/20220323.v1/ora_msigdb_H_CP.treated_vs_control.human.proteins.increased.top.20220323.v1.tsv")
+enricher_top_df2 <- fread(data.table = F, input = "./Resources/Analysis_Results/expression/protein/pathway/filter_ora_treated_vs_control_ttest_human_protein_msigdb_HCP/20220323.v1/ora_msigdb_H_CP.treated_vs_control.human.proteins.decreased.top.20220323.v1.tsv")
 
 # make plot data -----------------------------------------------------------
+enricher_top_df <- rbind(enricher_top_df1, enricher_top_df2)
 plotdata_df <- enricher_top_df %>%
   mutate(pathway_name = str_split_fixed(string = ID, pattern = "_", n = 2)[,2]) %>%
   mutate(pathway_database = str_split_fixed(string = ID, pattern = "_", n = 2)[,1]) %>%
   # mutate(y_plot = paste0(tolower(pathway_name), "|", tolower(pathway_database))) %>%
-  mutate(y_plot = paste0(tolower(pathway_name), "(", tolower(pathway_database), ")")) %>%
-  mutate(x_plot = generatio_num) %>%
+  # mutate(y_plot = paste0(tolower(pathway_name), "(", tolower(pathway_database), ")")) %>%
+  mutate(y_plot = gsub(x = tolower(pathway_name), pattern = "_", replacement = " ")) %>%
+  mutate(x_plot = generatio_num*100) %>%
   mutate(treatment = group1) %>%
-  mutate(rank = ifelse(is.na(my_ranks), ">5", my_ranks))
+  filter(treatment == "Cabo+ Sap" & !is.na(my_ranks))
   # mutate(rank = ifelse(is.na(my_ranks), ">10", my_ranks))
 # plotdata_df$rank <- factor(x = plotdata_df$rank, levels = c(as.character(1:10), ">10"))
-plotdata_df$rank <- factor(x = plotdata_df$rank, levels = c(as.character(1:5), ">5"))
+plotdata_df$y_plot[plotdata_df$y_plot == "intracellular trafficking proteins involved in cmt neuropathy"] <- "intracellular trafficking proteins\ninvolved in CMT neuropathy"
+plotdata_df$y_plot[plotdata_df$y_plot == "e2f targets"] <- "E2F targets"
+plotdata_df$y_plot[plotdata_df$y_plot == "g2m checkpoint"] <- "G2M checkpoint"
 
 ## order pathways
 orderdata_df <- plotdata_df %>%
   filter(treatment == "Cabo+ Sap") %>%
   # filter(treatment == "CaboSap") %>%
-  arrange(desc(x_plot))
+  arrange(x_plot)
 plotdata_df$y_plot <- factor(x = plotdata_df$y_plot, levels = orderdata_df$y_plot)
 color_red <- RColorBrewer::brewer.pal(n = 7, name = "Set1")[1]
+color_blue <- RColorBrewer::brewer.pal(n = 7, name = "Set1")[2]
 color_green <- RColorBrewer::brewer.pal(n = 7, name = "Set1")[3]
 color_yellow <- RColorBrewer::brewer.pal(n = 7, name = "Set2")[6]
-colors_rank <- c(paste0("grey", 6*(0:9)), "white")
-names(colors_rank) <- c(as.character(1:10), ">10")
-colors_rank <- c(paste0("grey", 6*(0:4)), "white")
-names(colors_rank) <- c(as.character(1:5), ">5")
 
 # make plot ---------------------------------------------------------------
+fontsize_plot <- 12
 p <- ggplot()
-p <- p + geom_point(data = plotdata_df, mapping = aes(x = x_plot, y = y_plot, fill = treatment, size = Count, color = rank, stroke = !is.na(my_ranks)), shape = 21)
-p <- p + xlab("Gene ratio")
-p <- p + scale_fill_manual(values = c("Cabo" = color_red, "Sap" = color_green, "Cabo+ Sap" = color_yellow))
-p <- p + scale_color_manual(values = colors_rank)
+p <- p + geom_point(data = plotdata_df, mapping = aes(x = x_plot, y = y_plot, size = Count, fill = diff_direction), shape = 21)
+p <- p + facet_wrap(diff_direction~., scales = "free", nrow = 2)
+p <- p + xlab("Gene ratio (%)")
+p <- p + scale_fill_manual(values = c("up" = color_red, "down" = color_blue))
 p <- p + theme_bw()
 p <- p + theme(axis.title.y = element_blank(), 
-               axis.text.x = element_text(color = "black"),
-               axis.text.y = element_text(color = "black"), legend.position = "right")
+               axis.text.x = element_text(color = "black", size = fontsize_plot),
+               axis.text.y = element_text(color = "black", size = fontsize_plot), legend.position = "right")
 p <- p + guides(size = guide_legend(ncol = 2), color = guide_legend(ncol = 2))
 
 
@@ -79,7 +82,7 @@ dir_out <- paste0(makeOutDir(), run_id, "/")
 dir.create(dir_out)
 
 file2write <- paste0(dir_out, "ora_msigdb_H_CP_pathways.pdf")
-pdf(file2write, width = 6.5, height = 3.5, useDingbats = F)
+pdf(file2write, width = 5.5, height = 3, useDingbats = F)
 print(p)
 dev.off()
 # file2write <- paste0(dir_out, "ora_msigdb_H_CP_pathways.png")
