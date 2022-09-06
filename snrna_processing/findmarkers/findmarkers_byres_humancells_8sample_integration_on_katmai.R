@@ -25,11 +25,26 @@ path_this_script <- thisFile()
 dir_base = "/diskmnt/Projects/ccRCC_scratch/ccRCC_Drug/"
 # dir_base = "~/Box/Ding_Lab/Projects_Current/RCC/ccRCC_Drug/"
 setwd(dir_base)
-source("./ccRCC_drug_analysis/load_pkgs.R")
-source("./ccRCC_drug_analysis/functions.R")
-source("./ccRCC_drug_analysis/variables.R")
-library(Seurat)
+packages = c(
+  "rstudioapi",
+  "plyr",
+  "dplyr",
+  "stringr",
+  "reshape2",
+  "data.table",
+  "Seurat",
+  "future",
+  "future.apply"
+)
+
+for (pkg_name_tmp in packages) {
+  library(package = pkg_name_tmp, character.only = T)
+}
+# set up future for parallelization
+plan("multiprocess", workers = 6)
+options(future.globals.maxSize = 10000 * 1024^2)
 ## set output directory
+source("./ccRCC_drug_analysis/functions.R")
 dir_out_parent <- makeOutDir_katmai(path_this_script)
 dir_out <- paste0(dir_out_parent, run_id, "/")
 dir.create(dir_out)
