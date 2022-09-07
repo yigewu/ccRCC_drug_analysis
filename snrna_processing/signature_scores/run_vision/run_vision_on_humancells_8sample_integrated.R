@@ -41,7 +41,7 @@ signatures <- c("../ccRCC_snRNA/Resources/Knowledge/Databases/MSigDB/msigdb_v7.4
 ### NULL
 ### rownames(srat$integrated@data will give top variably expressed genes
 # DefaultAssay(srat) <- "RNA"
-options(mc.cores = 8)
+options(mc.cores = 10)
 vision.obj <- Vision(srat, signatures = signatures, pool = F)
 print("Finish creating the vision object!\n")
 # Set the number of threads when running parallel computations
@@ -49,15 +49,17 @@ vision.obj <- analyze(vision.obj)
 print("Finish analyze the vision object!\n")
 sigScores <- getSignatureScores(vision.obj)
 print("Finish getSignatureScores!\n")
-sigCorr <- getSignatureAutocorrelation(vis_obj)
+file2write <- paste0(dir_out, "humancells.8sampleintegrated.Vision.sigScores.", run_id, ".RDS")
+saveRDS(object = sigScores, file = file2write, compress = T)
+sigCorr <- getSignatureAutocorrelation(vision.obj)
 sigCorr$gene_set <- rownames(sigCorr)
 print(head(sigCorr))
 print("Finish getSignatureAutocorrelation!\n")
+file2write <- paste0(dir_out, "humancells.8sampleintegrated.Vision.SignatureAutocorrelation.", run_id, ".tsv")
+write.table(x = sigCorr, file = file2write, quote = F, sep = "\t", row.names = F)
 
 # save output -------------------------------------------------------------
 file2write <- paste0(dir_out, "humancells.8sampleintegrated.Vision.", run_id, ".RDS")
 saveRDS(object = vision.obj, file = file2write, compress = T)
-file2write <- paste0(dir_out, "humancells.8sampleintegrated.Vision.sigScores.", run_id, ".RDS")
-saveRDS(object = sigScores, file = file2write, compress = T)
-file2write <- paste0(dir_out, "humancells.8sampleintegrated.Vision.SignatureAutocorrelation.", run_id, ".tsv")
-write.table(x = sigCorr, file = file2write, quote = F, sep = "\t", row.names = F)
+
+
