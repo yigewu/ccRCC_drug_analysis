@@ -3,9 +3,30 @@
 ## before run script, run conda activate vision
 
 # set up libraries and output directory -----------------------------------
+## getting the path to the current script
+thisFile <- function() {
+  cmdArgs <- commandArgs(trailingOnly = FALSE)
+  needle <- "--file="
+  match <- grep(needle, cmdArgs)
+  if (length(match) > 0) {
+    # Rscript
+    return(normalizePath(sub(needle, "", cmdArgs[match])))
+  } else {
+    # 'source'd via R console
+    return(normalizePath(sys.frames()[[1]]$ofile))
+  }
+}
+path_this_script <- thisFile()
+## set working directory
 dir_base = "/diskmnt/Projects/ccRCC_scratch/ccRCC_Drug/"
 setwd(dir_base)
 packages = c(
+  "rstudioapi",
+  "plyr",
+  "dplyr",
+  "stringr",
+  "reshape2",
+  "data.table",
   "Seurat",
   "VISION"
 )
@@ -19,10 +40,15 @@ for (pkg_name_tmp in packages) {
 ## set run id
 version_tmp <- 1
 run_id <- paste0(format(Sys.Date(), "%Y%m%d") , ".v", version_tmp)
-dir_parent_out <- "/diskmnt/Projects/ccRCC_scratch/ccRCC_Drug/Resources/Analysis_Results/snrna_processing/signature_scores/run_vision/run_vision_on_humancells_8sample_integrated/"
-dir.create(dir_parent_out)
-dir_out <- paste0(dir_parent_out, run_id, "/")
+## set output directory
+source("./ccRCC_drug_analysis/functions.R")
+dir_out <- paste0(makeOutDir_katmai(path_this_script), run_id, "/")
 dir.create(dir_out)
+
+# dir_parent_out <- "/diskmnt/Projects/ccRCC_scratch/ccRCC_Drug/Resources/Analysis_Results/snrna_processing/signature_scores/run_vision/run_vision_on_humancells_8sample_integrated/"
+# dir.create(dir_parent_out)
+# dir_out <- paste0(dir_parent_out, run_id, "/")
+# dir.create(dir_out)
 
 # input  ------------------------------------------------------
 ## input seurat object
@@ -41,7 +67,7 @@ signatures <- c("../ccRCC_snRNA/Resources/Knowledge/Databases/MSigDB/msigdb_v7.4
 ### NULL
 ### rownames(srat$integrated@data will give top variably expressed genes
 # DefaultAssay(srat) <- "RNA"
-options(mc.cores = 10)
+options(mc.cores = 20)
 vision.obj <- Vision(srat, signatures = signatures, pool = F)
 print("Finish creating the vision object!\n")
 # Set the number of threads when running parallel computations
