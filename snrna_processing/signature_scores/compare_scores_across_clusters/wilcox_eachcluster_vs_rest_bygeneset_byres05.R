@@ -26,8 +26,6 @@ packages = c(
   "stringr",
   "reshape2",
   "data.table",
-  "Seurat",
-  "VISION",
   "doParallel"
 )
 if (!("VISION" %in% installed.packages()[,1])) {
