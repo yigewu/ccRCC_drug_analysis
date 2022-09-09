@@ -1,4 +1,4 @@
-# Yige Wu @WashU Mar 2022
+# Yige Wu @WashU Sep 2022
 ## https://yoseflab.github.io/VISION/articles/web_only/Seurat.html
 ## before run script, run conda activate vision
 
