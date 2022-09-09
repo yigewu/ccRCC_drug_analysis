@@ -27,7 +27,8 @@ packages = c(
   "reshape2",
   "data.table",
   "Seurat",
-  "VISION"
+  "VISION",
+  "doParallel"
 )
 if (!("VISION" %in% installed.packages()[,1])) {
   print(paste0(pkg_name_tmp, "is being installed!"))
