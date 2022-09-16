@@ -3,7 +3,8 @@
 
 # set up libraries and output directory -----------------------------------
 ## set working directory
-dir_base = "~/Box/Ding_Lab/Projects_Current/RCC/ccRCC_Drug/"
+# dir_base = "~/Box/Ding_Lab/Projects_Current/RCC/ccRCC_Drug/"
+dir_base = "~/Library/CloudStorage/Box-Box/Ding_Lab/Projects_Current/RCC/ccRCC_Drug/"
 setwd(dir_base)
 source("./ccRCC_drug_analysis/load_pkgs.R")
 source("./ccRCC_drug_analysis/functions.R")
@@ -19,6 +20,9 @@ dir.create(dir_out)
 ## input cell type and umap data
 barcode2cluster_df <- fread(input = "./Resources/Analysis_Results/snrna_processing/fetch_data/fetch_data_humancells_8sample_integration_withanchor_on_katmai/20210209.v1/HumanCells_8sample.umap_data.20210209.v1.tsv", data.table = F)
 
+# set parameters ----------------------------------------------------------
+clusters_plot <- c("MC3", "MC6", "MC8", "MC11", "MC14")
+
 # make plot data ----------------------------------------------------------
 plot_data_df <- barcode2cluster_df %>%
   group_by(orig.ident, seurat_clusters) %>%
@@ -33,37 +37,46 @@ plot_data_df <- plot_data_df %>%
   mutate(treatment_group = str_split_fixed(string = orig.ident, pattern = "-", n = 3)[,3]) %>%
   mutate(treatment_group = gsub(pattern = "2", replacement = "", x = treatment_group)) %>%
   mutate(treatment_group = factor(x = treatment_group, levels = c("CT", "Sap", "Cabo", "Cabo_Sap"))) %>%
-  mutate(cluster = factor(seurat_clusters))
-## make color for each cluster
-colors_cluster <- Polychrome::dark.colors(n = length(unique(plotdata_df$id_seurat_cluster)))
-names(colors_cluster) <- unique(plotdata_df$id_seurat_cluster)
+  mutate(cluster = paste0("MC", (seurat_clusters+1))) %>%
+  filter(cluster %in% clusters_plot) %>%
+  group_by(id_model, treatment_group) %>%
+  summarise(frac_bysample_clustergrouped = sum(frac_bysample_bycluster))
 
 # make plot for CT-Sap-Combo ---------------------------------------------------------
-p <- ggplot(data = subset(plot_data_df, treatment_group != "Cabo"), mapping = aes(x = treatment_group, y = frac_bysample_bycluster, group = cluster, color = cluster))
+p <- ggplot(data = subset(plot_data_df, treatment_group != "Cabo"), mapping = aes(x = treatment_group, y = frac_bysample_clustergrouped, group = id_model))
 p <- p + geom_line()
 p <- p + geom_point()
-p <- p + scale_color_manual(values = colors_cluster)
 p <- p + facet_grid(cols = vars(id_model), scales = "free")
 p <- p + theme_classic()
-p <- p + guides(colour = guide_legend(ncol = 2))
-
 p
 file2write <- paste0(dir_out, "CT-Sap-Combo", ".png")
 png(filename = file2write, width = 1000, height = 600, res = 150)
 print(p)
 dev.off()
 
-# make plot for CT-Sap-Combo ---------------------------------------------------------
-p <- ggplot(data = subset(plot_data_df, treatment_group != "Sap"), mapping = aes(x = treatment_group, y = frac_bysample_bycluster, group = cluster, color = cluster))
+# make plot for CT-Cab-Combo ---------------------------------------------------------
+p <- ggplot(data = subset(plot_data_df, treatment_group != "Sap"), mapping = aes(x = treatment_group, y = frac_bysample_clustergrouped, group = id_model))
 p <- p + geom_line()
 p <- p + geom_point()
-p <- p + scale_color_manual(values = colors_cluster)
 p <- p + facet_grid(cols = vars(id_model), scales = "free")
 p <- p + theme_classic()
-p <- p + guides(colour = guide_legend(ncol = 2))
 
 p
 file2write <- paste0(dir_out, "CT-Cabo-Combo", ".png")
+png(filename = file2write, width = 1000, height = 600, res = 150)
+print(p)
+dev.off()
+
+# make plot for CT-Cab-Combo ---------------------------------------------------------
+p <- ggplot(data = plot_data_df, mapping = aes(x = treatment_group, y = frac_bysample_clustergrouped, fill = treatment_group))
+p <- p + geom_bar(stat = "identity")
+p <- p + geom_point()
+p <- p + facet_grid(cols = vars(id_model), scales = "free")
+p <- p + theme_classic()
+p <- p + guides(colour = guide_legend(ncol = 1))
+
+p
+file2write <- paste0(dir_out, "barplot", ".png")
 png(filename = file2write, width = 1000, height = 600, res = 150)
 print(p)
 dev.off()
