@@ -28,10 +28,6 @@ packages = c(
   "data.table",
   "doParallel"
 )
-if (!("VISION" %in% installed.packages()[,1])) {
-  print(paste0(pkg_name_tmp, "is being installed!"))
-  devtools::install_github("YosefLab/VISION", dependencies = T)
-}
 for (pkg_name_tmp in packages) {
   library(package = pkg_name_tmp, character.only = T)
 }
