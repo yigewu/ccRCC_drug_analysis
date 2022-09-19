@@ -50,7 +50,7 @@ barcode2cluster_df <- fread(data.table = F, input = "./Resources/Analysis_Result
 barcode2cluster_df <- barcode2cluster_df %>%
   mutate(clusterid_test = integrated_snn_res.0.5) %>%
   mutate(model_id = str_split_fixed(string = orig.ident, pattern = "\\-", n = 3)[,1]) %>%
-  mutate(group = paste0(orig.ident, "_", clusterid_test))
+  mutate(group = paste0(orig.ident, "-", clusterid_test))
 clusters <- unique(barcode2cluster_df$clusterid_test)
 genesets_test <- colnames(sigScores)
 barcodes_all <- barcode2cluster_df$barcode
