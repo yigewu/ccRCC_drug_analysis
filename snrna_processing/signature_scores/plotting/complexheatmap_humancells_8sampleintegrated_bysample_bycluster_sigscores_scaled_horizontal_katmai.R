@@ -1,8 +1,22 @@
 # Yige Wu @WashU May 2022
 
 # set up libraries and output directory -----------------------------------
+## getting the path to the current script
+thisFile <- function() {
+  cmdArgs <- commandArgs(trailingOnly = FALSE)
+  needle <- "--file="
+  match <- grep(needle, cmdArgs)
+  if (length(match) > 0) {
+    # Rscript
+    return(normalizePath(sub(needle, "", cmdArgs[match])))
+  } else {
+    # 'source'd via R console
+    return(normalizePath(sys.frames()[[1]]$ofile))
+  }
+}
+path_this_script <- thisFile()
 ## set working directory
-dir_base = "~/Library/CloudStorage/Box-Box/Ding_Lab/Projects_Current/RCC/ccRCC_Drug/"
+dir_base = "/diskmnt/Projects/ccRCC_scratch/ccRCC_Drug/"
 setwd(dir_base)
 packages = c(
   "rstudioapi",
@@ -14,17 +28,23 @@ packages = c(
   "circlize",
   "ComplexHeatmap"
 )
+
 for (pkg_name_tmp in packages) {
   library(package = pkg_name_tmp, character.only = T)
 }
+## set run id
+version_tmp <- 1
+run_id <- paste0(format(Sys.Date(), "%Y%m%d") , ".v", version_tmp)
+## set output directory
+source("./ccRCC_drug_analysis/functions.R")
+dir_out <- paste0(makeOutDir_katmai(path_this_script), run_id, "/")
+dir.create(dir_out)
 
 # input dependencies ------------------------------------------------------
 ## input median(?) signature scores per cluster
 results_df <- fread(data.table = F, input = "./Resources/Analysis_Results/snrna_processing/signature_scores/other/make_median_signaturescores_bygeneset_bycluster_bysample/20220918.v1/median_scores.res05.bycluster.bysample.humancells.8sampleintegrated.20220918.v1.tsv")
 ## input the auto-correlation results
 sigCorr_df <- fread(data.table = F, input = "./Resources/Analysis_Results/snrna_processing/signature_scores/run_vision/run_vision_on_humancells_8sample_integrated/20220907.v1/humancells.8sampleintegrated.Vision.SignatureAutocorrelation.20220907.v1.tsv")
-## input the annotation for the hallmark gene sets
-hallmark_anno_df <- readxl::read_xlsx(path = "../ccRCC_snRNA/Resources/Knowledge/Databases/MSigDB/Hallmark_gene_sets_summary.xlsx")
 
 # make matrix data for heatmap body color-----------------------------------------------------------------
 ## get gene sets to plot
@@ -49,7 +69,6 @@ plotdata_long_df <- plotdata_long_df %>%
   mutate(cluster = as.numeric(cluster)) %>%
   arrange(cluster) %>%
   mutate(y_plot = paste0(model, "_", treatment, "_", paste0("MC", (cluster+1))))
-
 rm(results_df)
 plotdata_wide_df <- dcast(data = plotdata_long_df, formula = x_plot ~ y_plot, value.var = "value")
 plotdata_raw_mat <- as.matrix(plotdata_wide_df[,-1])
@@ -57,6 +76,7 @@ plotdata_raw_mat <- as.matrix(plotdata_wide_df[,-1])
 plotdata_mat <- apply(plotdata_raw_mat, 1, scale)
 rownames(plotdata_mat) <- colnames(plotdata_raw_mat)
 colnames(plotdata_mat) <- plotdata_wide_df$x_plot
+rm(plotdata_raw_mat)
 ## reorder clusters
 clusters_ordered <- plotdata_long_df$y_plot
 plotdata_mat <- plotdata_mat[clusters_ordered,]
@@ -165,21 +185,13 @@ list_lgd = list(
          # legend_height = unit(4, "cm"),
          direction = "vertical"))
 
-source("./ccRCC_drug_analysis/functions.R")
-## set run id
-version_tmp <- 1
-run_id <- paste0(format(Sys.Date(), "%Y%m%d") , ".v", version_tmp)
-## set output directory
-dir_out <- paste0(makeOutDir(), run_id, "/")
-dir.create(dir_out)
-
 file2write <- paste0(dir_out, "heatmap", ".png")
 png(file2write, width = 4000, height = 4000, res = 150)
 p
 dev.off()
 
 file2write <- paste0(dir_out, "heatmap", ".pdf")
-pdf(file2write, width = 20, height = 20, useDingbats = F)
+pdf(file2write, width = 50, height = 50, useDingbats = F)
 draw(object = p,
      annotation_legend_side = "left", annotation_legend_list = list_lgd)
 dev.off()
