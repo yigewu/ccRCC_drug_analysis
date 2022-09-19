@@ -33,7 +33,7 @@ for (pkg_name_tmp in packages) {
   library(package = pkg_name_tmp, character.only = T)
 }
 ## set run id
-version_tmp <- 1
+version_tmp <- 2
 run_id <- paste0(format(Sys.Date(), "%Y%m%d") , ".v", version_tmp)
 ## set output directory
 source("./ccRCC_drug_analysis/functions.R")
@@ -185,10 +185,10 @@ list_lgd = list(
          # legend_height = unit(4, "cm"),
          direction = "vertical"))
 
-file2write <- paste0(dir_out, "heatmap", ".png")
-png(file2write, width = 4000, height = 4000, res = 150)
-p
-dev.off()
+# file2write <- paste0(dir_out, "heatmap", ".png")
+# png(file2write, width = 4000, height = 4000, res = 150)
+# print(p)
+# dev.off()
 
 file2write <- paste0(dir_out, "heatmap", ".pdf")
 pdf(file2write, width = 50, height = 50, useDingbats = F)
