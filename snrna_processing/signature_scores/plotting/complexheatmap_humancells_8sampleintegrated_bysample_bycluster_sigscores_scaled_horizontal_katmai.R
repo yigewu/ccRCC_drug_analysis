@@ -120,7 +120,7 @@ colors_correlation <- colorRamp2(c(-1, 0, 1), c("blue", "white", "red"))
 
 # make row annotation -----------------------------------------------------
 # consistency_vec <-  mapvalues(x = row_ids, from = sigCorr_df$gene_set, to = as.vector(sigCorr_df$C)); consistency_vec <- as.numeric(consistency_vec)
-geneset_cat_vec <- mapvalues(x =  gsub(x = column_ids, replacement = "", pattern = "HALLMARK_"), from = hallmark_anno_df$`Hallmark Name`, to = as.vector(hallmark_anno_df$`Process Category`))
+# geneset_cat_vec <- mapvalues(x =  gsub(x = column_ids, replacement = "", pattern = "HALLMARK_"), from = hallmark_anno_df$`Hallmark Name`, to = as.vector(hallmark_anno_df$`Process Category`))
 
 # make column split ----------------------------------------------------------
 col_split_vec <- geneset_cat_vec
