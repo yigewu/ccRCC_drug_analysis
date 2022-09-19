@@ -123,8 +123,8 @@ colors_correlation <- colorRamp2(c(-1, 0, 1), c("blue", "white", "red"))
 # geneset_cat_vec <- mapvalues(x =  gsub(x = column_ids, replacement = "", pattern = "HALLMARK_"), from = hallmark_anno_df$`Hallmark Name`, to = as.vector(hallmark_anno_df$`Process Category`))
 
 # make column split ----------------------------------------------------------
-col_split_vec <- geneset_cat_vec
-col_split_vec <- factor(x = col_split_vec, levels = c("metabolic", "DNA damage", "proliferation", "immune", "development", "pathway", "signaling", "cellular component"))
+# col_split_vec <- geneset_cat_vec
+# col_split_vec <- factor(x = col_split_vec, levels = c("metabolic", "DNA damage", "proliferation", "immune", "development", "pathway", "signaling", "cellular component"))
 
 # plot --------------------------------------------------------------------
 fontsize_plot <- 14
