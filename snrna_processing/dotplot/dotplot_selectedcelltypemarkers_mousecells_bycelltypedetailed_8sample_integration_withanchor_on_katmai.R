@@ -40,19 +40,19 @@ for (pkg_name_tmp in packages) {
 }
 library(Seurat)
 ## set output directory
+source("./ccRCC_drug_analysis/functions.R")
 dir_out <- paste0(makeOutDir_katmai(path_this_script), run_id, "/")
 dir.create(dir_out)
 
 # set dependencies --------------------------------------------------------
-## set the path to the rds file for integrated object
-path_rds <- "./Resources/Analysis_Results/snrna_processing/integration/run_mousecells_8sample_integration_withanchor_on_katmai/20210208.v1/MouseCells_8sample_integration.withanchor.20210208.v1.RDS"
-## input RDS file
-srat <- readRDS(file = path_rds)
-DefaultAssay(srat) <- "RNA"
 ##
 barcode2celltype_df <- fread(input = "./Resources/Analysis_Results/snrna_processing/map_barcode/map_barcode2celltype_mousecells_integration_withanchor/20210225.v1/MouseCells.Barcode2CellType.20210225.v1.tsv", data.table = F)
 ## input marker gene table
 gene2celltype_df <- fread("./Resources/Knowledge/Gene_Lists/Cell_Type_Marker_Genes/Mouse.Gene2CellType.20210224.v2.tsv", data.table = F)
+## input RDS file
+path_rds <- "./Resources/Analysis_Results/snrna_processing/integration/run_mousecells_8sample_integration_withanchor_on_katmai/20210208.v1/MouseCells_8sample_integration.withanchor.20210208.v1.RDS"
+srat <- readRDS(file = path_rds)
+DefaultAssay(srat) <- "RNA"
 ## set the minimal % of cells expresssing the gene
 min.exp.pct <- 10
 
