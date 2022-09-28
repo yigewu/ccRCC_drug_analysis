@@ -61,6 +61,7 @@ srat@meta.data$cell_group <- mapvalues(x = rownames(srat@meta.data),
                                        from = barcode2celltype_df$Barcode_Integrated, 
                                        to = barcode2celltype_df$Cell_Type.Detailed)
 table(srat@meta.data$cell_group)
+Idents(srat) <- "cell_group"
 
 # get gene to plot --------------------------------------------------------
 # ## make feature name
