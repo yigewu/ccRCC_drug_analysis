@@ -117,8 +117,10 @@ cat("Finished writing pdf!\n\n\n")
 
 # plot not scaled -------------------------------------------------------------
 cat("Starting not-scaled plot!\n\n\n")
-plotdata_df <- expdata_df %>%
-  filter(features.plot %in% featurenames_filtered)
+p <- DotPlot(object = srat, features = featurenames_filtered, col.min = 0, assay = "RNA")
+plotdata_df <- p$data
+# plotdata_df <- expdata_df %>%
+#   filter(features.plot %in% featurenames_filtered)
 expvalue_top <- quantile(x = plotdata_df$avg.exp, probs = 0.95)
 plotdata_df <- plotdata_df %>%
   mutate(expvalue_plot = ifelse(avg.exp >= expvalue_top, expvalue_top, avg.exp))
