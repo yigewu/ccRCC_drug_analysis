@@ -48,7 +48,7 @@ dir.create(dir_out)
 ##
 barcode2celltype_df <- fread(input = "./Resources/Analysis_Results/snrna_processing/map_barcode/map_barcode2celltype_mousecells_integration_withanchor/20210225.v1/MouseCells.Barcode2CellType.20210225.v1.tsv", data.table = F)
 ## input marker gene table
-gene2celltype_df <- fread("./Resources/Knowledge/Gene_Lists/Cell_Type_Marker_Genes/Mouse.Gene2CellType.20210224.v2.tsv", data.table = F)
+gene2celltype_df <- fread("./Resources/Knowledge/Gene_Lists/Cell_Type_Marker_Genes/Mouse.Gene2CellType.20220928.tsv", data.table = F)
 ## input RDS file
 path_rds <- "./Resources/Analysis_Results/snrna_processing/integration/run_mousecells_8sample_integration_withanchor_on_katmai/20210208.v1/MouseCells_8sample_integration.withanchor.20210208.v1.RDS"
 srat <- readRDS(file = path_rds)
@@ -60,6 +60,10 @@ min.exp.pct <- 10
 srat@meta.data$cell_group <- mapvalues(x = rownames(srat@meta.data), 
                                        from = barcode2celltype_df$Barcode_Integrated, 
                                        to = barcode2celltype_df$Cell_Type.Detailed)
+srat@meta.data$cell_group <- factor(x = srat@meta.data$cell_group, levels = c("Macrophages", "Macrophages Tgfbi+", "Macrophages M2-like",
+                                                                              "Endothelial cells", 
+                                                                              "Fibroblasts", "Fibroblasts Col14a1+", "Fibroblasts Pdgfrb+",
+                                                                              "Myofibroblasts"))
 table(srat@meta.data$cell_group)
 Idents(srat) <- "cell_group"
 
@@ -87,16 +91,17 @@ Idents(srat) <- "cell_group"
 # cat("Finished making plot data!\n\n\n")
 
 # make scaled dotplot ------------------------------------------------------------
-featurenames_filtered <- c("Ptprc","Flt1", "Pecam1", "Tek", "Pdgfrb", "Tgfbi", "Col14a1", "Mrc1", "F13a1", "Col3a1", "Dcn", "Plac8", "Acta2", "Mylk")
+featurenames_filtered <- c("Ptprc", "Tgfbi", "Mrc1", "F13a1", "Flt1", "Pecam1", "Tek", "Col3a1", "Dcn", "Pdgfrb",  "Col14a1", "Acta2", "Mylk")
 cat("Start plotting scaled!\n\n\n")
 p <- DotPlot(object = srat, features = featurenames_filtered, col.min = 0, assay = "RNA")
-p$data$gene_cell_type_group <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$Gene, to = gene2celltype_df$Cell_Type_Group)
-p$data$gene_cell_type1 <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$Gene, to = gene2celltype_df$Cell_Type1)
-p$data$gene_cell_type2 <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$Gene, to = gene2celltype_df$Cell_Type2)
-p$data$gene_cell_type3 <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$Gene, to = gene2celltype_df$Cell_Type3)
-p$data$gene_cell_type4 <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$Gene, to = gene2celltype_df$Cell_Type4)
+p$data$features.plot <- factor(x = p$data$features.plot, levels = featurenames_filtered)
+# p$data$gene_cell_type_group <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$Gene, to = gene2celltype_df$Cell_Type_Group)
+# p$data$gene_cell_type1 <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$Gene, to = gene2celltype_df$Cell_Type1)
+# p$data$gene_cell_type2 <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$Gene, to = gene2celltype_df$Cell_Type2)
+# p$data$gene_cell_type3 <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$Gene, to = gene2celltype_df$Cell_Type3)
+# p$data$gene_cell_type4 <- plyr::mapvalues(p$data$features.plot, from = gene2celltype_df$Gene, to = gene2celltype_df$Cell_Type4)
 # p <- p + RotatedAxis()
-p <- p + facet_grid(.~gene_cell_type_group + gene_cell_type1 + gene_cell_type2 + gene_cell_type3 + gene_cell_type4, scales = "free", space = "free", drop = T)
+# p <- p + facet_grid(.~gene_cell_type_group + gene_cell_type1 + gene_cell_type2 + gene_cell_type3 + gene_cell_type4, scales = "free", space = "free", drop = T)
 p <- p + theme(panel.spacing = unit(0, "lines"),
                strip.background = element_blank(),
                panel.border = element_rect(colour = "black"),
@@ -106,7 +111,7 @@ p <- p + theme(panel.spacing = unit(0, "lines"),
                strip.placement = "outside")
 cat("Finished plotting scaled!\n\n\n")
 file2write <- paste0(dir_out, "dotplot.", "scaled.", "pdf")
-pdf(file2write, width = 10, height = 6, useDingbats = F)
+pdf(file2write, width = 8, height = 5, useDingbats = F)
 print(p)
 dev.off()
 cat("Finished writing pdf!\n\n\n")
@@ -126,17 +131,17 @@ expvalue_top <- quantile(x = plotdata_df$avg.exp, probs = 0.95)
 plotdata_df <- plotdata_df %>%
   mutate(expvalue_plot = ifelse(avg.exp >= expvalue_top, expvalue_top, avg.exp))
 ## add facet
-plotdata_df$gene_cell_type_group <- plyr::mapvalues(plotdata_df$features.plot, from = gene2celltype_df$Gene, to = gene2celltype_df$Cell_Type_Group)
-plotdata_df$gene_cell_type1 <- plyr::mapvalues(plotdata_df$features.plot, from = gene2celltype_df$Gene, to = gene2celltype_df$Cell_Type1)
-plotdata_df$gene_cell_type2 <- plyr::mapvalues(plotdata_df$features.plot, from = gene2celltype_df$Gene, to = gene2celltype_df$Cell_Type2)
-plotdata_df$gene_cell_type3 <- plyr::mapvalues(plotdata_df$features.plot, from = gene2celltype_df$Gene, to = gene2celltype_df$Cell_Type3)
-plotdata_df$gene_cell_type4 <- plyr::mapvalues(plotdata_df$features.plot, from = gene2celltype_df$Gene, to = gene2celltype_df$Cell_Type4)
+# plotdata_df$gene_cell_type_group <- plyr::mapvalues(plotdata_df$features.plot, from = gene2celltype_df$Gene, to = gene2celltype_df$Cell_Type_Group)
+# plotdata_df$gene_cell_type1 <- plyr::mapvalues(plotdata_df$features.plot, from = gene2celltype_df$Gene, to = gene2celltype_df$Cell_Type1)
+# plotdata_df$gene_cell_type2 <- plyr::mapvalues(plotdata_df$features.plot, from = gene2celltype_df$Gene, to = gene2celltype_df$Cell_Type2)
+# plotdata_df$gene_cell_type3 <- plyr::mapvalues(plotdata_df$features.plot, from = gene2celltype_df$Gene, to = gene2celltype_df$Cell_Type3)
+# plotdata_df$gene_cell_type4 <- plyr::mapvalues(plotdata_df$features.plot, from = gene2celltype_df$Gene, to = gene2celltype_df$Cell_Type4)
 ## plot
 p <- ggplot()
 p <- p + geom_point(data = plotdata_df, mapping = aes(x = features.plot, y = id, color = expvalue_plot, size = pct.exp), shape = 16)
 p <- p + scale_color_gradientn(colours = rev(RColorBrewer::brewer.pal(n = 9, name = "Spectral")[1:5]), guide = guide_legend(direction = "horizontal", nrow = 2, byrow = T))
 p <- p + scale_size_continuous(range = c(0, 8), name="% Expressed", guide = guide_legend(direction = "horizontal"))
-p <- p + facet_grid(.~gene_cell_type_group + gene_cell_type1 + gene_cell_type2 + gene_cell_type3 + gene_cell_type4, scales = "free", space = "free", drop = T)
+# p <- p + facet_grid(.~gene_cell_type_group + gene_cell_type1 + gene_cell_type2 + gene_cell_type3 + gene_cell_type4, scales = "free", space = "free", drop = T)
 p <- p + theme(axis.text.x = element_text(angle = 90, size = 10))
 p <- p + theme(axis.text.y = element_text(size = 12))
 p <- p + theme(panel.spacing = unit(0, "lines"), 
@@ -155,7 +160,7 @@ cat("Finished plotting not-scaled!\n\n\n")
 # dev.off()
 # cat("Finished writing png!\n\n\n")
 file2write <- paste0(dir_out, "dotplot.", "scaled.", "pdf")
-pdf(file2write, width = 10, height = 6, useDingbats = F)
+pdf(file2write, width = 8, height = 5, useDingbats = F)
 print(p)
 dev.off()
 cat("Finished writing pdf!\n\n\n")
