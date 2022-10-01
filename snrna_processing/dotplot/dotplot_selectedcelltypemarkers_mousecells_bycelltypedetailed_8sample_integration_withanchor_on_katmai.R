@@ -55,6 +55,7 @@ srat <- readRDS(file = path_rds)
 DefaultAssay(srat) <- "RNA"
 ## set the minimal % of cells expresssing the gene
 min.exp.pct <- 10
+textsize_plot <- 17
 
 # process seurat object ---------------------------------------------------
 srat@meta.data$cell_group <- mapvalues(x = rownames(srat@meta.data), 
@@ -106,8 +107,10 @@ p <- p + theme(panel.spacing = unit(0, "lines"),
                strip.background = element_blank(),
                panel.border = element_rect(colour = "black"),
                panel.grid.major = element_line(colour = "grey50"),
-               strip.text.x = element_text(angle = 0, vjust = 0.5),
-               axis.text.x = element_text(angle = 90, size = 15, face = "bold"),
+               strip.text.x = element_text(angle = 0, vjust = 0.5, hjust = 0.5),
+               axis.text.x = element_text(angle = 90, size = textsize_plot, face = "italic", color = "black"), 
+               axis.text.y = element_text(size = textsize_plot, color = "black"), 
+               axis.title = element_blank(), legend.text = element_text(size = textsize_plot), legend.title = element_text(size = textsize_plot),
                strip.placement = "outside")
 cat("Finished plotting scaled!\n\n\n")
 file2write <- paste0(dir_out, "dotplot.", "scaled.", "pdf")
@@ -142,8 +145,8 @@ p <- p + geom_point(data = plotdata_df, mapping = aes(x = features.plot, y = id,
 p <- p + scale_color_gradientn(colours = rev(RColorBrewer::brewer.pal(n = 9, name = "Spectral")[1:5]), guide = guide_legend(direction = "horizontal", nrow = 1, byrow = T))
 p <- p + scale_size_continuous(range = c(0, 8), name="% Expressed", guide = guide_legend(direction = "horizontal"))
 # p <- p + facet_grid(.~gene_cell_type_group + gene_cell_type1 + gene_cell_type2 + gene_cell_type3 + gene_cell_type4, scales = "free", space = "free", drop = T)
-p <- p + theme(axis.text.x = element_text(angle = 90, size = 10))
-p <- p + theme(axis.text.y = element_text(size = 12))
+p <- p + theme(axis.text.x = element_text(angle = 90, size = textsize_plot))
+p <- p + theme(axis.text.y = element_text(size = textsize_plot))
 p <- p + theme(panel.spacing = unit(0, "lines"), 
                panel.grid.major = element_line(colour = "grey80"), 
                panel.border = element_rect(color = "black", fill = NA, size = 0.5),
