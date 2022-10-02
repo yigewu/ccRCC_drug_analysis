@@ -38,11 +38,11 @@ plot_data_df <-celltype_frac_df %>%
   mutate(model = paste0("RESL", model)) %>%
   mutate(treatment = str_split_fixed(string = Id_Sample, pattern = "\\-", n = 3)[,3]) %>%
   mutate(treatment = gsub(x = treatment, pattern = '[0-9]', replacement = ""))
-plot_data_df$treatment[plot_data_df$treatment == "CT"] <- "control" 
-plot_data_df$treatment[plot_data_df$treatment == "Sap"] <- "sapanisertib" 
-plot_data_df$treatment[plot_data_df$treatment == "Cabo"] <- "cabozantinib" 
-plot_data_df$treatment[plot_data_df$treatment == "Cabo_Sap"] <- "cabozantinib+\nsapanisertib" 
-plot_data_df$treatment <- factor(x = plot_data_df$treatment, levels = rev(c("control", "cabozantinib", "sapanisertib", "cabozantinib+\nsapanisertib")))
+plot_data_df$treatment[plot_data_df$treatment == "CT"] <- "Control" 
+plot_data_df$treatment[plot_data_df$treatment == "Sap"] <- "Sapanisertib" 
+plot_data_df$treatment[plot_data_df$treatment == "Cabo"] <- "Cabozantinib" 
+plot_data_df$treatment[plot_data_df$treatment == "Cabo_Sap"] <- "Cabozantinib+\nSapanisertib" 
+plot_data_df$treatment <- factor(x = plot_data_df$treatment, levels = rev(c("Control", "Cabozantinib", "Sapanisertib", "Cabozantinib+\nSapanisertib")))
 plot_data_df <- plot_data_df[order(plot_data_df$Id_Sample, by = plot_data_df$treatment), ]
 plot_data_df$Id_Sample <- factor(x = plot_data_df$Id_Sample)
 ## make colors
@@ -59,15 +59,17 @@ p <- p + geom_col(data = plot_data_df, mapping = aes(x = treatment, y = Fraction
 p <- p + scale_fill_manual(values = colors_celltype)
 p <- p + facet_grid(model~. , scales = "free", space = "free", drop = T)
 p <- p + coord_flip()
+p <- p + guides(fill = guide_legend(title = "Cell type", label.theme = element_text(size = textsize_plot), title.theme = element_text(size = textsize_plot)))
 p <- p + ylab(label = "% cells by cell type")
-p <- p + theme(legend.position = "none")
+p <- p + theme(legend.position = "right")
 p <- p + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-               panel.background = element_blank(), strip.background = element_blank(), strip.text = element_text(color = "black", size = textsize_plot))
+               panel.background = element_blank(), strip.background = element_blank(), 
+               strip.text = element_text(color = "black", size = textsize_plot))
 p <- p + theme(axis.title.y = element_blank(), 
                axis.title.x = element_text(size = textsize_plot), 
                axis.text = element_text(color = "black", size = textsize_plot), axis.ticks.y = element_blank())
 file2write <- paste0(dir_out, "Cell_Group_Plot_Composition.", "pdf")
-pdf(file2write, width = 5, height = 4, useDingbats = F)
+pdf(file2write, width = 6.75, height = 4, useDingbats = F)
 print(p)
 dev.off()
 # file2write <- paste0(dir_out, "Cell_Group_Plot_Composition.", "png")
