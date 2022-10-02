@@ -106,9 +106,8 @@ p$data$features.plot <- factor(x = p$data$features.plot, levels = featurenames_f
 p <- p + theme(panel.spacing = unit(0, "lines"),
                strip.background = element_blank(),
                panel.border = element_rect(colour = "black"),
-               panel.grid.major = element_line(colour = "grey50"),
-               strip.text.x = element_text(angle = 0, vjust = 0.5, hjust = 1),
-               axis.text.x = element_text(angle = 90, size = textsize_plot, face = "italic", color = "black"), 
+               panel.grid.major = element_line(colour = "grey80"),
+               axis.text.x = element_text(angle = 90, size = textsize_plot, face = "italic", color = "black", vjust = 0.5, hjust = 1), 
                axis.text.y = element_text(size = textsize_plot, color = "black"), 
                axis.title = element_blank(), legend.text = element_text(size = textsize_plot), legend.title = element_text(size = textsize_plot),
                strip.placement = "outside")
