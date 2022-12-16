@@ -41,7 +41,7 @@ dir.create(dir_out)
 
 # input  ------------------------------------------------------
 ## input signature scores by barcode
-sigScores <- readRDS("./Resources/Analysis_Results/snrna_processing/signature_scores/run_vision/run_vision_on_humancells_8sample_SCT_counts/20221216.v1/humancells.8sampleintegrated.Vision.20221216.v1.RDS")
+sigScores <- readRDS("./Resources/Analysis_Results/snrna_processing/signature_scores/run_vision/run_vision_on_humancells_8sample_SCT_counts/20221216.v1/humancells.8sampleintegrated.Vision.sigScores.20221216.v1.RDS")
 print("Finish reading the sigScores matrix!\n")
 ## input the barcode to new cluster
 barcode2cluster_df <- fread(data.table = F, input = "./Resources/Analysis_Results/snrna_processing/findmarkers/findmarkers_byres_humancells_8sample_integration_on_katmai/20220905.v1/HumanCells.8sample.Metadata.ByResolution.20220905.v1.tsv")
