@@ -77,3 +77,25 @@ dev.off()
 # print(p)
 # dev.off()
 
+# plot --------------------------------------------------------------------
+textsize_plot <- 14
+for (celltype_tmp in unique(plot_data_df$Cell_Type.Detailed)) {
+  p <- ggplot()
+  p <- p + geom_col(data = subset(plot_data_df, Cell_Type.Detailed == celltype_tmp), mapping = aes(x = treatment, y = Fraction_CellType_Sample, fill = Cell_Group_Plot), position = "stack")
+  p <- p + scale_fill_manual(values = colors_celltype)
+  p <- p + facet_grid(model~. , scales = "free", space = "free", drop = T)
+  p <- p + coord_flip()
+  p <- p + guides(fill = guide_legend(title = "Cell type", label.theme = element_text(size = textsize_plot), title.theme = element_text(size = textsize_plot)))
+  p <- p + ylab(label = "% cells by cell type")
+  p <- p + theme(legend.position = "right")
+  p <- p + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                 panel.background = element_blank(), strip.background = element_blank(), 
+                 strip.text = element_text(color = "black", size = textsize_plot))
+  p <- p + theme(axis.title.y = element_blank(), 
+                 axis.title.x = element_text(size = textsize_plot), 
+                 axis.text = element_text(color = "black", size = textsize_plot), axis.ticks.y = element_blank())
+  file2write <- paste0(dir_out, celltype_tmp,  ".pdf")
+  pdf(file2write, width = 6.75, height = 4, useDingbats = F)
+  print(p)
+  dev.off()
+}

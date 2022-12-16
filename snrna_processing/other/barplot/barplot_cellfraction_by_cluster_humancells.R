@@ -29,24 +29,50 @@ count_bysample_df <- barcode2cluster_df %>%
   summarise(count_bysample = n())  
 plot_data_df <- merge(x = plot_data_df, y = count_bysample_df, by = c("orig.ident"), all.x = T)
 plot_data_df <- plot_data_df %>%
-  mutate(frac_bysample_bycluster = (count_bysample_bycluster/count_bysample)) %>%
+  mutate(frac_bysample_bycluster = 100*(count_bysample_bycluster/count_bysample)) %>%
   mutate(id_model = str_split_fixed(string = orig.ident, pattern = "-", n = 3)[,1]) %>%
+  mutate(id_model = ifelse(id_model == "RESL10F", "RESL10", "RESL5")) %>%
   mutate(treatment_group = str_split_fixed(string = orig.ident, pattern = "-", n = 3)[,3]) %>%
   mutate(treatment_group = gsub(pattern = "2", replacement = "", x = treatment_group)) %>%
-  mutate(treatment_group = factor(x = treatment_group, levels = c("CT", "Sap", "Cabo", "Cabo_Sap"))) %>%
+  mutate(Treatment = ifelse(treatment_group == "CT", "Control",
+                            ifelse(treatment_group == "Cabo", "Cabozantinib",
+                                   ifelse(treatment_group == "Sap", "Sapanisertib", "Cabozantinib+\nSapanisertib")))) %>%
+  mutate(Treatment = factor(x = Treatment, levels = c("Control", "Cabozantinib+\nSapanisertib", "Cabozantinib", "Sapanisertib"))) %>%
   mutate(cluster = paste0("MC", (seurat_clusters+1))) %>%
   mutate(cluster = factor(cluster))
 
+## colors for treatment
+color_red <- RColorBrewer::brewer.pal(n = 7, name = "Set1")[1]
+color_green <- RColorBrewer::brewer.pal(n = 7, name = "Set1")[3]
+color_yellow <- RColorBrewer::brewer.pal(n = 7, name = "Set2")[6]
+color_grey <- "grey50"
+colors_treatment <- c("Control" = color_grey, "Cabozantinib" = color_red, "Sapanisertib" = color_green, "Cabozantinib+\nSapanisertib" = color_yellow)
+## define size
+fontsize_plot <- 12
+
 # make plot for CT-Sap-Combo ---------------------------------------------------------
 for (cluster_tmp in unique(plot_data_df$cluster)) {
-  p <- ggplot(data = subset(plot_data_df, cluster == cluster_tmp), mapping = aes(x = treatment_group, y = frac_bysample_bycluster, fill = treatment_group))
+  p <- ggplot(data = subset(plot_data_df, cluster == cluster_tmp), mapping = aes(x = Treatment, y = frac_bysample_bycluster, fill = Treatment))
   p <- p + geom_bar(stat = "identity")
-  p <- p + geom_point()
+  # p <- p + geom_point()
+  p <- p + scale_fill_manual(values = colors_treatment)
   p <- p + facet_grid(cols = vars(id_model), scales = "free")
+  p <- p + ylab(label = paste0("% of ", cluster_tmp, " in the tumor cells"))
   p <- p + theme_classic()
   p <- p + guides(colour = guide_legend(ncol = 1))
-  file2write <- paste0(dir_out, cluster_tmp, ".png")
-  png(filename = file2write, width = 1000, height = 600, res = 150)
+  p <- p + theme(axis.title.x = element_blank(), axis.title.y = element_text(size = fontsize_plot),
+                 axis.text.x = element_blank(),
+                 strip.background = element_rect(color = NA), strip.text = element_text(size = fontsize_plot),
+                 axis.text.y = element_text(color = "black", size = fontsize_plot), 
+                 legend.text = element_text(size = fontsize_plot), legend.title = element_text(size = fontsize_plot),
+                 axis.ticks.x = element_blank(), 
+                 axis.line.x = element_blank())
+  # file2write <- paste0(dir_out, cluster_tmp, ".png")
+  # png(filename = file2write, width = 1000, height = 600, res = 150)
+  # print(p)
+  # dev.off()
+  file2write <- paste0(dir_out, cluster_tmp, ".pdf")
+  pdf(file2write, width = 4, height = 2.5, useDingbats = F)
   print(p)
   dev.off()
 }

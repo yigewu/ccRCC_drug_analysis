@@ -2,7 +2,7 @@
 
 # set up libraries and output directory -----------------------------------
 ## set working directory
-dir_base = "~/Box/Ding_Lab/Projects_Current/RCC/ccRCC_Drug/"
+dir_base = "~/Library/CloudStorage/Box-Box/Ding_Lab/Projects_Current/RCC/ccRCC_Drug/"
 setwd(dir_base)
 source("./ccRCC_drug_analysis/load_pkgs.R")
 source("./ccRCC_drug_analysis/functions.R")
@@ -130,10 +130,10 @@ annotation_lgd = list(
          legend_gp = gpar(fill = colors_datatype)))
 
 # write output ------------------------------------------------------------
-file2write <- paste0(dir_out, "heatmap.png")
-png(file2write, width = 1000, height = 600, res = 150)
-draw(p, annotation_legend_side = "bottom", annotation_legend_list = annotation_lgd)  #Show the heatmap
-dev.off()
+# file2write <- paste0(dir_out, "heatmap.png")
+# png(file2write, width = 1000, height = 600, res = 150)
+# draw(p, annotation_legend_side = "bottom", annotation_legend_list = annotation_lgd)  #Show the heatmap
+# dev.off()
 file2write <- paste0(dir_out, "heatmap.pdf")
 pdf(file2write, width = 6, height = 2.5, useDingbats = F)
 draw(p, annotation_legend_side = "bottom", annotation_legend_list = annotation_lgd)  #Show the heatmap

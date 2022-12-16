@@ -22,6 +22,7 @@ barcode2cluster_df <- fread(input = "./Resources/Analysis_Results/snrna_processi
 
 # set parameters ----------------------------------------------------------
 clusters_plot <- c("MC3", "MC6", "MC8", "MC11", "MC14")
+clusters_plot <- c("MC2", "MC8", "MC13", "MC15")
 
 # make plot data ----------------------------------------------------------
 plot_data_df <- barcode2cluster_df %>%
@@ -38,9 +39,25 @@ plot_data_df <- plot_data_df %>%
   mutate(treatment_group = gsub(pattern = "2", replacement = "", x = treatment_group)) %>%
   mutate(treatment_group = factor(x = treatment_group, levels = c("CT", "Sap", "Cabo", "Cabo_Sap"))) %>%
   mutate(cluster = paste0("MC", (seurat_clusters+1))) %>%
-  filter(cluster %in% clusters_plot) %>%
   group_by(id_model, treatment_group) %>%
   summarise(frac_bysample_clustergrouped = sum(frac_bysample_bycluster))
+
+## filter
+plot_data_df <- plot_data_df %>%
+  filter(cluster %in% clusters_plot)
+
+# make plot for CT-Combo ---------------------------------------------------------
+p <- ggplot(data = subset(plot_data_df, treatment_group %in% c("CT", "Combo")), 
+            mapping = aes(x = treatment_group, y = frac_bysample_clustergrouped, group = id_model, color = cluster))
+p <- p + geom_line()
+p <- p + geom_point()
+p <- p + facet_grid(cols = vars(id_model), scales = "free")
+p <- p + theme_classic()
+p
+file2write <- paste0(dir_out, "CT-Combo", ".pdf")
+pdf(file2write, width = 5, height = 2.5, useDingbats = F)
+print(p)
+dev.off()
 
 # make plot for CT-Sap-Combo ---------------------------------------------------------
 p <- ggplot(data = subset(plot_data_df, treatment_group != "Cabo"), mapping = aes(x = treatment_group, y = frac_bysample_clustergrouped, group = id_model))

@@ -152,7 +152,7 @@ list_lgd = list(
 
 source("./ccRCC_drug_analysis//functions.R")
 ## set run id
-version_tmp <- 3
+version_tmp <- 1
 run_id <- paste0(format(Sys.Date(), "%Y%m%d") , ".v", version_tmp)
 ## set output directory
 dir_out <- paste0(makeOutDir(), run_id, "/")

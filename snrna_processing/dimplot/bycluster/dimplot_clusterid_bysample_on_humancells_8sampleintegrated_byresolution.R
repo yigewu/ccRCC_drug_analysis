@@ -21,7 +21,7 @@ for (pkg_name_tmp in packages) {
 }
 source("./ccRCC_drug_analysis//functions.R")
 ## set run id
-version_tmp <- 1
+version_tmp <- 3
 run_id <- paste0(format(Sys.Date(), "%Y%m%d") , ".v", version_tmp)
 ## set output directory
 dir_out <- paste0(makeOutDir(), run_id, "/")
@@ -43,6 +43,14 @@ plot_data_df$treatment[plot_data_df$treatment == "Sap"] <- "sapanisertib"
 plot_data_df$treatment[plot_data_df$treatment == "Cabo"] <- "cabozantinib" 
 plot_data_df$treatment[plot_data_df$treatment == "Cabo_Sap"] <- "cabozantinib+sapanisertib" 
 plot_data_df$treatment <- factor(x = plot_data_df$treatment, levels = c("control", "cabozantinib", "sapanisertib", "cabozantinib+sapanisertib"))
+## adjust transparency by cell number
+cellnumber_df <- plot_data_df %>%
+  group_by(orig.ident) %>%
+  summarise(cellnumber = n())
+cellnumber_df$alpha = log(min(cellnumber_df$cellnumber))/log(cellnumber_df$cellnumber)
+plot_data_df$alpha <- mapvalues(x = plot_data_df$orig.ident, from = cellnumber_df$orig.ident, to = as.vector(cellnumber_df$alpha))
+plot_data_df$alpha <- as.numeric(plot_data_df$alpha)
+plot_data_df$size <- 0.1*plot_data_df$alpha
 # make plots --------------------------------------------------------------
 for (res_tmp in c(0.5)) {
 # for (res_tmp in c(0.1, 0.2, 0.3, 0.4, 0.5, 1, 2)) {
@@ -52,9 +60,16 @@ for (res_tmp in c(0.5)) {
   colors_bycluster <- Polychrome::palette36.colors(n = (length(clusterids)+1))[-2]
   names(colors_bycluster) <- clusterids
   p <- ggplot()
+  # p <- p + geom_point_rast(data = plot_data_df, 
+  #                          mapping = aes(x = UMAP_1, y = UMAP_2, color = clustername_plot),
+  #                          alpha = 1, size = 0.1, shape = 16)
+  # p <- p + geom_point_rast(data = plot_data_df, 
+  #                          mapping = aes(x = UMAP_1, y = UMAP_2, color = clustername_plot, alpha = alpha),
+  #                          size = 0.1, shape = 16)
   p <- p + geom_point_rast(data = plot_data_df, 
-                           mapping = aes(x = UMAP_1, y = UMAP_2, color = clustername_plot),
-                           alpha = 1, size = 0.1, shape = 16)
+                           mapping = aes(x = UMAP_1, y = UMAP_2, color = clustername_plot, size = alpha),
+                           alpha = 0.7, shape = 16) +
+    scale_size_continuous(range = c(0.05, 0.7))
   p <- p + facet_grid(rows = vars(model), cols = vars(treatment))
   p <- p + scale_color_manual(values = colors_bycluster)
   p <- p + guides(colour = guide_legend(override.aes = list(size=4), title = NULL, label.theme = element_text(size = 18), nrow = 3))

@@ -29,22 +29,36 @@ run_id <- paste0(format(Sys.Date(), "%Y%m%d") , ".v", version_tmp)
 dir_out <- paste0(makeOutDir(), run_id, "/")
 dir.create(dir_out)
 
-# input dependencies --------------------------------------------
+
+# input data --------------------------------------------------------------
+## input phospho data
+pho_df <- fread("../../CPTAC/PGDAC/ccRCC_discovery_manuscript/ccRCC_expression_matrices/phosphoproteome/6_CPTAC3_CCRCC_Phospho_abundance_phosphosite_protNorm=2_CB.tsv", data.table = F)
+## input bulk meta data
+bulk_meta_tab <- fread("../../CPTAC/PGDAC/ccRCC_discovery_manuscript/ccRCC_expression_matrices/cptac-metadata.csv")
+
+
+# input parameters --------------------------------------------------------
 ## set plotting parameters
-num_nonna <- 40
+num_nonna <- 0
 row_fontsize <- 9
 ## set genes to plot
 ## reference: https://www.researchgate.net/figure/The-mammalian-target-of-rapamycin-complex-1-mTORC1-pathway-and-translation-initiation_fig1_309236845
 ## reference: https://www.sciencedirect.com/science/article/pii/S0092867417301824?via%3Dihub#bib19
-phosphosites <- data.frame(gene = c("RPS6KB1", rep("RPS6", 2), "EIF4B",
-                                    rep("EIF4EBP1", 4), "EIF4E"),
-                           phosphosite = c("T389", "S236", "S235", "S422",
-                                           "T37", "T46","T70", "S65", "S209"))
+phosphosites <- data.frame(gene = c("MET", 
+                                    "AKT2", "AKT2", 
+                                    "RPS6", "RPS6",
+                                    "MTOR",
+                                    "RPS6KB1"),
+                           phosphosite = c("Y1234", 
+                                           "S474", "T309",
+                                           "S240", "S235S236",
+                                           "S2448",
+                                           "T389"))
+phosphosites <- phosphosites %>%
+  mutate(protein_id = paste0(gene, "_", phosphosite))
 
-## input phospho data
-pho_df <- fread("./Ding_Lab/Projects_Current/CPTAC/PGDAC/ccRCC_discovery_manuscript/ccRCC_expression_matrices/phosphoproteome/6_CPTAC3_CCRCC_Phospho_abundance_phosphosite_protNorm=2_CB.tsv", data.table = F)
-## input bulk meta data
-bulk_meta_tab <- fread("./Ding_Lab/Projects_Current/CPTAC/PGDAC/ccRCC_discovery_manuscript/ccRCC_expression_matrices/cptac-metadata.csv")
+
+# preprocess --------------------------------------------
 ## get the bulk aliquot IDs
 ### get the ids for the normal samples
 normal_bulk_aliquot_ids2plot <- bulk_meta_tab$Specimen.Label[bulk_meta_tab$Set.A == "yes" & bulk_meta_tab$Type == "Normal"]
@@ -102,11 +116,11 @@ p_mtor <- Heatmap(plot_data_mat2[(rowSums(!is.na(plot_data_mat2)) >= num_nonna),
                   top_annotation = ca,
                   cluster_columns = F,
                   show_column_names = F,
-                  cluster_rows = T)
+                  cluster_rows = F)
 p_mtor
 ## save heatmap to PNG
-file2write <- paste0(dir_out, "Drug_Targets_Phosphoprotein.", run_id, ".png")
-png(file2write, width = 2000, height = 400, res = 150)
+file2write <- paste0(dir_out, "CPTAC.", run_id, ".pdf")
+pdf(file2write, width = 10, height = 2.5, useDingbats = F)
 print(p_mtor)
 dev.off()
 

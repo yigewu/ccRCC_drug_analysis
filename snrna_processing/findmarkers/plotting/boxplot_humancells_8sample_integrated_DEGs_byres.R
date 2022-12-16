@@ -42,24 +42,31 @@ textdata_df <- plotdata_df %>%
   group_by(resolution) %>%
   summarise(number_clusters = n()) %>%
   mutate(text = paste0("n=", number_clusters))
+  # mutate(text = paste0("n=", number_clusters))
 textdata_df$x_plot <- factor(textdata_df$resolution)
+
+
 # plot --------------------------------------------------------------------
+## set fontsize
+fontsize_plot <- 24
 pos <- position_jitter(width = 0.1, seed = 1)
 y_cutoff <- 50
 p <- ggplot()
 p <- p + geom_boxplot(data = plotdata_df, mapping = aes(x = x_plot, y = number_degs, group = x_plot))
-p <- p + geom_point(data = plotdata_df, mapping = aes(x = x_plot, y = number_degs), position = pos, alpha = 0.8)
+# p <- p + geom_point(data = plotdata_df, mapping = aes(x = x_plot, y = number_degs), position = pos, alpha = 0.8)
+p <- p + geom_dotplot(data = plotdata_df, mapping = aes(x = x_plot, y = number_degs), 
+                      color = NA, fill = "brown", binaxis='y', stackdir='center', dotsize=0.75, alpha = 0.75, shape = 16)
 # p <- p + geom_hline(yintercept = 20, linetype = 2)
 p <- p + geom_hline(yintercept = y_cutoff, linetype = 2)
-p <- p + geom_text(data = textdata_df, mapping = aes(x = x_plot, y = 430, label = text), size = 6.5)
+p <- p + geom_text(data = textdata_df, mapping = aes(x = x_plot, y = 430, label = text), size = 8)
 p <- p + scale_y_continuous(breaks = c(0, y_cutoff, 100, 200, 300, 400, 500))
-p <- p + xlab("Resolution") + ylab("Number of unique markers per cluster")
-p <- p + theme_classic(base_size = 15)
-p <- p + theme(axis.text = element_text(color = "black", size = 20), axis.title = element_text(color = "black", size = 20))
-p
+p <- p + xlab("Resolution") + ylab("No. unique markers / cluster")
+p <- p + theme_classic(base_size = fontsize_plot)
+p <- p + theme(axis.text = element_text(color = "black", size = fontsize_plot), 
+               axis.title = element_text(color = "black", size = fontsize_plot))
 # save outputs ------------------------------------------------------------
 file2write <- paste0(dir_out, "Number_of_DEGs_byresolution.pdf")
-pdf(file2write, width = 7, height = 6, useDingbats = F)
+pdf(file2write, width = 11, height = 6, useDingbats = F)
 print(p)
 dev.off()
 
