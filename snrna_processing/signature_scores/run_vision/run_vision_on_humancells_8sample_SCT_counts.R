@@ -68,11 +68,11 @@ signatures <- c("../ccRCC_snRNA/Resources/Knowledge/Databases/MSigDB/msigdb_v7.4
 ### rownames(srat$integrated@data will give top variably expressed genes
 # DefaultAssay(srat) <- "RNA"
 options(mc.cores = 20)
-## get counts data from the SCT assay
-counts <- srat$SCT@counts
 # Scale counts within each cell
-n.umi <- colSums(counts)
-scaled_counts <- t(t(counts) / n.umi) * median(n.umi)
+srat <- NormalizeData(object = srat, assay = "SCT", normalization.method = "RC")
+print(srat$SCT@counts[1:5, 1:5])
+print(srat$SCT@data[1:5, 1:5])
+scaled_counts <- srat$SCT@data
 ## crate vision object
 vision.obj <- Vision(scaled_counts, signatures = signatures, pool = F)
 print("Finish creating the vision object!\n")
