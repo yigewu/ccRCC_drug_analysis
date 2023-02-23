@@ -29,7 +29,6 @@ for (pkg_name_tmp in packages) {
 # input data --------------------------------------------------
 ## input the RTV data
 rtv_df <- read_xlsx(path = "./Resources/Treatment_Lists/Treatment_Summary/Relative_Tumor_Volume_tests.xlsx", sheet = "RTV")
-rtv_df <- read_xlsx(path = "./Resources/Treatment_Lists/Treatment_Summary/re", sheet = "RTV")
 
 # process -----------------------------------------------------------------
 rtv_df <- rtv_df %>%

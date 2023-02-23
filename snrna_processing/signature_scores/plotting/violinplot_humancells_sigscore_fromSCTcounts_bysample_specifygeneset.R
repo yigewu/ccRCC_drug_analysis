@@ -28,12 +28,12 @@ geneset_plot <- "HALLMARK_EPITHELIAL_MESENCHYMAL_TRANSITION"
 # geneset_plot <- "KEGG_METABOLISM_OF_XENOBIOTICS_BY_CYTOCHROME_P450"
 # geneset_plot <- "KEGG_DRUG_METABOLISM_CYTOCHROME_P450"
 geneset_plot <- "HALLMARK_PI3K_AKT_MTOR_SIGNALING"
-geneset_plot <- "WP_PI3KAKT_SIGNALING_PATHWAY"
-geneset_plot <- "HALLMARK_MTORC1_SIGNALING"
-geneset_plot <- "REACTOME_MAPK3_ERK1_ACTIVATION"
+# geneset_plot <- "WP_PI3KAKT_SIGNALING_PATHWAY"
+# geneset_plot <- "HALLMARK_MTORC1_SIGNALING"
+# geneset_plot <- "REACTOME_MAPK3_ERK1_ACTIVATION"
 geneset_plot <- "REACTOME_MAPK1_ERK2_ACTIVATION"
-geneset_plot <- "REACTOME_MET_RECEPTOR_ACTIVATION"
-geneset_plot <- "WP_MET_IN_TYPE_1_PAPILLARY_RENAL_CELL_CARCINOMA"
+# geneset_plot <- "REACTOME_MET_RECEPTOR_ACTIVATION"
+# geneset_plot <- "WP_MET_IN_TYPE_1_PAPILLARY_RENAL_CELL_CARCINOMA"
 
 # make plot data ----------------------------------------------------------
 plot_data_df <- results_df %>%

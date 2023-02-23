@@ -6,7 +6,6 @@ dir_base = "~/Library/CloudStorage/Box-Box/Ding_Lab/Projects_Current/RCC/ccRCC_D
 setwd(dir_base)
 source("./ccRCC_drug_analysis/load_pkgs.R")
 source("./ccRCC_drug_analysis/functions.R")
-source("./ccRCC_drug_analysis/variables.R")
 source("./ccRCC_drug_analysis/plotting.R")
 library(ComplexHeatmap)
 ## set run id
