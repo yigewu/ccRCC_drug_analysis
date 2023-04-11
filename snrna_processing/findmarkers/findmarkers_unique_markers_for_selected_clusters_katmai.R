@@ -78,9 +78,9 @@ for (sample_tmp in unique(Idents(srat))) {
   path_markers <- paste0(dir_out_parent, mc_name, ".", sample_tmp, ".tumorcellsreclustered.markers.logfcthreshold.", logfc.threshold.run, ".minpct.", min.pct.run, ".mindiffpct.", min.diff.pct.run, ".tsv")
   if (file.exists(path_markers)) {
     markers <- fread(data.table = F, input = path_markers)
-    cat(paste0("Markers for resolution ", resolution_tmp, "exists, reading!\n"))
+    cat(paste0("Markers for ", mc_name, " in ", sample_tmp, "exists, reading!\n"))
   } else {
-    cat(paste0("Markers for resolution ", resolution_tmp, "doesn't exist, running FindMarkers!\n"))
+    cat(paste0("Markers for ",  mc_name, " in ", sample_tmp, "doesn't exist, running FindMarkers!\n"))
     
     markers_df <- FindMarkers(object = srat, subset.ident = sample_tmp, group.by = "MC_name", ident.1 = mc_name,
                               test.use = "wilcox", only.pos = T,
