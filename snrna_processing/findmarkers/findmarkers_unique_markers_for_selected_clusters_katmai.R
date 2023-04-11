@@ -68,7 +68,8 @@ cat("Finished FindClusters!\n")
 
 # Preprocess ---------------------------------------------------------------
 Idents(srat) = "orig.ident"
-srat@meta.data[,"MC_name"] = paste0("MC", (srat@meta.data[,"integrated_snn_res.0.5"]+1))
+srat@meta.data[,"MC_name"] = paste0("MC", as.numeric(srat@meta.data[,"integrated_snn_res.0.5"]))
+table(srat@meta.data$MC_name)
 
 # Findmarkers -------------------------------------------------------------
 markers_all_df <- NULL
