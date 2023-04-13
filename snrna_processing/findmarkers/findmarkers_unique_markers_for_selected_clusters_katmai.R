@@ -61,6 +61,7 @@ logfc.threshold.run <- 0.25
 min.pct.run <- 0.1
 min.diff.pct.run <- 0
 mc_name = "MC8"
+mc_name = "MC2"
 
 # FindClusters -----------------------------------------------------------------
 srat <- FindClusters(srat, resolution = 0.5)
