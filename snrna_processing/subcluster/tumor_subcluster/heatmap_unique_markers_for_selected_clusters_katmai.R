@@ -52,7 +52,7 @@ print("Finish reading the RDS file!\n")
 
 
 # plot --------------------------------------------------------------------
-png(paste0(dir_out, "MC2_markers.png"), width = 800, height = 600, res = 150)
-DoHeatmap(srat, features = c("ABCA1", "C3", "NAV2", "NEAT1", "PLD1", "ROR1"), 
-         group.by = "integrated_snn_res.0.5")
+Idents(srat) = "integrated_snn_res.0.5"
+pdf(paste0(dir_out, "MC2_markers.pdf"), width = 8, height = 4, useDingbats = F)
+Seurat::DoHeatmap(object = srat, features = c("ABCA1", "C3", "NAV2", "NEAT1", "PLD1", "ROR1"))
 dev.off()
