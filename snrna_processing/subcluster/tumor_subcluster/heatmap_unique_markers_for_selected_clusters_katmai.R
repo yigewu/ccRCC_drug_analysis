@@ -52,7 +52,8 @@ print("Finish reading the RDS file!\n")
 
 
 # plot --------------------------------------------------------------------
-p = DoHeatmap(srat, features = c("ABCA1", "C3", "NAV2", "NEAT1", "PLD1", "ROR1"), group.by = "integrated_snn_res.0.5")
-png(paste0(dir_out, "MC2_markers.png"), width = 8, height = 6, res = 150)
+p = DoHeatmap(srat, features = c("ABCA1", "C3", "NAV2", "NEAT1", "PLD1", "ROR1"), 
+              group.by = "integrated_snn_res.0.5")
+png(paste0(dir_out, "MC2_markers.png"), width = 800, height = 600, res = 150)
 print(p)
 dev.off()
