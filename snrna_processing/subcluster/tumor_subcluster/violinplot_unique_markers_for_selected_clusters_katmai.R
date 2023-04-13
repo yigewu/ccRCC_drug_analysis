@@ -54,6 +54,8 @@ print("Finish reading the RDS file!\n")
 # plot --------------------------------------------------------------------
 srat@meta.data[,"MC_name"] = paste0("MC", as.numeric(srat@meta.data[,"integrated_snn_res.0.5"]))
 Idents(srat) = "MC_name"
-pdf(paste0(dir_out, "MC2_markers.pdf"), width = 8, height = 4, useDingbats = F)
-Seurat::DoHeatmap(object = srat, features = c("ABCA1", "C3", "NAV2", "NEAT1", "PLD1", "ROR1"))
-dev.off()
+for (gene in c("ABCA1", "C3", "NAV2", "NEAT1", "PLD1", "ROR1")) {
+  pdf(paste0(dir_out, gene, ".pdf"), width = 8, height = 4, useDingbats = F)
+  Seurat::VlnPlot(object = srat, features = gene)
+  dev.off()
+}
