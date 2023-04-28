@@ -26,3 +26,4 @@ deg_count_df = deg_df %>%
   as.data.frame() %>%
   arrange(desc(Freq))
 
+write.table(x = deg_count_df, file = paste0(dir_out, "MC2_DEG_count.", run_id, ".tsv"), quote = F, sep = "\t", row.names = F)

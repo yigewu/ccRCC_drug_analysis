@@ -22,6 +22,7 @@ thisFile <- function() {
 }
 path_this_script <- thisFile()
 ## set working directory
+dir_base = "~/Library/CloudStorage/Box-Box/Ding_Lab/Projects_Current/RCC/ccRCC_Drug/"
 dir_base = "/diskmnt/Projects/ccRCC_scratch/ccRCC_Drug/"
 setwd(dir_base)
 packages = c(
@@ -49,11 +50,14 @@ path_rds <- "./Resources/Analysis_Results/snrna_processing/integration/run_human
 ## input RDS file
 srat <- readRDS(file = path_rds)
 print("Finish reading the RDS file!\n")
-
+## input marker genes
+markers_df = fread(data.table = F, input = "./Resources/Analysis_Results/snrna_processing/findmarkers/examine_degs/filter_MC2_markers/20230428.v1/MC2_DEG_count.20230428.v1.tsv")
+colnames(markers_df) = c("gene", "Freq")
 
 # plot --------------------------------------------------------------------
 srat@meta.data[,"MC_name"] = paste0("MC", as.numeric(srat@meta.data[,"integrated_snn_res.0.5"]))
 Idents(srat) = "MC_name"
+genes_plot = markers_df$gene[markers_df$Freq >=4]
 pdf(paste0(dir_out, "MC2_markers.pdf"), width = 8, height = 4, useDingbats = F)
-Seurat::DoHeatmap(object = srat, features = c("ABCA1", "C3", "NAV2", "NEAT1", "PLD1", "ROR1"))
+Seurat::DoHeatmap(object = srat, features = genes_plot)
 dev.off()
