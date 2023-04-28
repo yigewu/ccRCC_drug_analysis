@@ -58,6 +58,6 @@ colnames(markers_df) = c("gene", "Freq")
 srat@meta.data[,"MC_name"] = paste0("MC", as.numeric(srat@meta.data[,"integrated_snn_res.0.5"]))
 Idents(srat) = "MC_name"
 genes_plot = markers_df$gene[markers_df$Freq >=4]
-pdf(paste0(dir_out, "MC2_markers.pdf"), width = 8, height = 4, useDingbats = F)
+pdf(paste0(dir_out, "MC2_markers.pdf"), width = 8, height = 10, useDingbats = F)
 Seurat::DoHeatmap(object = srat, features = genes_plot)
 dev.off()
