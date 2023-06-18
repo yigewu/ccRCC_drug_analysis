@@ -38,9 +38,6 @@ dir.create(dir_out)
 wb_value_df = read_xlsx("./Resources/Western_Blot/Image J quant_05312023_transposed.xlsx")
 
 # set parameter -----------------------------------------------------------
-phospho_plot = "phospho_ERK"
-total_plot = "total_ERK"
-loadcontrol_plot = "loadcontrol"
 stderror <- function(x) sd(x)/sqrt(length(x))
 color_red <- RColorBrewer::brewer.pal(n = 7, name = "Set1")[1]
 color_green <- RColorBrewer::brewer.pal(n = 7, name = "Set1")[3]
@@ -66,7 +63,7 @@ wb_value_filtered_df[,"phospho"] = wb_value_filtered_df[,phospho_plot]
 wb_value_filtered_df[,"total_protein"] = wb_value_filtered_df[,total_plot]
 wb_value_filtered_df = wb_value_filtered_df %>%
   mutate(phospho.bytotal = (phospho/total_protein)*100) %>%
-  mutate(total.bylc = (total_protein/loadcontrol)*100) %>%
+  mutate(phospho.bylc = (phospho/loadcontrol)*100) %>%
   mutate(phospho.bytotal.bylc = (phospho.bytotal/loadcontrol)*100)
 
 plot_data_df = wb_value_filtered_df
@@ -75,7 +72,7 @@ plot_data_df$Model = factor(plot_data_df$Model, levels = c("RESL4", "RESL10", "R
 
 stat.test <- plot_data_df %>%
   group_by(Model) %>%
-  t_test(phospho.bytotal ~ Treatment_group, paired = T, 
+  t_test(phospho.bylc ~ Treatment_group, paired = T, 
          comparisons = list(c("Control", "Cabozantinib"), 
                             c("Control", "Sapanisertib"),
                             c("Control", "Combo"),
@@ -85,21 +82,21 @@ stat.test <- plot_data_df %>%
   add_significance("p") %>%
   filter(p < 0.1)
 stat.test <- stat.test %>% add_xy_position(fun = "mean_se", x = "Treatment_group")
-stat.test$y.position = c(140, 160, 150, 40, 40, 70, 90, 40, 60, 80)
+stat.test$y.position = c(180, 180, 100, 120, 140, 30, 50, 70, 30)
 
 p <- ggbarplot(data = plot_data_df,
-               x = "Treatment_group", y = "phospho.bytotal", fill = "Treatment_group",
+               x = "Treatment_group", y = "phospho.bylc", fill = "Treatment_group",
                facet.by = "Model", nrow = 1,
                add = "mean_se", position = position_dodge())
-p <- p + ylim(c(0, 170))
+p <- p + ylim(c(0, 220))
 p <- p + stat_pvalue_manual(stat.test, label = "p", tip.length = 0.01)
 p <- p + scale_fill_manual(values = colors_plot)
-p <- p + ylab(paste0(phospho_plot, " normalized by\ntotal protein"))
+p <- p + ylab(paste0(phospho_plot, " normalized by\nloading control"))
 p <- p + theme(axis.text.x = element_blank(),
                axis.title.x = element_blank(),
                axis.ticks.x = element_blank())
 pdf.options(reset = TRUE, onefile = FALSE)
-file2write <- paste0(dir_out, phospho_plot, ".phospho.bytotal.ttest",  ".pdf")
+file2write <- paste0(dir_out, phospho_plot, ".phospho.bylc.ttest",  ".pdf")
 pdf(file2write, width = 7, height = 3.5, useDingbats = F)
 print(p)
 dev.off()
@@ -113,7 +110,7 @@ wb_value_filtered_df[,"phospho"] = wb_value_filtered_df[,phospho_plot]
 wb_value_filtered_df[,"total_protein"] = wb_value_filtered_df[,total_plot]
 wb_value_filtered_df = wb_value_filtered_df %>%
   mutate(phospho.bytotal = (phospho/total_protein)*100) %>%
-  mutate(total.bylc = (total_protein/loadcontrol)*100) %>%
+  mutate(phospho.bylc = (phospho/loadcontrol)*100) %>%
   mutate(phospho.bytotal.bylc = (phospho.bytotal/loadcontrol)*100)
 
 plot_data_df = wb_value_filtered_df
@@ -122,7 +119,7 @@ plot_data_df$Model = factor(plot_data_df$Model, levels = c("RESL4", "RESL10", "R
 
 stat.test <- plot_data_df %>%
   group_by(Model) %>%
-  t_test(phospho.bytotal ~ Treatment_group, paired = T, 
+  t_test(phospho.bylc ~ Treatment_group, paired = T, 
          comparisons = list(c("Control", "Cabozantinib"), 
                             c("Control", "Sapanisertib"),
                             c("Control", "Combo"),
@@ -135,19 +132,19 @@ stat.test <- stat.test %>% add_xy_position(fun = "mean_se", x = "Treatment_group
 stat.test$y.position = c(75, 25, 25, 25, 45)
 
 p <- ggbarplot(data = plot_data_df,
-               x = "Treatment_group", y = "phospho.bytotal", fill = "Treatment_group",
+               x = "Treatment_group", y = "phospho.bylc", fill = "Treatment_group",
                facet.by = "Model", nrow = 1,
                add = "mean_se", position = position_dodge())
 p <- p + ylim(c(0, 170))
 p <- p + stat_pvalue_manual(stat.test, label = "p", tip.length = 0.01)
 p <- p + scale_fill_manual(values = colors_plot)
-p <- p + ylab(paste0(phospho_plot, " normalized by\ntotal protein"))
+p <- p + ylab(paste0(phospho_plot, " normalized by\nloading control"))
 # p <- p + ylim(c(0, 6.5))
 p <- p + theme(axis.text.x = element_blank(),
                axis.title.x = element_blank(),
                axis.ticks.x = element_blank())
 pdf.options(reset = TRUE, onefile = FALSE)
-file2write <- paste0(dir_out, phospho_plot, ".phospho.bytotal.ttest",  ".pdf")
+file2write <- paste0(dir_out, phospho_plot, ".phospho.bylc.ttest",  ".pdf")
 pdf(file2write, width = 7, height = 3.5, useDingbats = F)
 print(p)
 dev.off()
@@ -161,7 +158,7 @@ wb_value_filtered_df[,"phospho"] = wb_value_filtered_df[,phospho_plot]
 wb_value_filtered_df[,"total_protein"] = wb_value_filtered_df[,total_plot]
 wb_value_filtered_df = wb_value_filtered_df %>%
   mutate(phospho.bytotal = (phospho/total_protein)*100) %>%
-  mutate(total.bylc = (total_protein/loadcontrol)*100) %>%
+  mutate(phospho.bylc = (phospho/loadcontrol)*100) %>%
   mutate(phospho.bytotal.bylc = (phospho.bytotal/loadcontrol)*100)
 wb_value_filtered_df$phospho.bymodel = phospho.bymodel_vec
 wb_value_filtered_df$phospho.bytotal.bylc.bymodel = phospho.bytotal.bylc.bymodel_vec
@@ -172,7 +169,7 @@ plot_data_df$Model = factor(plot_data_df$Model, levels = c("RESL4", "RESL10", "R
 
 stat.test <- plot_data_df %>%
   group_by(Model) %>%
-  t_test(phospho.bytotal ~ Treatment_group, paired = T, 
+  t_test(phospho.bylc ~ Treatment_group, paired = T, 
          comparisons = list(c("Control", "Cabozantinib"), 
                             c("Control", "Sapanisertib"),
                             c("Control", "Combo"),
@@ -189,18 +186,18 @@ stat.test$y.position[stat.test$Model == "RESL3"] = c(50, 70, 90)
 stat.test$y.position[stat.test$Model == "RESL11"] = c(50, 70, 90)
 
 p <- ggbarplot(data = plot_data_df,
-               x = "Treatment_group", y = "phospho.bytotal", fill = "Treatment_group",
+               x = "Treatment_group", y = "phospho.bylc", fill = "Treatment_group",
                facet.by = "Model", nrow = 1,
                add = "mean_se", position = position_dodge())
 p <- p + stat_pvalue_manual(stat.test, label = "p", tip.length = 0.01)
 p <- p + scale_fill_manual(values = colors_plot)
-p <- p + ylab(paste0(phospho_plot, " normalized by\ntotal protein"))
+p <- p + ylab(paste0(phospho_plot, " normalized by\nloading control"))
 p <- p + ylim(c(0, 220))
 p <- p + theme(axis.text.x = element_blank(),
                axis.title.x = element_blank(),
                axis.ticks.x = element_blank())
 pdf.options(reset = TRUE, onefile = FALSE)
-file2write <- paste0(dir_out, phospho_plot, ".phospho.bytotal.ttest",  ".pdf")
+file2write <- paste0(dir_out, phospho_plot, ".phospho.bylc.ttest",  ".pdf")
 pdf(file2write, width = 7, height = 3.5, useDingbats = F)
 print(p)
 dev.off()
@@ -215,7 +212,7 @@ wb_value_filtered_df[,"phospho"] = wb_value_filtered_df[,phospho_plot]
 wb_value_filtered_df[,"total_protein"] = wb_value_filtered_df[,total_plot]
 wb_value_filtered_df = wb_value_filtered_df %>%
   mutate(phospho.bytotal = (phospho/total_protein)*100) %>%
-  mutate(total.bylc = (total_protein/loadcontrol)*100) %>%
+  mutate(phospho.bylc = (phospho/loadcontrol)*100) %>%
   mutate(phospho.bytotal.bylc = (phospho.bytotal/loadcontrol)*100)
 
 plot_data_df = wb_value_filtered_df
@@ -224,7 +221,7 @@ plot_data_df$Model = factor(plot_data_df$Model, levels = c("RESL4", "RESL10", "R
 
 stat.test <- plot_data_df %>%
   group_by(Model) %>%
-  t_test(phospho.bytotal ~ Treatment_group, paired = T, 
+  t_test(phospho.bylc ~ Treatment_group, paired = T, 
          comparisons = list(c("Control", "Cabozantinib"), 
                             c("Control", "Sapanisertib"),
                             c("Control", "Combo"),
@@ -237,18 +234,18 @@ stat.test <- stat.test %>% add_xy_position(fun = "mean_se", x = "Treatment_group
 stat.test$y.position = c(140, 140, 140, 160, 140)
 
 p <- ggbarplot(data = plot_data_df,
-               x = "Treatment_group", y = "phospho.bytotal", fill = "Treatment_group",
+               x = "Treatment_group", y = "phospho.bylc", fill = "Treatment_group",
                facet.by = "Model", nrow = 1,
                add = "mean_se", position = position_dodge())
 p <- p + stat_pvalue_manual(stat.test, label = "p", tip.length = 0.01)
 p <- p + scale_fill_manual(values = colors_plot)
-p <- p + ylab(paste0(phospho_plot, " normalized by\ntotal protein"))
+p <- p + ylab(paste0(phospho_plot, " normalized by\nloading control"))
 # p <- p + ylim(c(0, 9))
 p <- p + theme(axis.text.x = element_blank(),
                axis.title.x = element_blank(),
                axis.ticks.x = element_blank())
 pdf.options(reset = TRUE, onefile = FALSE)
-file2write <- paste0(dir_out, phospho_plot, ".phospho.bytotal.ttest",  ".pdf")
+file2write <- paste0(dir_out, phospho_plot, ".phospho.bylc.ttest",  ".pdf")
 pdf(file2write, width = 7, height = 3.5, useDingbats = F)
 print(p)
 dev.off()

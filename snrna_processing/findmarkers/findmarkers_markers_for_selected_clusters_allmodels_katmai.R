@@ -78,7 +78,6 @@ markers_df <- FindMarkers(object = srat, group.by = "MC_name", ident.1 = mc_name
                           min.pct = min.pct.run, logfc.threshold = logfc.threshold.run, min.diff.pct = min.diff.pct.run, 
                           verbose = T)
 markers_df$gene_symbol <- rownames(markers_df)
-markers_df$sample <- sample_tmp
 path_markers <- paste0(dir_out, mc_name, ".notonlyposmarkers.logfcthreshold.", logfc.threshold.run, ".minpct.", min.pct.run, ".mindiffpct.", min.diff.pct.run, ".tsv")
 write.table(x = markers_df, file = path_markers, quote = F, sep = "\t", row.names = F)
 print("Finish writing the FindAllMarkers output!\n")
