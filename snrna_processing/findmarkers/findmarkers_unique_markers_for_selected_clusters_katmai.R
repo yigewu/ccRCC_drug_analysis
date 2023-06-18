@@ -77,7 +77,9 @@ markers_all_df <- NULL
 for (sample_tmp in unique(Idents(srat))) {
   print(sample_tmp)
   ## output to directory not seperated by run id, in case some of the iterations won't finish in one day
-  path_markers <- paste0(dir_out_parent, mc_name, ".", sample_tmp, ".tumorcellsreclustered.markers.logfcthreshold.", logfc.threshold.run, ".minpct.", min.pct.run, ".mindiffpct.", min.diff.pct.run, ".tsv")
+  # path_markers <- paste0(dir_out_parent, mc_name, ".", sample_tmp, ".tumorcellsreclustered.markers.logfcthreshold.", logfc.threshold.run, ".minpct.", min.pct.run, ".mindiffpct.", min.diff.pct.run, ".tsv")
+  path_markers <- paste0(dir_out_parent, mc_name, ".", sample_tmp, ".notonlyposmarkers.logfcthreshold.", logfc.threshold.run, ".minpct.", min.pct.run, ".mindiffpct.", min.diff.pct.run, ".tsv")
+  
   if (file.exists(path_markers)) {
     markers <- fread(data.table = F, input = path_markers)
     cat(paste0("Markers for ", mc_name, " in ", sample_tmp, "exists, reading!\n"))
