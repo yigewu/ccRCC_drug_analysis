@@ -85,12 +85,20 @@ for (treatment_tmp in c("Cabo", "Sap", "Cabo+ Sap")) {
 
       plotdata_tmp_df <- plotdata_df %>%
         filter(treatment_length == "1month") 
+      # p <- ggscatter(data = plotdata_tmp_df, x = "exp_value", y = "relative_tumor_volume",
+      #                add = "reg.line",  # Add regressin line
+      #                label = "model_id", font.label = c(fontsize_plot, "plain"),
+      #                add.params = list(color = "grey", fill = "lightgray", linetype = 2), # Customize reg. line
+      #                conf.int = T # Add confidence interval
+      # )
       p <- ggscatter(data = plotdata_tmp_df, x = "exp_value", y = "relative_tumor_volume",
                      add = "reg.line",  # Add regressin line
-                     label = "model_id", font.label = c(fontsize_plot, "plain"),
+                     # label = "model_id", font.label = c(fontsize_plot, "plain"),
+                     color = "model_id",
                      add.params = list(color = "grey", fill = "lightgray", linetype = 2), # Customize reg. line
                      conf.int = T # Add confidence interval
       )
+      p <- p + scale_color_manual(values = RColorBrewer::brewer.pal(n = 6, name = "Set1"))
       p <- p + stat_cor(method = "pearson",
                         label.x = min(plotdata_tmp_df$x_plot),
                         label.y = (max(plotdata_tmp_df$y_plot) + 0.1), size = 7)
@@ -101,12 +109,12 @@ for (treatment_tmp in c("Cabo", "Sap", "Cabo+ Sap")) {
       p <- p + xlim(c(min(plotdata_tmp_df$x_plot)-0.11, max(plotdata_tmp_df$x_plot)+0.11))
       p <- p + ylim(c(min(plotdata_tmp_df$y_plot)-0.05, max(plotdata_tmp_df$y_plot)+0.1))
       p <- p + theme(axis.text = element_text(color = "black", size = fontsize_plot))
-      file2write <- paste0(dir_tmp_out, protein_tmp, ".", pathwayname_tmp, ".", treatment_tmp, ".", "1month", ".png")
-      png(file2write, width = 600, height = 500, res = 150)
-      print(p)
-      dev.off()
+      # file2write <- paste0(dir_tmp_out, protein_tmp, ".", pathwayname_tmp, ".", treatment_tmp, ".", "1month", ".png")
+      # png(file2write, width = 600, height = 500, res = 150)
+      # print(p)
+      # dev.off()
       file2write <- paste0(dir_tmp_out, protein_tmp, ".", pathwayname_tmp, ".", treatment_tmp, ".", "1month", ".pdf")
-      pdf(file2write, width = 4, height = 4, useDingbats = F)
+      pdf(file2write, width = 5.5, height = 4, useDingbats = F)
       print(p)
       dev.off()
       

@@ -2,15 +2,30 @@
 
 # set up libraries and output directory -----------------------------------
 ## set working directory
-dir_base = "~/Box/Ding_Lab/Projects_Current/RCC/ccRCC_Drug/"
+dir_base = "~/Library/CloudStorage/Box-Box/Ding_Lab/Projects_Current/RCC/ccRCC_Drug"
 setwd(dir_base)
-source("./ccRCC_drug_analysis/load_pkgs.R")
-source("./ccRCC_drug_analysis/functions.R")
-source("./ccRCC_drug_analysis/variables.R")
-source("./ccRCC_drug_analysis/plotting.R")
-library(ComplexHeatmap)
+packages = c(
+  "plyr",
+  "dplyr",
+  "stringr",
+  "reshape2",
+  "data.table",
+  "ggplot2",
+  "ComplexHeatmap"
+)
+for (pkg_name_tmp in packages) {
+  if (!(pkg_name_tmp %in% installed.packages()[,1])) {
+    install.packages(pkg_name_tmp, dependencies = T)
+  }
+  if (!(pkg_name_tmp %in% installed.packages()[,1])) {
+    if (!requireNamespace("BiocManager", quietly=TRUE))
+      install.packages("BiocManager")
+    BiocManager::install(pkg_name_tmp)
+  }
+  library(package = pkg_name_tmp, character.only = T)
+}
 ## set run id
-version_tmp <- 4
+version_tmp <- 1
 run_id <- paste0(format(Sys.Date(), "%Y%m%d") , ".v", version_tmp)
 ## set output directory
 dir_out <- paste0(makeOutDir(), run_id, "/")

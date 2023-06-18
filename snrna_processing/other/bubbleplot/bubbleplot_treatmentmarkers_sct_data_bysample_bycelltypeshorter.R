@@ -3,6 +3,7 @@
 # set up libraries and output directory -----------------------------------
 ## set working directory
 dir_base = "~/Box/Ding_Lab/Projects_Current/RCC/ccRCC_Drug/"
+dir_base = "~/Library/CloudStorage/Box-Box/Ding_Lab/Projects_Current/RCC/ccRCC_Drug/"
 setwd(dir_base)
 source("./ccRCC_drug_analysis/load_pkgs.R")
 source("./ccRCC_drug_analysis/functions.R")
@@ -22,6 +23,8 @@ exp_wide_df <- fread(data.table = F, input = "./Resources/Analysis_Results/snrna
 x_cap <- 20
 genes_plot <- c("PXDN", "PDXP", "GLUD2", "SUSD2")
 gene_plot <- "PXDN"
+genes_plot <- c("C3", "C1R")
+
 ## make colors
 colors_cellgroup <- RColorBrewer::brewer.pal(n = 5, name = "Set1")
 names(colors_cellgroup) <- c("Tumor.cells", "Endothelial.cells", "Macrophages", "Fibroblasts", "Myofibroblasts")

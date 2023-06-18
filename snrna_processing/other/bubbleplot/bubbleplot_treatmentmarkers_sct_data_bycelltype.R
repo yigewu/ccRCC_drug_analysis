@@ -3,6 +3,7 @@
 # set up libraries and output directory -----------------------------------
 ## set working directory
 dir_base = "~/Box/Ding_Lab/Projects_Current/RCC/ccRCC_Drug/"
+dir_base = "~/Library/CloudStorage/Box-Box/Ding_Lab/Projects_Current/RCC/ccRCC_Drug/"
 setwd(dir_base)
 source("./ccRCC_drug_analysis/load_pkgs.R")
 source("./ccRCC_drug_analysis/functions.R")
@@ -20,6 +21,7 @@ exp_wide_df <- fread(data.table = F, input = "./Resources/Analysis_Results/snrna
 
 # identify genes to plot -------------------------------------------------
 genes_plot <- c("PXDN", "PDXP", "GLUD2", "SUSD2")
+genes_plot <- c("C3", "C1R")
 
 # make plot data ----------------------------------------------------------
 plotdata_wide_df <- exp_wide_df %>%
@@ -56,7 +58,7 @@ p <- p + theme(axis.text.y = element_text(size = 12), axis.title.y = element_bla
 p <- p + theme(axis.text.x = element_text(size = 12), axis.line.x = element_line(arrow = grid::arrow(length = unit(0.3, "cm"), ends = "first")))
 p <- p + ggtitle(label = paste0("ccRCC PDX sn Expression"))
 file2write <- paste0(dir_out, "TreatmentMarkers", ".png")
-png(file2write, width = 800, height = 500, res = 150)
+png(file2write, width = 800, height = 300, res = 150)
 print(p)
 dev.off()
 

@@ -79,7 +79,8 @@ plot_data_df <- merge(bw_treatmentstart_df,
 plot_data_df <- plot_data_df %>%
   mutate(BodyweightChange = (Bodyweight.ClosestTo1Month - Bodyweight.TreatmentStart)/Bodyweight.TreatmentStart) %>%
   mutate(plot_x = Group) %>%
-  mutate(plot_y = BodyweightChange*100)
+  mutate(plot_y = BodyweightChange*100) %>%
+  mutate(model = str_split_fixed(PDXLineID, "_", 2)[,1])
 plot_data_df$plot_x <- factor(x = plot_data_df$plot_x, levels = c("CT", "Cab", "Sap", "Cab+Sap"))
 
 # make colors -------------------------------------------------------------
@@ -88,7 +89,7 @@ RColorBrewer::display.brewer.pal(name = "Set1", n = 7)
 colors_group <- c("grey50", RColorBrewer::brewer.pal(name = "Set1", n = 6)[c(1,3,6)])
 names(colors_group) <- c("CT", "Cab", "Sap", "Cab+Sap")
 
-# make box plot -----------------------------------------------------------
+# make box plot without annotating model -----------------------------------------------------------
 p <- ggplot(data = plot_data_df, mapping = aes(x = plot_x, y = plot_y))
 p <- p + geom_violin(mapping = aes(fill = plot_x))
 p = p + geom_boxplot(width=.1, outlier.shape = 23, outlier.fill = "black")
@@ -104,17 +105,45 @@ p <- p + theme(legend.position = "none",
                axis.title.x = element_blank(),
                axis.text = element_text(size = 15, color = "black"),
                axis.title.y = element_text(size = 15))
-p
 
-# write output ------------------------------------------------------------
 file2write <- paste0(dir_out, "BodyWeightChange.", "1MonthTreatment.", "pdf")
 pdf(file2write, width = 4, height = 3.5, useDingbats = F)
 print(p)
 dev.off()
-
 file2write <- paste0(dir_out, "BodyWeightChange.", "1MonthTreatment.", "png")
 png(filename = file2write, width = 1000, height = 800, res = 150)
 print(p)
 dev.off()
+
+# make box plot with annotating model -----------------------------------------------------------
+library(ggrepel)
+library(RColorBrewer)
+p <- ggplot(data = plot_data_df, mapping = aes(x = plot_x, y = plot_y))
+# p <- p + geom_violin(trim = F)
+p = p + geom_boxplot(width = 0.5)
+p = p + geom_dotplot(binaxis = 'y', stackdir = "center", stackgroups = T,
+                     binpositions="all",
+                     mapping = aes(fill = model))
+# p = p + stat_summary(fun.data="mean_sdl",  fun.args = list(mult=1))
+p = p + stat_compare_means(comparisons = list(c("Cab", "CT"), c("Sap", "CT"), c("Cab+Sap", "CT")),
+                           # symnum.args = symnum.args,
+                           hide.ns = F, method = "wilcox.test")
+p <- p + geom_hline(yintercept = 0, linetype = 2, alpha = 0.8)
+p <- p + scale_fill_manual(values = RColorBrewer::brewer.pal(n = 6, name = "Set1"))
+p <- p + theme_bw()
+p <- p + ylab(label = "% Body Weight Change (1-Month)")
+p <- p + theme(axis.title.x = element_blank(),
+               axis.text = element_text(size = 15, color = "black"),
+               axis.title.y = element_text(size = 15))
+p
+file2write <- paste0(dir_out, "BodyWeightChange.", "1MonthTreatment.markmodel", ".pdf")
+pdf(file2write, width = 4, height = 3.5, useDingbats = F)
+print(p)
+dev.off()
+file2write <- paste0(dir_out, "BodyWeightChange.", "1MonthTreatment.markmodel", ".png")
+png(filename = file2write, width = 700, height = 500, res = 150)
+print(p)
+dev.off()
+
 
 

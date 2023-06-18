@@ -85,7 +85,7 @@ for (sample_tmp in unique(Idents(srat))) {
     cat(paste0("Markers for ",  mc_name, " in ", sample_tmp, "doesn't exist, running FindMarkers!\n"))
     
     markers_df <- FindMarkers(object = srat, subset.ident = sample_tmp, group.by = "MC_name", ident.1 = mc_name,
-                              test.use = "wilcox", only.pos = T,
+                              test.use = "wilcox", only.pos = F,
                               min.pct = min.pct.run, logfc.threshold = logfc.threshold.run, min.diff.pct = min.diff.pct.run, 
                               verbose = T)
     markers_df$gene_symbol <- rownames(markers_df)

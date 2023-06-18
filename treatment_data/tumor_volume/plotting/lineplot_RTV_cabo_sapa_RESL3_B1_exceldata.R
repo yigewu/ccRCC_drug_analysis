@@ -58,25 +58,26 @@ color_grey <- "grey50"
 colors_plot <- c("Control" = color_grey, "Cabozantinib" = color_red, "Sapanisertib" = color_green, "Cabozantinib+Sapanisertib" = color_yellow)
 
 # plot complete plot --------------------------------------------------------------------
-p <- ggplot()
-p <- p + geom_line(data = subset(plot_data_long_df, Treatment_Group %in% c("Cabozantinib", "Cabozantinib+Sapanisertib")), mapping = aes(x = Treatment_Days, y = Avg_Relative_Volume, group = Treatment_Group, color = Treatment_Group), linetype = 2)
-p <- p + geom_line(data = subset(plot_data_long_df, !(Treatment_Group %in% c("Cabozantinib", "Cabozantinib+Sapanisertib"))), mapping = aes(x = Treatment_Days, y = Avg_Relative_Volume, group = Treatment_Group, color = Treatment_Group))
-p <- p + geom_point(data = plot_data_long_df, mapping = aes(x = Treatment_Days, y = Avg_Relative_Volume, group = Treatment_Group, color = Treatment_Group))
-p <- p + geom_errorbar(data = plot_data_long_df, 
-                       mapping = aes(x = Treatment_Days, y = Avg_Relative_Volume, group = Treatment_Group, color = Treatment_Group,
-                                     ymin=Avg_Relative_Volume-STDEV_relative_tumor_volumn, 
-                                     ymax=Avg_Relative_Volume+STDEV_relative_tumor_volumn), 
-                       width=1, alpha = 0.5, size = 0.5)
+p <- ggplot(data = plot_data_long_df, mapping = aes(x = Treatment_Days, y = Avg_Relative_Volume, group = Treatment_Group, color = Treatment_Group))
+p <- p + geom_line()
+p <- p + geom_point(alpha = 0.7, shape = 16)
+p <- p + geom_errorbar(aes(ymin=Avg_Relative_Volume-STDEV_relative_tumor_volumn, 
+                           ymax=Avg_Relative_Volume+STDEV_relative_tumor_volumn), 
+                       width=1, alpha = 0.7, size = 0.5)
 p <- p + scale_color_manual(values = colors_plot)
-p <- p + scale_y_continuous(breaks = seq(0, 800, 100))
-p <- p + scale_x_continuous(expand = c(0,0), breaks = seq(0, 60, 10), limits = c(0, 32))
+p <- p + scale_y_continuous(expand = c(0,0), breaks = seq(0, 1000, 100), limits = c(0, 1000))
 p <- p + theme_classic(base_size = 16)
+p <- p + theme(panel.grid.major.y = element_line(colour = "grey90"), legend.position = "none")
+p <- p + scale_x_continuous(expand = c(0,0), breaks = seq(0, 60, 10), limits = c(0, 32))
 p <- p + geom_hline(aes(yintercept = 100), linetype = 2)
-p <- p + theme(panel.grid.major.y = element_line(colour = "grey90"))
 p <- p + ylab("Relative tumor volume (%)") + xlab("Treatment time (days)")
 # p
+# file2write <- paste0(dir_out, id_model, ".B", id_batch, ".cab_sap", ".complete.", "png")
+# png(filename = file2write, width = 1000, height = 600, res = 150)
+# print(p)
+# dev.off()
 file2write <- paste0(dir_out, id_model, ".B", id_batch, ".cab_sap", ".complete.", "pdf")
-pdf(file2write, width = 8, height = 3.5, useDingbats = F)
+pdf(file2write, width = 4, height = 3.5, useDingbats = F)
 print(p)
 dev.off()
 
@@ -113,35 +114,55 @@ pdf(file2write, width = 4, height = 3.5, useDingbats = F)
 print(p)
 dev.off()
 
-for (treatment_tmp in c("Cabozantinib", "Sapanisertib", "Cabozantinib+Sapanisertib")) {
-  p <- ggplot(data = subset(plot_data_long_df, Treatment_Group %in% c("Control", treatment_tmp)), mapping = aes(x = Treatment_Days, y = Avg_Relative_Volume, group = Treatment_Group, color = Treatment_Group))
-  p <- p + geom_line()
-  p <- p + geom_point()
-  p <- p + geom_errorbar(aes(ymin=Avg_Relative_Volume-STDEV_relative_tumor_volumn, 
-                             ymax=Avg_Relative_Volume+STDEV_relative_tumor_volumn), 
-                         width=1, alpha = 0.5, size = 0.5)
-  p <- p + scale_color_manual(values = colors_plot)
-  # p <- p + ylim(c(10, 800))
-  p <- p + scale_x_continuous(expand = c(0,0), breaks = seq(0, 60, 10), limits = c(0, 32))
-  p <- p + theme_classic(base_size = 16)
-  # p <- p + scale_y_cut(breaks = 200, which = 1, scales = 1.5)
-  p <- p + ylim(c(10, 1000))
-  p <- p + scale_y_cut(breaks = c(200, 600), which = c(1, 2), scales = c(0.5, 1), space = 0.17)
-  
-  p <- p + theme(panel.grid.major.y = element_line(colour = "grey90"), legend.position = "none")
-  p <- p + ylab("Relative tumor volume (%)") + xlab("Treatment time (days)")
-  # p
-  
-  # file2write <- paste0(dir_out, id_model, ".B", id_batch, ".cab_sap", ".ggbreak.", "png")
-  # png(filename = file2write, width = 600, height = 600, res = 150)
-  # print(p)
-  # dev.off()
-  
-  pdf.options(reset = TRUE, onefile = FALSE)
-  file2write <- paste0(dir_out, id_model, ".B", id_batch, ".", treatment_tmp, ".ggbreak.", "pdf")
-  pdf(file2write, width = 4, height = 3.5, useDingbats = F)
-  print(p)
-  dev.off()
-}
+# plot complete plot with ggbreak at 100--------------------------------------------------------------------
+p <- ggplot(data = plot_data_long_df, mapping = aes(x = Treatment_Days, y = Avg_Relative_Volume, group = Treatment_Group, color = Treatment_Group))
+p <- p + geom_line()
+p <- p + geom_point()
+p <- p + geom_errorbar(aes(ymin=Avg_Relative_Volume-STDEV_relative_tumor_volumn, 
+                           ymax=Avg_Relative_Volume+STDEV_relative_tumor_volumn), 
+                       width=1, alpha = 0.5, size = 0.5)
+p <- p + scale_color_manual(values = colors_plot)
+p <- p + ylim(c(10, 1000))
+p <- p + scale_x_continuous(expand = c(0,0), breaks = seq(0, 60, 10), limits = c(0, 32))
+p <- p + theme_classic(base_size = 16)
+p <- p + scale_y_cut(breaks = c(100), scales = 1, space = 0)
+p <- p + theme(panel.grid.major.y = element_line(colour = "grey90"), legend.position = "none")
+p <- p + ylab("Relative tumor volume (%)") + xlab("Treatment time (days)")
+# p
+file2write <- paste0(dir_out, id_model, ".B", id_batch, ".cab_sap", ".ggbreak.v2.", "png")
+png(filename = file2write, width = 600, height = 600, res = 150)
+print(p)
+dev.off()
 
-
+# for (treatment_tmp in c("Cabozantinib", "Sapanisertib", "Cabozantinib+Sapanisertib")) {
+#   p <- ggplot(data = subset(plot_data_long_df, Treatment_Group %in% c("Control", treatment_tmp)), mapping = aes(x = Treatment_Days, y = Avg_Relative_Volume, group = Treatment_Group, color = Treatment_Group))
+#   p <- p + geom_line()
+#   p <- p + geom_point()
+#   p <- p + geom_errorbar(aes(ymin=Avg_Relative_Volume-STDEV_relative_tumor_volumn, 
+#                              ymax=Avg_Relative_Volume+STDEV_relative_tumor_volumn), 
+#                          width=1, alpha = 0.5, size = 0.5)
+#   p <- p + scale_color_manual(values = colors_plot)
+#   # p <- p + ylim(c(10, 800))
+#   p <- p + scale_x_continuous(expand = c(0,0), breaks = seq(0, 60, 10), limits = c(0, 32))
+#   p <- p + theme_classic(base_size = 16)
+#   # p <- p + scale_y_cut(breaks = 200, which = 1, scales = 1.5)
+#   p <- p + ylim(c(10, 1000))
+#   p <- p + scale_y_cut(breaks = c(200, 600), which = c(1, 2), scales = c(0.5, 1), space = 0.17)
+#   
+#   p <- p + theme(panel.grid.major.y = element_line(colour = "grey90"), legend.position = "none")
+#   p <- p + ylab("Relative tumor volume (%)") + xlab("Treatment time (days)")
+#   # p
+#   
+#   # file2write <- paste0(dir_out, id_model, ".B", id_batch, ".cab_sap", ".ggbreak.", "png")
+#   # png(filename = file2write, width = 600, height = 600, res = 150)
+#   # print(p)
+#   # dev.off()
+#   
+#   pdf.options(reset = TRUE, onefile = FALSE)
+#   file2write <- paste0(dir_out, id_model, ".B", id_batch, ".", treatment_tmp, ".ggbreak.", "pdf")
+#   pdf(file2write, width = 4, height = 3.5, useDingbats = F)
+#   print(p)
+#   dev.off()
+# }
+# 
+# 
