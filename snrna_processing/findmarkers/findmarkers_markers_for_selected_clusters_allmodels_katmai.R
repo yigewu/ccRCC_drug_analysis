@@ -73,32 +73,13 @@ srat@meta.data[,"MC_name"] = paste0("MC", as.numeric(srat@meta.data[,"integrated
 table(srat@meta.data$MC_name)
 
 # Findmarkers -------------------------------------------------------------
-markers_all_df <- NULL
-for (sample_tmp in unique(Idents(srat))) {
-  print(sample_tmp)
-  ## output to directory not seperated by run id, in case some of the iterations won't finish in one day
-  # path_markers <- paste0(dir_out_parent, mc_name, ".", sample_tmp, ".tumorcellsreclustered.markers.logfcthreshold.", logfc.threshold.run, ".minpct.", min.pct.run, ".mindiffpct.", min.diff.pct.run, ".tsv")
-  path_markers <- paste0(dir_out_parent, mc_name, ".", sample_tmp, ".notonlyposmarkers.logfcthreshold.", logfc.threshold.run, ".minpct.", min.pct.run, ".mindiffpct.", min.diff.pct.run, ".tsv")
-  
-  if (file.exists(path_markers)) {
-    markers_df <- fread(data.table = F, input = path_markers)
-    cat(paste0("Markers for ", mc_name, " in ", sample_tmp, "exists, reading!\n"))
-  } else {
-    cat(paste0("Markers for ",  mc_name, " in ", sample_tmp, "doesn't exist, running FindMarkers!\n"))
-    
-    markers_df <- FindMarkers(object = srat, subset.ident = sample_tmp, group.by = "MC_name", ident.1 = mc_name,
-                              test.use = "wilcox", only.pos = F,
-                              min.pct = min.pct.run, logfc.threshold = logfc.threshold.run, min.diff.pct = min.diff.pct.run, 
-                              verbose = T)
-    markers_df$gene_symbol <- rownames(markers_df)
-    markers_df$sample <- sample_tmp
-    write.table(x = markers_df, file = path_markers, quote = F, sep = "\t", row.names = F)
-  }
-  markers_all_df <- rbind(markers_all_df, markers_df)
-}
-file2write <- paste0(dir_out, mc_name, ".logfcthreshold.", 
-                     logfc.threshold.run, ".minpct.", min.pct.run, ".mindiffpct.", min.diff.pct.run,
-                     ".tsv")
-write.table(x = markers_all_df, file = file2write, quote = F, sep = "\t", row.names = F)
+markers_df <- FindMarkers(object = srat, group.by = "MC_name", ident.1 = mc_name,
+                          test.use = "wilcox", only.pos = F,
+                          min.pct = min.pct.run, logfc.threshold = logfc.threshold.run, min.diff.pct = min.diff.pct.run, 
+                          verbose = T)
+markers_df$gene_symbol <- rownames(markers_df)
+markers_df$sample <- sample_tmp
+path_markers <- paste0(dir_out, mc_name, ".notonlyposmarkers.logfcthreshold.", logfc.threshold.run, ".minpct.", min.pct.run, ".mindiffpct.", min.diff.pct.run, ".tsv")
+write.table(x = markers_df, file = path_markers, quote = F, sep = "\t", row.names = F)
 print("Finish writing the FindAllMarkers output!\n")
 
