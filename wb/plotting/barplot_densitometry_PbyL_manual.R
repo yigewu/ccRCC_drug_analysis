@@ -13,7 +13,8 @@ packages = c(
   "data.table",
   "readxl",
   "ggplot2",
-  "ggbreak"
+  "ggpubr",
+  "rstatix"
 )
 for (pkg_name_tmp in packages) {
   if (!(pkg_name_tmp %in% installed.packages()[,1])) {
@@ -52,7 +53,6 @@ wb_value_df = wb_value_df %>%
   filter(Date != "060723")
 phospho_total_plot_df = data.frame(phospho = c("phospho_AKT_473", "phospho_AKT_308", "phospho_ERK", "phospho_RPS6"),
                                    total = c("total_AKT", "total_AKT", "total_ERK", "total_RPS6"))
-
 
 # do phospho-AKT-473 ------------------------------------------------------
 i = 1
@@ -129,13 +129,13 @@ stat.test <- plot_data_df %>%
   add_significance("p") %>%
   filter(p <= 0.1)
 stat.test <- stat.test %>% add_xy_position(fun = "mean_se", x = "Treatment_group")
-stat.test$y.position = c(75, 25, 25, 25, 45)
+# stat.test$y.position = c(50, 70, 90, 110, 50, 70, 90)
 
 p <- ggbarplot(data = plot_data_df,
                x = "Treatment_group", y = "phospho.bylc", fill = "Treatment_group",
                facet.by = "Model", nrow = 1,
                add = "mean_se", position = position_dodge())
-p <- p + ylim(c(0, 170))
+# p <- p + ylim(c(0, 170))
 p <- p + stat_pvalue_manual(stat.test, label = "p", tip.length = 0.01)
 p <- p + scale_fill_manual(values = colors_plot)
 p <- p + ylab(paste0(phospho_plot, " normalized by\nloading control"))
@@ -160,8 +160,6 @@ wb_value_filtered_df = wb_value_filtered_df %>%
   mutate(phospho.bytotal = (phospho/total_protein)*100) %>%
   mutate(phospho.bylc = (phospho/loadcontrol)*100) %>%
   mutate(phospho.bytotal.bylc = (phospho.bytotal/loadcontrol)*100)
-wb_value_filtered_df$phospho.bymodel = phospho.bymodel_vec
-wb_value_filtered_df$phospho.bytotal.bylc.bymodel = phospho.bytotal.bylc.bymodel_vec
 
 plot_data_df = wb_value_filtered_df
 plot_data_df$Treatment_group = factor(x = plot_data_df$Treatment_group, levels = c("Control", "Cabozantinib", "Sapanisertib", "Combo"))
@@ -179,29 +177,31 @@ stat.test <- plot_data_df %>%
   add_significance("p") %>%
   filter(p <= 0.1)
 stat.test <- stat.test %>% add_xy_position(fun = "mean_se", x = "Treatment_group")
-stat.test$y.position[stat.test$Model == "RESL10"] = c(125, 145)
-stat.test$y.position[stat.test$Model == "RESL5"] = c(100, 120, 140)
-stat.test$y.position[stat.test$Model == "RESL12"] = c(70, 90)
-stat.test$y.position[stat.test$Model == "RESL3"] = c(50, 70, 90)
-stat.test$y.position[stat.test$Model == "RESL11"] = c(50, 70, 90)
+stat.test$y.position[stat.test$Model == "RESL4"] = c(130, 160, 190)
+stat.test$y.position[stat.test$Model == "RESL10"] = c(150, 175, 200, 225, 250)
+stat.test$y.position[stat.test$Model == "RESL5"] = c(130, 155, 180, 205, 230)
+stat.test$y.position[stat.test$Model == "RESL12"] = c(70, 100, 130, 160)
+stat.test$y.position[stat.test$Model == "RESL3"] = c(50, 80, 110)
+stat.test$y.position[stat.test$Model == "RESL11"] = c(50, 80, 110, 140)
 
 p <- ggbarplot(data = plot_data_df,
                x = "Treatment_group", y = "phospho.bylc", fill = "Treatment_group",
                facet.by = "Model", nrow = 1,
                add = "mean_se", position = position_dodge())
-p <- p + stat_pvalue_manual(stat.test, label = "p", tip.length = 0.01)
+p <- p + stat_pvalue_manual(stat.test, label = "p", tip.length = 0.01, size = 5)
 p <- p + scale_fill_manual(values = colors_plot)
-p <- p + ylab(paste0(phospho_plot, " normalized by\nloading control"))
-p <- p + ylim(c(0, 220))
+p <- p + ylab(paste0("Normalized pERK"))
+p <- p + guides(fill = guide_legend(title = ""))
+p <- p + theme_classic(base_size = 18)
+p <- p + ylim(c(0, 260))
 p <- p + theme(axis.text.x = element_blank(),
                axis.title.x = element_blank(),
-               axis.ticks.x = element_blank())
+               axis.ticks.x = element_blank(), legend.position = "bottom")
 pdf.options(reset = TRUE, onefile = FALSE)
 file2write <- paste0(dir_out, phospho_plot, ".phospho.bylc.ttest",  ".pdf")
 pdf(file2write, width = 7, height = 3.5, useDingbats = F)
 print(p)
 dev.off()
-
 
 # do phospho-RPS6 ------------------------------------------------------
 i = 4
@@ -231,7 +231,12 @@ stat.test <- plot_data_df %>%
   add_significance("p") %>%
   filter(p <= 0.1)
 stat.test <- stat.test %>% add_xy_position(fun = "mean_se", x = "Treatment_group")
-stat.test$y.position = c(140, 140, 140, 160, 140)
+stat.test$y.position[stat.test$Model == "RESL4"] = c(130, 150, 170, 190)
+stat.test$y.position[stat.test$Model == "RESL10"] = c(130, 150, 170, 190)
+stat.test$y.position[stat.test$Model == "RESL5"] = c(130, 150, 170, 190)
+stat.test$y.position[stat.test$Model == "RESL12"] = c(130, 150)
+stat.test$y.position[stat.test$Model == "RESL3"] = c(100, 120, 140)
+stat.test$y.position[stat.test$Model == "RESL11"] = c(100, 120, 140, 160)
 
 p <- ggbarplot(data = plot_data_df,
                x = "Treatment_group", y = "phospho.bylc", fill = "Treatment_group",
@@ -240,7 +245,7 @@ p <- ggbarplot(data = plot_data_df,
 p <- p + stat_pvalue_manual(stat.test, label = "p", tip.length = 0.01)
 p <- p + scale_fill_manual(values = colors_plot)
 p <- p + ylab(paste0(phospho_plot, " normalized by\nloading control"))
-# p <- p + ylim(c(0, 9))
+p <- p + ylim(c(0, 200))
 p <- p + theme(axis.text.x = element_blank(),
                axis.title.x = element_blank(),
                axis.ticks.x = element_blank())

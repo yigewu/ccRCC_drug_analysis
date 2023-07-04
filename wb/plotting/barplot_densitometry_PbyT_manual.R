@@ -13,7 +13,8 @@ packages = c(
   "data.table",
   "readxl",
   "ggplot2",
-  "ggbreak"
+  "ggpubr",
+  "rstatix"
 )
 for (pkg_name_tmp in packages) {
   if (!(pkg_name_tmp %in% installed.packages()[,1])) {
@@ -38,8 +39,6 @@ dir.create(dir_out)
 wb_value_df = read_xlsx("./Resources/Western_Blot/Image J quant_05312023_transposed.xlsx")
 
 # set parameter -----------------------------------------------------------
-phospho_plot = "phospho_ERK"
-total_plot = "total_ERK"
 loadcontrol_plot = "loadcontrol"
 stderror <- function(x) sd(x)/sqrt(length(x))
 color_red <- RColorBrewer::brewer.pal(n = 7, name = "Set1")[1]
@@ -163,8 +162,6 @@ wb_value_filtered_df = wb_value_filtered_df %>%
   mutate(phospho.bytotal = (phospho/total_protein)*100) %>%
   mutate(total.bylc = (total_protein/loadcontrol)*100) %>%
   mutate(phospho.bytotal.bylc = (phospho.bytotal/loadcontrol)*100)
-wb_value_filtered_df$phospho.bymodel = phospho.bymodel_vec
-wb_value_filtered_df$phospho.bytotal.bylc.bymodel = phospho.bytotal.bylc.bymodel_vec
 
 plot_data_df = wb_value_filtered_df
 plot_data_df$Treatment_group = factor(x = plot_data_df$Treatment_group, levels = c("Control", "Cabozantinib", "Sapanisertib", "Combo"))
@@ -192,13 +189,15 @@ p <- ggbarplot(data = plot_data_df,
                x = "Treatment_group", y = "phospho.bytotal", fill = "Treatment_group",
                facet.by = "Model", nrow = 1,
                add = "mean_se", position = position_dodge())
-p <- p + stat_pvalue_manual(stat.test, label = "p", tip.length = 0.01)
+p <- p + stat_pvalue_manual(stat.test, label = "p", tip.length = 0.01, label.size = 5)
 p <- p + scale_fill_manual(values = colors_plot)
-p <- p + ylab(paste0(phospho_plot, " normalized by\ntotal protein"))
+p <- p + ylab(paste0("pERK/ERK ratio"))
 p <- p + ylim(c(0, 220))
+p <- p + guides(fill = guide_legend(title = ""))
+p <- p + theme_classic(base_size = 18)
 p <- p + theme(axis.text.x = element_blank(),
                axis.title.x = element_blank(),
-               axis.ticks.x = element_blank())
+               axis.ticks.x = element_blank(), legend.position = "bottom")
 pdf.options(reset = TRUE, onefile = FALSE)
 file2write <- paste0(dir_out, phospho_plot, ".phospho.bytotal.ttest",  ".pdf")
 pdf(file2write, width = 7, height = 3.5, useDingbats = F)

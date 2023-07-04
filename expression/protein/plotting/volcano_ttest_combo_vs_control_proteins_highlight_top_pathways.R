@@ -37,6 +37,7 @@ result_merged_df <- fread(data.table = F, input = "./Resources/Analysis_Results/
 genes_highlight_tmp <- c("TK1", "CDK1", "KPNA2", "MCM2", "PRDX4", "PCNA", "TBRG4", "MCM3", "RFC3", "MCM7",
                          #"TIMM8B", "GOT2", "HCCS", "UQCRQ", "SLC25A20", "NDUFB1", "COX7C", "TOMM22", "SLC25A5", "UQCRB", "UQCR10", "COX4I1", "COX17", "MRPL11", "DLD")#,
                           "SCG2", "LRP1", "TGFBI", "THBS1", "COL7A1", "TFPI2", "TAGLN",
+                         "IGF2BP3",
                           "CDK4", "TNPO2", "RPS6KA5", "PRMT5", "NUP98")
                           #"ICAM1", "LRP1", "FTH1", "ICAM1", "ALDH1L1", "CDK4", "BLVRB", "ADK", "MAT1A")
 cap_value <- 2

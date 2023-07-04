@@ -58,10 +58,13 @@ color_grey <- "grey50"
 colors_plot <- c("Control" = color_grey, "Cabozantinib" = color_red, "Sapanisertib" = color_green, "Cabozantinib+Sapanisertib" = color_yellow)
 
 # plot complete plot --------------------------------------------------------------------
-p <- ggplot(data = plot_data_long_df, mapping = aes(x = Treatment_Days, y = Avg_Relative_Volume, group = Treatment_Group, color = Treatment_Group))
-p <- p + geom_line()
-p <- p + geom_point(alpha = 0.7, shape = 16)
-p <- p + geom_errorbar(aes(ymin=Avg_Relative_Volume-STDEV_relative_tumor_volumn, 
+p <- ggplot()
+p <- p + geom_line(data = subset(plot_data_long_df, Treatment_Group %in% c("Cabozantinib", "Cabozantinib+Sapanisertib")), mapping = aes(x = Treatment_Days, y = Avg_Relative_Volume, group = Treatment_Group, color = Treatment_Group), linetype = 2)
+p <- p + geom_line(data = subset(plot_data_long_df, !(Treatment_Group %in% c("Cabozantinib", "Cabozantinib+Sapanisertib"))), mapping = aes(x = Treatment_Days, y = Avg_Relative_Volume, group = Treatment_Group, color = Treatment_Group))
+p <- p + geom_point(data = plot_data_long_df, mapping = aes(x = Treatment_Days, y = Avg_Relative_Volume, group = Treatment_Group, color = Treatment_Group), alpha = 0.7, shape = 16)
+p <- p + geom_errorbar(data = plot_data_long_df, 
+                       aes(x = Treatment_Days, y = Avg_Relative_Volume, group = Treatment_Group, color = Treatment_Group,
+                           ymin=Avg_Relative_Volume-STDEV_relative_tumor_volumn, 
                            ymax=Avg_Relative_Volume+STDEV_relative_tumor_volumn), 
                        width=1, alpha = 0.7, size = 0.5)
 p <- p + scale_color_manual(values = colors_plot)

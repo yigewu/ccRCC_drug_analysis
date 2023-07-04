@@ -1,4 +1,4 @@
-# Yige Wu @ WashU 2022 Feb
+# Yige Wu @ WashU 2023 Jun
 
 # set up libraries and output directory -----------------------------------
 ## set working directory
@@ -18,7 +18,8 @@ for (pkg_name_tmp in packages) {
 
 # input dependencies ------------------------------------------------------
 ## input the protein data
-exp_df <- fread("./Data_Freeze/v1.dataFreeze.washU_rcc/3.geneExp/v3.20210116/datafreeze.v3.kallisto.geneExp.tsv", data.table = F)
+# exp_df <- fread("./Resources/Analysis_Results/expression/rna/pathway/calculate_TF_activity_bysample/20230621.v1/TF_activity.wide.20230621.v1.tsv", data.table = F)
+exp_df <- fread("./Resources/Analysis_Results/expression/rna/pathway/calculate_TF_activity_bysample/20230621.v2/TF_activity.wide.20230621.v2.tsv", data.table = F)
 sampleinfo_df <- readxl::read_excel(path = "./Data_Freeze/v1.dataFreeze.washU_rcc/0.sample_info/v3.20210116/RCC_PDX_Samples.20210115.v2.xlsx")
 
 # specify parameters --------------------------------------------------------------
@@ -32,7 +33,6 @@ result_merged_df <- NULL
 ## pre-process
 sampleinfo_df <- sampleinfo_df %>%
   filter(DataType == "RNA-Seq") %>%
-  filter(!(PairTag %in% c("RESL5D.27", "RESL5E.28", "RESL5E.30", "RESL10F.38"))) %>%
   mutate(Treatment = ShortTag) %>%
   mutate(Treatment_length = paste0(Treatment.Month, " month")) %>%
   mutate(PairTag.middle = str_split_fixed(string = Analysis_ID, pattern = "_", n = 3)[,2]) %>%
@@ -66,34 +66,28 @@ for (group1_tmp in group1_process) {
     ## initiate
     pvalue_vec <- vector(mode = "numeric", length = num_tests)
     diff_estimate_vec <- vector(mode = "numeric", length = num_tests)
-    diff_bottom_vec <- vector(mode = "numeric", length = num_tests)
-    diff_top_vec <- vector(mode = "numeric", length = num_tests)
     number_group1_vec <- vector(mode = "numeric", length = num_tests)
     number_group2_vec <- vector(mode = "numeric", length = num_tests)
     ## test per protein
     for (i in 1:num_tests) {
       print(i)
       idx_test <- idxs_test[i]
-      exp_group1_tmp <- unlist(exp_group1_df[idx_test,]); exp_group1_tmp = log2(exp_group1_tmp+1)
-      exp_group2_tmp <- unlist(exp_group2_df[idx_test,]); exp_group2_tmp = log2(exp_group2_tmp+1)
+      exp_group1_tmp <- unlist(exp_group1_df[idx_test,]); 
+      exp_group2_tmp <- unlist(exp_group2_df[idx_test,]);
       ### test
-      stat <- t.test(x = exp_group1_tmp, y = exp_group2_tmp, conf.int = T, paired = T)
+      stat <- wilcox.test(x = exp_group1_tmp, y = exp_group2_tmp, paired = T)
       pvalue_vec[i] <- stat$p.value
-      diff_estimate_vec[i] <- stat$estimate
+      diff_estimate_vec[i] <- stat$statistic
       
-      diff_bottom_vec[i] <- stat$conf.int[1]
-      diff_top_vec[i] <- stat$conf.int[2]
       number_group1_vec[i] <- length(exp_group1_tmp[!is.na(exp_group1_tmp)])
       number_group2_vec[i] <- length(exp_group2_tmp[!is.na(exp_group2_tmp)])
     }
     
     ## parse results
-    result_tmp_df <- data.frame(Name = exp_df[idxs_test, c("Name")])
+    result_tmp_df <- data.frame(Name = exp_df[idxs_test, c("TF_genesymbol")])
     result_tmp_df <- cbind(result_tmp_df,
                            data.frame(pvalue = pvalue_vec,
                                       diff_estimate = diff_estimate_vec,
-                                      diff_bottom = diff_bottom_vec,
-                                      diff_top = diff_top_vec,
                                       number_group1 = number_group1_vec,
                                       number_group2 = number_group2_vec,
                                       group1 = group1_tmp,
@@ -105,11 +99,11 @@ for (group1_tmp in group1_process) {
 
 # save output -------------------------------------------------------------
 ## set run id
-version_tmp <- 2
+version_tmp <- 1
 run_id <- paste0(format(Sys.Date(), "%Y%m%d") , ".v", version_tmp)
 ## set output directory
 source("./ccRCC_drug_analysis/functions.R")
 dir_out <- paste0(makeOutDir(), run_id, "/")
 dir.create(dir_out)
-file2write <- paste0(dir_out, "mRNA.Ttest.Paired.1month.Combo_vs_single.", run_id, ".tsv")
+file2write <- paste0(dir_out, "TFactivity.Wilcoxon.Paired.1month.Combo_vs_single.", run_id, ".tsv")
 write.table(x = result_merged_df, file = file2write, quote = F, sep = "\t", row.names = F)

@@ -71,7 +71,7 @@ p <- p + facet_grid(cols = vars(id_model), scales = "free")
 p <- p + ylab(label = paste0("% of meta-cluster\nin the tumor cells"))
 p <- p + theme_classic()
 p <- p + guides(colour = guide_legend(ncol = 1, override.aes = aes(size = 3), title = NULL))
-p <- p + theme(legend.position = "right",
+p <- p + theme(legend.position = "top",
                axis.title.x = element_blank(), axis.title.y = element_text(size = fontsize_plot),
                axis.text.y = element_text(color = "black", size = fontsize_plot), 
                axis.text.x = element_text(color = "black", size = fontsize_plot), 
@@ -79,6 +79,27 @@ p <- p + theme(legend.position = "right",
                legend.text = element_text(size = fontsize_plot))
 file2write <- paste0(dir_out, "CT-Combo", ".pdf")
 pdf(file2write, width = 4.5, height = 2.5, useDingbats = F)
+print(p)
+dev.off()
+
+# make plot for CT-Combo for revision ---------------------------------------------------------
+p <- ggplot(data = subset(plot_data_df, treatment_group %in% c("CT", "Cabo_Sap")), 
+            mapping = aes(x = Treatment, y = frac_bysample_bycluster, group = cluster, color = cluster))
+p <- p + geom_line(alpha = 0.7)
+p <- p + geom_point(alpha = 0.7, shape = 16)
+p <- p + scale_color_manual(values = colors_cluster[clusters_plot])
+p <- p + facet_grid(cols = vars(id_model), scales = "free")
+p <- p + ylab(label = paste0("% of meta-cluster\nin the tumor cells"))
+p <- p + theme_classic()
+p <- p + guides(colour = guide_legend(ncol = 3, override.aes = aes(size = 3), title = NULL))
+p <- p + theme(legend.position = "bottom",
+               axis.title.x = element_blank(), axis.title.y = element_text(size = fontsize_plot),
+               axis.text.y = element_text(color = "black", size = fontsize_plot), 
+               axis.text.x = element_text(color = "black", size = fontsize_plot), 
+               strip.background = element_rect(color = NA), strip.text = element_text(size = fontsize_plot),
+               legend.text = element_text(size = fontsize_plot))
+file2write <- paste0(dir_out, "CT-Combo.revision", ".pdf")
+pdf(file2write, width = 3.5, height = 3, useDingbats = F)
 print(p)
 dev.off()
 

@@ -2,7 +2,7 @@
 
 # set up libraries and output directory -----------------------------------
 ## set working directory
-dir_base = "~/Box/Ding_Lab/Projects_Current/RCC/ccRCC_Drug/"
+dir_base = "~/Library/CloudStorage/Box-Box/Ding_Lab/Projects_Current/RCC/ccRCC_Drug/"
 setwd(dir_base)
 source("./ccRCC_drug_analysis/load_pkgs.R")
 source("./ccRCC_drug_analysis/functions.R")
@@ -17,13 +17,14 @@ dir.create(dir_out)
 
 # input dependencies ------------------------------------------------------
 ## input the protein data
-protein_df <- fread(data.table = F, input = "./Resources/Analysis_Results/expression/protein/preprocess/impute_protein_data_using_DreamAI/20210201.v1/RCC_PDX.DIA_Protein.Log2.QuantileNormalized.RegImpute.tsv")
+protein_df <- fread(data.table = F, input = "./Resources/Analysis_Results/expression/protein/preprocess/normalize_DIA_protein_data/20210111.v1/RCC_PDX.DIA_Protein.Log2.QuantileNormalized.20210111.v1.tsv")
 ## input the sample info
 sampleinfo_df <- readxl::read_excel(path = "./Data_Freeze/v1.dataFreeze.washU_rcc/4.protein/WUSTL to JHU_ccRCC PDX_sample information_01062021_YW.xlsx")
 
 # set parameters ----------------------------------------------------------
 # genes_filter <- c("MT-CO1", "MT-CO3")
-genes_filter <- c("TMEM63A", "Aig1;AIG1", "C11orf54", "SLC27A3")
+# genes_filter <- c("TMEM63A", "Aig1;AIG1", "C11orf54", "SLC27A3")
+genes_filter <- c("ICAM1")
 colnames_id <- colnames(protein_df)[!(colnames(protein_df) %in% sampleinfo_df$`Sample ID`)]
 
 # plot --------------------------------------------------------------------
